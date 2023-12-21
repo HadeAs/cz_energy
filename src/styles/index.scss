@@ -23,16 +23,6 @@ body {
 .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
   background-color: rgba(244, 247, 253, 1) !important;
 }
-.el-button--primary {
-  border-color: var(--highlight-color) !important;
-}
 .el-button.is-disabled {
   background-color: #f4f7fd !important;
-}
-.el-button--primary,
-.el-pager li.is-active {
-  background-color: var(--highlight-color) !important;
-}
-.el-select-dropdown__item.selected {
-  color: var(--highlight-color) !important;
 }

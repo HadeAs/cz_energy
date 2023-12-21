@@ -1,5 +1,12 @@
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': rgb(43, 62, 177),
+    )
+  )
+);
+
 :root {
-  --theme-color: #2563eb;
   --menu-color: #f8f9fb;
   --menu-text-color: #515E83;
   --highlight-color: rgb(43, 62, 177);

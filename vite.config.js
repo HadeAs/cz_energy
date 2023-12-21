@@ -28,9 +28,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `
-          @import "@/styles/variables.scss";
-        `,
+        additionalData: `@use "@/styles/variables.scss" as *;`,
         javascriptEnabled: true,
       },
     },
@@ -39,10 +37,16 @@ export default defineConfig({
     vue(),
     vueJsx(),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({
+        importStyle: 'sass'
+      })],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
-    }),
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: "sass"
+        }),
+      ],
+    })
   ],
 });
