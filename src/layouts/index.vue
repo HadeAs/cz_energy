@@ -2,6 +2,18 @@
   <el-config-provider :locale="zhCn">
     <el-container class="basic-layout-container">
       <el-aside width="240px">
+        <div class="logo-container">
+          <el-image
+            style="width: 70px; height: 53px"
+            :src="logoUrl"
+            fit="fill"
+          />
+          <el-image
+            style="width: 154px; height: 31px"
+            :src="logoTextUrl"
+            fit="fill"
+          />
+        </div>
         <el-menu router :default-active="defaultMenuKey">
           <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
             <template #title>
@@ -59,6 +71,8 @@
 import { ref } from "vue";
 import { MENU_DATA } from "@/constant";
 import imgUrl from "@/assets/img/user.png";
+import logoUrl from "@/assets/img/logo.png";
+import logoTextUrl from "@/assets/img/logo-text.png";
 import { useRoute } from "vue-router";
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 
@@ -121,7 +135,18 @@ const handleMenuClick = (item) => {
     }
   }
   .el-main {
-    padding: 0px 20px 10px;
+    padding: 0px 15px 10px;
+  }
+  .logo-container {
+    height: 95px;
+    padding: 15px;
+    border-bottom: 1px solid #d9d9d9;
+    background-color: var(--menu-color);
+    border-radius: 0px 50px 0px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
   }
   .header-content-container {
     padding: 15px 20px 20px;
