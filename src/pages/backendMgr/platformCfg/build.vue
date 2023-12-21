@@ -10,6 +10,6 @@
     <el-empty description="暂无数据" />
   </MainContentContainer>
 </template>
-<script lang="ts" setup>
+<script setup>
 import MainContentContainer from "@/components/MainContentContainer.vue";
 </script>

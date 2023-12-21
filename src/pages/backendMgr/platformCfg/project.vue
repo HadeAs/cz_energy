@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 16:55:45
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-20 16:59:31
+ * @LastEditTime: 2023-12-21 14:46:07
  * @Description: 
 -->
 <template>
@@ -10,6 +10,6 @@
     <el-empty description="暂无数据" />
   </MainContentContainer>
 </template>
-<script lang="ts" setup>
+<script setup>
 import MainContentContainer from "@/components/MainContentContainer.vue";
 </script>

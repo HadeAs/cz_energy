@@ -9,7 +9,7 @@
   <MainTabContainer :tabData="tabData" :defaultTab="defaultTab" />
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import LoginLog from "./loginLog.vue";
 import AlarmLog from "./alarmLog.vue";
 import OperationLog from "./operationLog.vue";

@@ -9,7 +9,7 @@
   <MainTabContainer :tabData="tabData" :defaultTab="defaultTab" />
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import Global from "./global.vue";
 import Project from "./project.vue";
 import Unit from "./unit.vue";

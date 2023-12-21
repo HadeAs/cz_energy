@@ -1,64 +1,66 @@
 <template>
-  <el-container class="basic-layout-container">
-    <el-aside width="240px">
-      <el-menu router :default-active="defaultMenuKey">
-        <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
-          <template #title>
-            <el-icon>
-              <component :is="item.icon"></component>
-            </el-icon>
-            <span style="font-size: 16px">{{ item.name }}</span>
-          </template>
-          <el-menu-item
-            v-for="v in item.children"
-            :index="v.path"
-            @click="handleMenuClick(v)"
-            >{{ v.name }}</el-menu-item
-          >
-        </el-sub-menu>
-      </el-menu>
-    </el-aside>
-    <el-container>
-      <el-header class="header-content-container">
-        <el-row :gutter="30" align="middle">
-          <el-col :span="6">
-            <div class="current-menu">{{ currentMenu }}</div>
-          </el-col>
-          <el-col :span="3" :offset="12">
-            <el-button class="custom-btn" type="primary">主页大屏</el-button>
-          </el-col>
-          <el-col :span="3">
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                <el-avatar size="small" :src="imgUrl" />
-                <span class="user-name">管理员</span>
-                <el-icon class="el-icon--right">
-                  <arrow-down />
-                </el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>个人信息</el-dropdown-item>
-                  <el-dropdown-item>登出</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </el-col>
-        </el-row>
-      </el-header>
+  <el-config-provider :locale="zhCn">
+    <el-container class="basic-layout-container">
+      <el-aside width="240px">
+        <el-menu router :default-active="defaultMenuKey">
+          <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
+            <template #title>
+              <el-icon>
+                <component :is="item.icon"></component>
+              </el-icon>
+              <span style="font-size: 16px">{{ item.name }}</span>
+            </template>
+            <el-menu-item
+              v-for="v in item.children"
+              :index="v.path"
+              @click="handleMenuClick(v)"
+              >{{ v.name }}</el-menu-item
+            >
+          </el-sub-menu>
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <el-header class="header-content-container">
+          <el-row :gutter="30" align="middle">
+            <el-col :span="6">
+              <div class="current-menu">{{ currentMenu }}</div>
+            </el-col>
+            <el-col :span="3" :offset="12">
+              <el-button class="custom-btn" type="primary">主页大屏</el-button>
+            </el-col>
+            <el-col :span="3">
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  <el-avatar size="small" :src="imgUrl" />
+                  <span class="user-name">管理员</span>
+                  <el-icon class="el-icon--right">
+                    <arrow-down />
+                  </el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>退出</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </el-col>
+          </el-row>
+        </el-header>
 
-      <el-main>
-        <router-view />
-      </el-main>
+        <el-main>
+          <router-view />
+        </el-main>
+      </el-container>
     </el-container>
-  </el-container>
+  </el-config-provider>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref } from "vue";
 import { MENU_DATA } from "@/constant";
 import imgUrl from "@/assets/img/user.png";
 import { useRoute } from "vue-router";
+import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 
 const route = useRoute();
 const defaultMenuKey = route.path;

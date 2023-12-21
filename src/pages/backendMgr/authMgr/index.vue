@@ -15,7 +15,7 @@
   </MainContentContainer>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import MainContentContainer from "@/components/MainContentContainer.vue";
 const tableData = [
   {

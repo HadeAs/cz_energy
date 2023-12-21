@@ -13,9 +13,9 @@ body {
   font-family: "system-ui", "-apple-system", "BlinkMacSystemFont", "segoe ui", "Roboto", "Helvetica", "Arial", "sans-serif";
 }
 .el-table--fit {
-  border-top: 1px solid #e3e3e3;
-  border-left: 1px solid #e3e3e3;
-  border-right: 1px solid #e3e3e3 !important;
+  border-top: var(--common-border);
+  border-left: var(--common-border);
+  border-right: var(--common-border) !important;
 }
 .el-table th.el-table__cell {
   background-color: rgba(236, 241, 249, 1) !important;
@@ -24,6 +24,15 @@ body {
   background-color: rgba(244, 247, 253, 1) !important;
 }
 .el-button--primary {
-  background-color: rgb(43, 62, 177) !important;
-  border-color: rgb(43, 62, 177) !important;
+  border-color: var(--highlight-color) !important;
+}
+.el-button.is-disabled {
+  background-color: #f4f7fd !important;
+}
+.el-button--primary,
+.el-pager li.is-active {
+  background-color: var(--highlight-color) !important;
+}
+.el-select-dropdown__item.selected {
+  color: var(--highlight-color) !important;
 }
