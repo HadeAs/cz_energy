@@ -2,38 +2,35 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-20 11:02:29
+ * @LastEditTime: 2023-12-21 21:12:13
  * @Description: 
 -->
 <template>
-  <el-table :data="tableData" stripe style="width: 100%">
-    <el-table-column prop="date" label="Date" width="180" />
-    <el-table-column prop="name" label="Name" width="180" />
-    <el-table-column prop="address" label="Address" />
-  </el-table>
+  <MainTabContainer :tabData="tabData" :defaultTab="defaultTab" />
 </template>
 
 <script setup>
-const tableData = [
+import Actual from "./actual.vue";
+import History from "./history.vue";
+import Device from "./device.vue";
+import MainTabContainer from "@/components/MainTabContainer.vue";
+
+const defaultTab = "actual";
+const tabData = [
   {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
+    label: "实时数据",
+    name: "actual",
+    component: Actual,
   },
   {
-    date: "2016-05-02",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
+    label: "历史数据",
+    name: "history",
+    component: History,
   },
   {
-    date: "2016-05-04",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
+    label: "单类设备数据",
+    name: "device",
+    component: Device,
   },
 ];
 </script>

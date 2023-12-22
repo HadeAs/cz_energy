@@ -1,14 +1,19 @@
-@forward 'element-plus/theme-chalk/src/common/var.scss' with (
-  $colors: (
-    'primary': (
-      'base': rgb(43, 62, 177),
-    )
-  )
-);
+// @forward 'element-plus/theme-chalk/src/common/var.scss' with (
+//   $colors: (
+//     'primary': (
+//       'base': rgb(43, 62, 177),
+//     )
+//   )
+// );
 
 :root {
   --menu-color: #f8f9fb;
   --menu-text-color: #515E83;
   --highlight-color: rgb(43, 62, 177);
+  --el-color-primary: rgb(43, 62, 177);
   --common-border: 1px solid #e3e3e3;
+}
+.el-button--primary {
+  --el-button-hover-border-color: rgb(43, 62, 177);
+  --el-button-hover-bg-color: rgb(43, 62, 177);
 }

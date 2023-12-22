@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-21 14:40:28
+ * @LastEditTime: 2023-12-21 21:00:52
  * @Description: 
 -->
 <template>
@@ -10,14 +10,20 @@
     <div class="tool-bar">
       <slot name="toolbar"></slot>
     </div>
-    <el-table :data="datasource" stripe style="width: 100%">
+    <el-table
+      :data="datasource"
+      stripe
+      style="width: 100%"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column v-if="!!multiple" type="selection" width="55" />
-      <el-table-column prop="projectName" label="项目名称" />
-      <el-table-column prop="district" label="所在地区" />
-      <el-table-column prop="area" label="建筑面积(万平方米)" />
-      <el-table-column prop="mode" label="当前模式" />
-      <el-table-column prop="startTime" label="项目起始时间" />
-      <el-table-column label="操作" width="250">
+      <el-table-column v-for="item in column" v-bind="item" />
+      <el-table-column
+        v-if="$slots.operation"
+        fixed="right"
+        label="操作"
+        width="250"
+      >
         <template #default="scope">
           <slot name="operation" v-bind="scope"></slot>
         </template>
@@ -58,6 +64,7 @@ const props = defineProps({
 });
 
 const emits = defineEmits([
+  "selection-change",
   "page-change",
   "page-prev-click",
   "page-next-click",
@@ -65,6 +72,10 @@ const emits = defineEmits([
 
 const pageSize = ref(props.pageInfo.pageSize);
 const currentPage = ref(props.pageInfo.currentPage);
+
+const handleSelectionChange = (selection) => {
+  emits("selection-change", selection);
+};
 
 const handlePageChange = (currentPage, pageSize) => {
   emits("page-change", currentPage, pageSize);

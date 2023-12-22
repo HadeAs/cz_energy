@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-21 16:14:15
+ * @LastEditTime: 2023-12-21 21:01:17
  * @Description: 
 -->
 <template>
@@ -16,10 +16,13 @@
       @page-change="pageChange"
       @page-prev-click="pagePrevClick"
       @page-next-click="pageNextClick"
+      @selection-change="selectionChange"
     >
       <template #toolbar>
         <el-button type="primary">新增</el-button>
-        <el-button :disabled="true">批量删除</el-button>
+        <el-button :disabled="!selectRows.length" @click="batchDelete"
+          >批量删除</el-button
+        >
         <el-input
           clearable
           v-model="projName"
@@ -49,6 +52,7 @@
 import { ref, onMounted } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
@@ -56,6 +60,7 @@ import MainContentContainer from "@/components/MainContentContainer.vue";
 const projName = ref("");
 const loading = ref(false);
 const datasource = ref([]);
+const selectRows = ref([]);
 
 const editRow = (scope) => {
   console.log(scope.row);
@@ -79,6 +84,30 @@ const pagePrevClick = (val) => {
 
 const pageNextClick = (val) => {
   console.log(val);
+};
+
+const selectionChange = (data) => {
+  selectRows.value = data;
+};
+
+const batchDelete = () => {
+  ElMessageBox.confirm("确认删除选中的内容？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(() => {
+      ElMessage({
+        type: "success",
+        message: "Delete completed",
+      });
+    })
+    .catch(() => {
+      ElMessage({
+        type: "info",
+        message: "Delete canceled",
+      });
+    });
 };
 
 const pageInfo = {

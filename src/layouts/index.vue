@@ -105,6 +105,7 @@ const handleMenuClick = (item) => {
     color: var(--el-text-color-primary);
   }
   .el-aside {
+    background-color: var(--menu-color);
     color: var(--el-text-color-primary);
   }
   .el-menu {
