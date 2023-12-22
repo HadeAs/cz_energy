@@ -2,13 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 16:08:34
+ * @LastEditTime: 2023-12-22 21:49:32
  * @Description: 
 -->
 <template>
   <EchartTreeContainer>
     <template #left>
-      <Echart :option="option" />
+      <Echart :option="chartOption" />
     </template>
     <template #right>
       <el-input
@@ -40,6 +40,7 @@ import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
 const varName = ref("");
 const treeRef = ref();
+const chartOption = ref(COMMON_ECHART_OPTION);
 const treeData = ref(CARBON_CATEGORY_DATA);
 
 const randomArr = (num) => {
@@ -67,12 +68,16 @@ const varCheckChangeHandle = () => {
       name: item.label,
       type: "line",
       smooth: true,
+      showSymbol: false,
       data: randomArr(1000),
     });
   });
-  option.value.legend.data = legendData;
-  option.value.series = seriesData;
-  option.value = { ...option.value };
+  chartOption.value.xAxis[0].data = new Array(13)
+    .fill("")
+    .map((v, i) => `${i}:00`);
+  chartOption.value.legend.data = legendData;
+  chartOption.value.series = seriesData;
+  chartOption.value = { ...chartOption.value };
   //跨父节点节点禁止点击
   if (checkchilds.length) {
     const node = checkchilds[0];
@@ -101,7 +106,5 @@ const varCheckChangeHandle = () => {
 onMounted(() => {
   varCheckChangeHandle();
 });
-
-const option = ref(COMMON_ECHART_OPTION);
 </script>
 <style lang="scss" scoped></style>

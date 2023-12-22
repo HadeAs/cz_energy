@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 16:40:06
+ * @LastEditTime: 2023-12-22 20:31:24
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -103,7 +103,7 @@ export const MENU_DATA = [
 ];
 
 const minValue = 10;
-const colorArr = ["#55c5f7", "#95d2f6", "#f9bf00", "#fa5555", "#6666ff"];
+const colorArr = ["#2DB7F5", "#7DC856", "#F9BF00", "#FA5555", "#6666FF"];
 export const COMMON_ECHART_OPTION = {
   tooltip: {
     trigger: "axis",
@@ -129,7 +129,7 @@ export const COMMON_ECHART_OPTION = {
     {
       type: "category",
       boundaryGap: false,
-      data: new Array(13).fill("").map((v, i) => `${i}:00`),
+      data: [],
       axisLine: {
         lineStyle: {
           color: "#cad3e2",
@@ -251,6 +251,95 @@ export const CARBON_CATEGORY_DATA = [
       {
         id: 18,
         label: "风力发电",
+      },
+    ],
+  },
+];
+
+export const DEVICE_CATEGORY_DATA = [
+  {
+    id: 1,
+    label: "空调系统设备",
+    children: [
+      {
+        id: 6,
+        label: "主机用电量",
+      },
+      {
+        id: 7,
+        label: "冷冻水泵用电量",
+      },
+      {
+        id: 8,
+        label: "冷却水泵用电量",
+      },
+      {
+        id: 9,
+        label: "冷却塔用电量",
+      },
+      {
+        id: 10,
+        label: "空调箱用电量",
+      },
+    ],
+  },
+  {
+    id: 2,
+    label: "照明插座设备",
+    children: [
+      {
+        id: 11,
+        label: "照明用电量",
+      },
+      {
+        id: 12,
+        label: "插座用电量",
+      },
+    ],
+  },
+  {
+    id: 3,
+    label: "动力设备",
+    children: [
+      {
+        id: 13,
+        label: "电梯用电量",
+      },
+      {
+        id: 14,
+        label: "水泵用电量",
+      },
+      {
+        id: 15,
+        label: "通风机用电量",
+      },
+    ],
+  },
+  {
+    id: 4,
+    label: "特殊用电设备",
+    children: [
+      {
+        id: 16,
+        label: "信息中心",
+      },
+      {
+        id: 17,
+        label: "食堂用电量",
+      },
+    ],
+  },
+  {
+    id: 5,
+    label: "燃气",
+    children: [
+      {
+        id: 18,
+        label: "燃气锅炉",
+      },
+      {
+        id: 19,
+        label: "厨具",
       },
     ],
   },

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-20 15:36:16
+ * @LastEditTime: 2023-12-22 21:45:28
  * @Description: 
 -->
 <template>
@@ -13,7 +13,10 @@
         :label="item.label"
         :name="item.name"
       >
-        <component :is="item.component"></component>
+        <component
+          v-if="activeName === item.name"
+          :is="item.component"
+        ></component>
       </el-tab-pane>
     </el-tabs>
   </div>

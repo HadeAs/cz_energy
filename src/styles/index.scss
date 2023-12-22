@@ -31,7 +31,8 @@ body {
     background-color: var(--highlight-color) !important;
   }
   .el-input__inner,
-  .el-input .el-select__caret {
+  .el-input .el-select__caret,
+  .el-input__inner::placeholder {
     color: #ffffff !important;
   }
 }

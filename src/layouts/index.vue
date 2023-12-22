@@ -34,42 +34,44 @@
       <el-container>
         <el-header class="header-content-container">
           <el-row :gutter="30" align="middle">
-            <el-col :span="3">
-              <div class="current-menu">{{ currentMenu }}</div>
+            <el-col :span="7">
+              <div class="menu-container">
+                <div class="current-menu">{{ currentMenu }}</div>
+                <el-select
+                  v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
+                  v-model="appStore.global.projectName"
+                  @change="projectChange"
+                  placeholder="选择项目"
+                >
+                  <el-option
+                    v-for="item in projects"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </div>
             </el-col>
-            <el-col :span="4">
-              <el-select
-                v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
-                v-model="appStore.global.projectName"
-                @change="projectChange"
-                placeholder="选择项目"
-              >
-                <el-option
-                  v-for="item in projects"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-col>
-            <el-col :span="3" :offset="11">
-              <el-button class="custom-btn" type="primary">主页大屏</el-button>
-            </el-col>
-            <el-col :span="3">
-              <el-dropdown>
-                <span class="el-dropdown-link">
-                  <el-avatar size="small" :src="imgUrl" />
-                  <span class="user-name">管理员</span>
-                  <el-icon class="el-icon--right">
-                    <arrow-down />
-                  </el-icon>
-                </span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item>退出</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+            <el-col :span="5" :offset="12">
+              <div class="menu-container">
+                <el-button class="custom-btn" type="primary"
+                  >主页大屏</el-button
+                >
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    <el-avatar size="small" :src="imgUrl" />
+                    <span class="user-name">管理员</span>
+                    <el-icon class="el-icon--right">
+                      <arrow-down />
+                    </el-icon>
+                  </span>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item>退出</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
             </el-col>
           </el-row>
         </el-header>
@@ -177,11 +179,16 @@ const projectChange = (val) => {
   }
   .header-content-container {
     padding: 15px 20px 20px;
+    .menu-container {
+      display: flex;
+      align-items: center;
+    }
     .current-menu {
       font-weight: 700;
       font-style: normal;
       font-size: 20px;
       color: #3142b4;
+      margin-right: 15px;
     }
     .custom-btn {
       border: 2px solid rgba(43, 62, 177, 1);
@@ -191,6 +198,7 @@ const projectChange = (val) => {
       color: #2b3eb1;
       text-align: center;
       height: 30px;
+      margin-right: 15px;
     }
     .el-dropdown-link {
       cursor: pointer;
