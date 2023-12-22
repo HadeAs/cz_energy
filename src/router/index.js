@@ -8,6 +8,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import BasicRouter from "./basicRouter";
 import Layout from "@/layouts/index.vue";
+import ScreenLayout from "@/layouts/screenLayout.vue"
 
 const routesArray = [
   {
@@ -136,6 +137,25 @@ const routesArray = [
           ),
       },
     ],
+  },
+  {
+    path: "/screen",
+    redirect: "/mainA",
+    component: ScreenLayout,
+    children: [
+      {
+        path: "/mainA",
+        name: "MainA",
+        component: () =>
+          import(/* webpackChunkName: "404" */ "@/pages/screen/mainA/index.vue"),
+      },
+      {
+        path: "/mainB",
+        name: "MainB",
+        component: () =>
+          import(/* webpackChunkName: "404" */ "@/pages/screen/mainB/index.vue"),
+      },
+    ]
   },
   ...BasicRouter,
 ];

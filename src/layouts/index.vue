@@ -1,5 +1,4 @@
 <template>
-  <el-config-provider :locale="zhCn">
     <el-container class="basic-layout-container">
       <el-aside width="240px">
         <div class="logo-container">
@@ -76,12 +75,11 @@
           </el-row>
         </el-header>
 
-        <el-main>
-          <router-view />
-        </el-main>
-      </el-container>
+      <el-main>
+        <router-view />
+      </el-main>
     </el-container>
-  </el-config-provider>
+  </el-container>
 </template>
 
 <script setup>
@@ -92,7 +90,6 @@ import imgUrl from "@/assets/img/user.png";
 import logoUrl from "@/assets/img/logo.png";
 import logoTextUrl from "@/assets/img/logo-text.png";
 import { useRoute } from "vue-router";
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 
 const route = useRoute();
 const defaultMenuKey = route.path;

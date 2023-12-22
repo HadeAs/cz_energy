@@ -159,7 +159,7 @@ const submitForm = async () => {
 .page-container {
   width: 100%;
   min-height: 100%;
-  background: url(@/assets/img/u0.jpg) no-repeat;
+  background: url(@/assets/img/login-bg.jpg) no-repeat;
   background-size: cover;
   overflow-y: scroll;
   position: relative;
@@ -187,13 +187,16 @@ const submitForm = async () => {
   }
   .cs-login-content {
     position: absolute;
-    width: 442px;
-    height: 515px;
+    // width: 442px;
+    // height: 515px;
+    // width: 22%;
+    // height: 47%;
+    min-width: 440px;
     font-size: 20px;
     top: 50%;
     left: 50%;
-    margin-top: 80px;
-    margin-bottom: 80px;
+    // margin-top: 80px;
+    // margin-bottom: 80px;
     transform: translate(-50%, -50%);
     .cs-login-wrapper {
       padding: 60px;
@@ -205,6 +208,7 @@ const submitForm = async () => {
         font-weight: bold;
         text-align: center;
         margin-bottom: 30px;
+        margin-top: 0;
       }
       :deep() {
         .el-tabs__header {

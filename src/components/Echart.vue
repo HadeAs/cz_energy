@@ -6,21 +6,24 @@
  * @Description: 
 -->
 <template>
-  <v-chart class="chart" :option="option" autoresize />
+  <v-chart ref="chartRef" class="chart" :option="option" autoresize />
 </template>
 <script setup>
+import { ref } from "vue";
 import { use } from "echarts/core";
-import { PieChart, LineChart } from "echarts/charts";
+import { PieChart, LineChart, MapChart, ScatterChart, BarChart } from "echarts/charts";
 import {
   GridComponent,
   TitleComponent,
   TooltipComponent,
   LegendComponent,
   ToolboxComponent,
+  VisualMapComponent
 } from "echarts/components";
 import VChart from "vue-echarts";
 import { SVGRenderer } from "echarts/renderers";
 
+const chartRef = ref();
 use([
   ToolboxComponent,
   TitleComponent,
@@ -29,10 +32,34 @@ use([
   GridComponent,
   PieChart,
   LineChart,
+  MapChart,
+  ScatterChart,
+  BarChart,
   SVGRenderer,
+  VisualMapComponent
 ]);
 
 defineProps(["option"]);
+
+const resize = () => {
+  if (chartRef.value) {
+    chartRef.value.resize();
+  }
+}
+
+const clear = () => {
+  if (chartRef.value) {
+    chartRef.value.clear();
+  }
+}
+
+const dispose = () => {
+  if (chartRef.value) {
+    chartRef.value.dispose();
+  }
+}
+
+defineExpose({ resize, clear, dispose });
 </script>
 <style lang="scss" scoped>
 .chart {
