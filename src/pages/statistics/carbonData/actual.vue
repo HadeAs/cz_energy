@@ -2,125 +2,106 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 10:41:43
+ * @LastEditTime: 2023-12-22 16:08:34
  * @Description: 
 -->
 <template>
-  <MainContentContainer>
-    <Echart :option="option" />
-  </MainContentContainer>
+  <EchartTreeContainer>
+    <template #left>
+      <Echart :option="option" />
+    </template>
+    <template #right>
+      <el-input
+        v-model="varName"
+        placeholder="请输入内容"
+        :prefix-icon="Search"
+        style="margin-bottom: 10px"
+      />
+      <el-tree
+        :data="treeData"
+        show-checkbox
+        node-key="id"
+        ref="treeRef"
+        default-expand-all
+        @check="varCheckChangeHandle"
+        :default-checked-keys="[8, 9, 10, 11]"
+        :filter-node-method="filterNode"
+      />
+    </template>
+  </EchartTreeContainer>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted, nextTick } from "vue";
+import { Search } from "@element-plus/icons-vue";
 import Echart from "@/components/Echart.vue";
-import MainContentContainer from "@/components/MainContentContainer.vue";
+import { COMMON_ECHART_OPTION, CARBON_CATEGORY_DATA } from "@/constant";
+import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
-const xArr = [];
-const yArr1 = [];
-const yArr2 = [];
-const yArr3 = [];
-const yArr4 = [];
-const minValue = 10;
-const colorArr = ["#55c5f7", "#95d2f6", "#f9bf00", "#fa5555", "#6666ff"];
+const varName = ref("");
+const treeRef = ref();
+const treeData = ref(CARBON_CATEGORY_DATA);
 
-for (let i = 0; i <= 12; i++) {
-  xArr.push(`${i}:00`);
-  yArr1.push((Math.random() * 1000).toFixed(0));
-  yArr2.push((Math.random() * 800).toFixed(0));
-  yArr3.push((Math.random() * 600).toFixed(0));
-  yArr4.push((Math.random() * 700).toFixed(0));
-}
+const randomArr = (num) => {
+  return new Array(13).fill("").map((v) => (Math.random() * num).toFixed(0));
+};
 
-const option = ref({
-  tooltip: {
-    trigger: "axis",
-    axisPointer: {
-      label: {
-        backgroundColor: "#6a7985",
-      },
-    },
-  },
-  legend: {
-    data: ["空调系统", "动力系统", "照明插座", "特殊用电"],
-    top: 12,
-    right: 24,
-  },
-  grid: {
-    left: "24",
-    right: "24",
-    bottom: "24",
-    top: "40",
-    containLabel: true,
-  },
-  xAxis: [
-    {
-      type: "category",
-      boundaryGap: false,
-      data: xArr,
-      axisLine: {
-        lineStyle: {
-          color: "#cad3e2",
-        },
-      },
-      axisLabel: {
-        color: "#2D2F33",
-      },
-    },
-  ],
-  yAxis: [
-    {
-      type: "value",
-      name: "单位：kWh",
-      nameTextStyle: {
-        color: "#2D2F33",
-        fontSize: 14,
-      },
-      axisTick: {
-        show: false,
-      },
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: "#cad3e2",
-        },
-      },
-      axisLabel: {
-        color: "#2D2F33",
-      },
-      splitLine: {
-        show: false,
-      },
-      min: minValue,
-    },
-  ],
-  series: [
-    {
-      name: "空调系统",
-      type: "line",
-      smooth: true,
-      data: yArr1,
-    },
-    {
-      name: "动力系统",
-      type: "line",
-      smooth: true,
-      data: yArr2,
-    },
-    {
-      name: "照明插座",
-      type: "line",
-      smooth: true,
-      data: yArr3,
-    },
-    {
-      name: "特殊用电",
-      type: "line",
-      smooth: true,
-      data: yArr4,
-    },
-  ],
-  color: colorArr,
+watch(varName, (val) => {
+  treeRef.value && treeRef.value.filter(val);
 });
+
+const filterNode = (value, data) => {
+  if (!value) return true;
+  return data.label.includes(value);
+};
+
+const varCheckChangeHandle = () => {
+  const checks = treeRef.value.getCheckedNodes();
+  const checkchilds = checks.filter((v) => !v.children);
+  // 动态更改图表数据
+  const seriesData = [];
+  const legendData = [];
+  checkchilds.forEach((item) => {
+    legendData.push(item.label);
+    seriesData.push({
+      name: item.label,
+      type: "line",
+      smooth: true,
+      data: randomArr(1000),
+    });
+  });
+  option.value.legend.data = legendData;
+  option.value.series = seriesData;
+  option.value = { ...option.value };
+  //跨父节点节点禁止点击
+  if (checkchilds.length) {
+    const node = checkchilds[0];
+    treeData.value.forEach((v) => {
+      if (!v.children.find((item) => item.id === node.id)) {
+        v.disabled = true;
+        v.children.forEach((j) => {
+          j.disabled = true;
+        });
+      }
+    });
+  } else {
+    treeData.value.forEach((v) => {
+      v.disabled = false;
+      v.children.forEach((j) => {
+        j.disabled = false;
+      });
+    });
+  }
+  treeData.value = [...treeData.value];
+  nextTick(() => {
+    treeRef.value.setCheckedNodes(checks);
+  });
+};
+
+onMounted(() => {
+  varCheckChangeHandle();
+});
+
+const option = ref(COMMON_ECHART_OPTION);
 </script>
 <style lang="scss" scoped></style>

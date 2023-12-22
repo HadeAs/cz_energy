@@ -34,10 +34,25 @@
       <el-container>
         <el-header class="header-content-container">
           <el-row :gutter="30" align="middle">
-            <el-col :span="6">
+            <el-col :span="3">
               <div class="current-menu">{{ currentMenu }}</div>
             </el-col>
-            <el-col :span="3" :offset="12">
+            <el-col :span="4">
+              <el-select
+                v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
+                v-model="appStore.global.projectName"
+                @change="projectChange"
+                placeholder="选择项目"
+              >
+                <el-option
+                  v-for="item in projects"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="3" :offset="11">
               <el-button class="custom-btn" type="primary">主页大屏</el-button>
             </el-col>
             <el-col :span="3">
@@ -69,7 +84,8 @@
 
 <script setup>
 import { ref } from "vue";
-import { MENU_DATA } from "@/constant";
+import appStore from "@/store";
+import { MENU_DATA, SHOW_PROJ_CHANGE_PATH } from "@/constant";
 import imgUrl from "@/assets/img/user.png";
 import logoUrl from "@/assets/img/logo.png";
 import logoTextUrl from "@/assets/img/logo-text.png";
@@ -78,6 +94,12 @@ import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 
 const route = useRoute();
 const defaultMenuKey = route.path;
+const projects = [
+  { label: "项目001", value: "项目001" },
+  { label: "项目002", value: "项目002" },
+  { label: "项目003", value: "项目003" },
+  { label: "项目004", value: "项目004" },
+];
 
 //查找当前url对应的菜单
 let defaultMenu = "";
@@ -92,6 +114,10 @@ const currentMenu = ref(defaultMenu);
 
 const handleMenuClick = (item) => {
   currentMenu.value = item.name;
+};
+
+const projectChange = (val) => {
+  appStore.global.changeName(val);
 };
 </script>
 
