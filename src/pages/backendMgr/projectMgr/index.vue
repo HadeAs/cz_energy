@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-21 21:01:17
+ * @LastEditTime: 2023-12-23 17:30:36
  * @Description: 
 -->
 <template>
@@ -19,17 +19,25 @@
       @selection-change="selectionChange"
     >
       <template #toolbar>
-        <el-button type="primary">新增</el-button>
-        <el-button :disabled="!selectRows.length" @click="batchDelete"
-          >批量删除</el-button
-        >
-        <el-input
-          clearable
-          v-model="projName"
-          placeholder="项目名称"
-          :suffix-icon="Search"
-          @keyup.enter="handleSearch"
-        />
+        <el-row align="middle" :gutter="5">
+          <el-col :span="2">
+            <el-button type="primary">新增</el-button>
+          </el-col>
+          <el-col :span="2">
+            <el-button :disabled="!selectRows.length" @click="batchDelete"
+              >批量删除</el-button
+            >
+          </el-col>
+          <el-col :offset="16" :span="4">
+            <el-input
+              clearable
+              v-model="projName"
+              placeholder="项目名称"
+              :suffix-icon="Search"
+              @keyup.enter="handleSearch"
+            />
+          </el-col>
+        </el-row>
       </template>
       <template #operation="scope">
         <a class="table-operator-btn" @click="editRow(scope)">编辑</a>

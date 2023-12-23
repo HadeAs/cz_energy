@@ -2,36 +2,38 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-20 16:29:11
+ * @LastEditTime: 2023-12-23 15:51:34
  * @Description: 
 -->
 <template>
-  <MainContentContainer class="search">
-    <el-form :inline="true" :model="formData">
-      <el-form-item label="登录时间范围">
-        <el-date-picker
-          v-model="formData.timeRange"
-          type="datetimerange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
-          value-format="YYYY-MM-DD hh:mm:ss"
-        />
-      </el-form-item>
-      <el-form-item label="登录用户">
-        <el-input v-model="formData.user" clearable />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSearch">搜索</el-button>
-      </el-form-item>
-    </el-form>
-  </MainContentContainer>
-  <MainContentContainer>
-    <el-table :data="tableData" stripe style="width: 100%">
-      <el-table-column prop="date" label="Date" width="180" />
-      <el-table-column prop="name" label="Name" width="180" />
-      <el-table-column prop="address" label="Address" />
-    </el-table>
-  </MainContentContainer>
+  <div>
+    <MainContentContainer class="search">
+      <el-form :inline="true" :model="formData">
+        <el-form-item label="登录时间范围">
+          <el-date-picker
+            v-model="formData.timeRange"
+            type="datetimerange"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            value-format="YYYY-MM-DD hh:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="登录用户">
+          <el-input v-model="formData.user" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">搜索</el-button>
+        </el-form-item>
+      </el-form>
+    </MainContentContainer>
+    <MainContentContainer>
+      <el-table :data="tableData" stripe style="width: 100%">
+        <el-table-column prop="date" label="Date" width="180" />
+        <el-table-column prop="name" label="Name" width="180" />
+        <el-table-column prop="address" label="Address" />
+      </el-table>
+    </MainContentContainer>
+  </div>
 </template>
 
 <script setup>
@@ -70,3 +72,8 @@ const tableData = [
   },
 ];
 </script>
+<style lang="scss" scoped>
+.search {
+  margin-bottom: 10px;
+}
+</style>

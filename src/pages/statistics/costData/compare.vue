@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 16:21:26
+ * @LastEditTime: 2023-12-23 16:21:41
  * @Description: 
 -->
 <template>
@@ -45,7 +45,7 @@
           ref="treeRef"
           default-expand-all
           @check="varCheckChangeHandle"
-          :default-checked-keys="[6, 7, 8, 9]"
+          :default-checked-keys="[2, 3, 4]"
           :filter-node-method="filterNode"
         />
       </template>
@@ -57,7 +57,7 @@
 import { ref, reactive, watch, onMounted, nextTick } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import Echart from "@/components/Echart.vue";
-import { COMMON_ECHART_OPTION, DEVICE_CATEGORY_DATA } from "@/constant";
+import { COMMON_ECHART_OPTION, CHARGE_CATEGORY_DATA } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 
@@ -66,7 +66,7 @@ const treeRef = ref();
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const chartOption = ref(COMMON_ECHART_OPTION);
-const treeData = ref(DEVICE_CATEGORY_DATA);
+const treeData = ref(CHARGE_CATEGORY_DATA);
 const formData = reactive({
   timeRange: "",
 });

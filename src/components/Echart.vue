@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 10:35:38
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 10:39:38
+ * @LastEditTime: 2023-12-23 16:36:36
  * @Description: 
 -->
 <template>
@@ -11,14 +11,20 @@
 <script setup>
 import { ref } from "vue";
 import { use } from "echarts/core";
-import { PieChart, LineChart, MapChart, ScatterChart, BarChart } from "echarts/charts";
+import {
+  PieChart,
+  LineChart,
+  MapChart,
+  ScatterChart,
+  BarChart,
+} from "echarts/charts";
 import {
   GridComponent,
   TitleComponent,
   TooltipComponent,
   LegendComponent,
   ToolboxComponent,
-  VisualMapComponent
+  VisualMapComponent,
 } from "echarts/components";
 import VChart from "vue-echarts";
 import { SVGRenderer } from "echarts/renderers";
@@ -36,7 +42,7 @@ use([
   ScatterChart,
   BarChart,
   SVGRenderer,
-  VisualMapComponent
+  VisualMapComponent,
 ]);
 
 defineProps(["option"]);
@@ -45,24 +51,24 @@ const resize = () => {
   if (chartRef.value) {
     chartRef.value.resize();
   }
-}
+};
 
 const clear = () => {
   if (chartRef.value) {
     chartRef.value.clear();
   }
-}
+};
 
 const dispose = () => {
   if (chartRef.value) {
     chartRef.value.dispose();
   }
-}
+};
 
 defineExpose({ resize, clear, dispose });
 </script>
 <style lang="scss" scoped>
 .chart {
-  height: 100vh;
+  // height: 100%;
 }
 </style>

@@ -2,13 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 21:49:32
+ * @LastEditTime: 2023-12-23 15:15:28
  * @Description: 
 -->
 <template>
   <EchartTreeContainer>
     <template #left>
-      <Echart :option="chartOption" />
+      <Echart ref="chartRef" :option="chartOption" />
     </template>
     <template #right>
       <el-input
@@ -40,6 +40,7 @@ import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
 const varName = ref("");
 const treeRef = ref();
+const chartRef = ref();
 const chartOption = ref(COMMON_ECHART_OPTION);
 const treeData = ref(CARBON_CATEGORY_DATA);
 
@@ -105,6 +106,7 @@ const varCheckChangeHandle = () => {
 
 onMounted(() => {
   varCheckChangeHandle();
+  chartRef.value.resize();
 });
 </script>
 <style lang="scss" scoped></style>

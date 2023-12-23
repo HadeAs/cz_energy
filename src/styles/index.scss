@@ -26,13 +26,3 @@ body {
 .el-button.is-disabled {
   background-color: #f4f7fd !important;
 }
-.el-select {
-  .el-input__wrapper {
-    background-color: var(--highlight-color) !important;
-  }
-  .el-input__inner,
-  .el-input .el-select__caret,
-  .el-input__inner::placeholder {
-    color: #ffffff !important;
-  }
-}

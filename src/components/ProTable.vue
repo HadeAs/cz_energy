@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-21 21:00:52
+ * @LastEditTime: 2023-12-23 17:26:48
  * @Description: 
 -->
 <template>
@@ -11,8 +11,9 @@
       <slot name="toolbar"></slot>
     </div>
     <el-table
-      :data="datasource"
       stripe
+      row-key="id"
+      :data="datasource"
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
@@ -91,12 +92,12 @@ const handleNextClick = (val) => {
 .pro-table-container {
   .tool-bar {
     margin-bottom: 15px;
-    :deep() {
-      .el-input {
-        width: 250px;
-        float: right;
-      }
-    }
+    // :deep() {
+    //   .el-input {
+    //     width: 250px;
+    //     float: right;
+    //   }
+    // }
   }
   :deep() {
     .el-pagination {

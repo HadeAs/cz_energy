@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 21:45:28
+ * @LastEditTime: 2023-12-23 17:48:47
  * @Description: 
 -->
 <template>
@@ -14,6 +14,7 @@
         :name="item.name"
       >
         <component
+          class="tab-content-container"
           v-if="activeName === item.name"
           :is="item.component"
         ></component>
@@ -30,6 +31,10 @@ const activeName = ref(props.defaultTab);
 </script>
 <style lang="scss" scoped>
 .main-tab-container {
+  .tab-content-container {
+    height: calc(100vh - 123px);
+    overflow: auto;
+  }
   :deep() {
     .el-tabs__header {
       background-color: #ffffff;

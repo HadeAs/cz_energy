@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 20:31:24
+ * @LastEditTime: 2023-12-23 15:24:19
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -340,6 +340,31 @@ export const DEVICE_CATEGORY_DATA = [
       {
         id: 19,
         label: "厨具",
+      },
+      {
+        id: 19,
+        label: "厨具1",
+      },
+    ],
+  },
+];
+
+export const CHARGE_CATEGORY_DATA = [
+  {
+    id: 1,
+    label: "总费用",
+    children: [
+      {
+        id: 2,
+        label: "电费",
+      },
+      {
+        id: 3,
+        label: "燃气费",
+      },
+      {
+        id: 4,
+        label: "水费",
       },
     ],
   },

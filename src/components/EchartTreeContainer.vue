@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 20:44:40
+ * @LastEditTime: 2023-12-23 16:39:07
  * @Description: 
 -->
 <template>
@@ -50,7 +50,7 @@ const handleTabChange = (val) => {
 .echart-tree-container {
   background-color: #ffffff;
   border-radius: 5px;
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
   display: flex;
   .left-title {
     display: flex;
@@ -60,21 +60,27 @@ const handleTabChange = (val) => {
     span {
       font-size: 16px;
       font-weight: 700;
+      color: #000;
     }
   }
   .right-title {
     padding: 10px;
     font-size: 16px;
     font-weight: 700;
+    color: #000;
   }
   .left {
     width: 80%;
     border-right: 1px solid #dfe4ed;
     padding: 0px 10px;
+    display: flex;
+    flex-direction: column;
   }
   .right {
     width: 20%;
     padding: 0px 10px;
+    height: 100%;
+    overflow: auto;
   }
 }
 </style>

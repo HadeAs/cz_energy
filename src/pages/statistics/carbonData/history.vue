@@ -2,49 +2,55 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-22 22:03:01
+ * @LastEditTime: 2023-12-23 16:21:15
  * @Description: 
 -->
 <template>
-  <MainContentContainer class="search">
-    <el-form :inline="true" :model="formData">
-      <el-form-item label="时间范围">
-        <el-date-picker
-          v-model="formData.timeRange"
-          type="datetimerange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
-          value-format="YYYY-MM-DD hh:mm:ss"
+  <div>
+    <MainContentContainer class="search">
+      <el-form :inline="true" :model="formData">
+        <el-form-item label="时间范围">
+          <el-date-picker
+            v-model="formData.timeRange"
+            type="datetimerange"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            value-format="YYYY-MM-DD hh:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item style="float: right">
+          <el-button type="primary">导出</el-button>
+        </el-form-item>
+      </el-form>
+    </MainContentContainer>
+    <EchartTreeContainer
+      style="height: calc(100vh - 203px)"
+      :showSwitch="true"
+      @type-change="handleTypeChange"
+    >
+      <template #left>
+        <Echart :option="chartOption" />
+      </template>
+      <template #right>
+        <el-input
+          v-model="varName"
+          placeholder="请输入内容"
+          :prefix-icon="Search"
+          style="margin-bottom: 10px"
         />
-      </el-form-item>
-      <el-form-item style="float: right">
-        <el-button type="primary">导出</el-button>
-      </el-form-item>
-    </el-form>
-  </MainContentContainer>
-  <EchartTreeContainer :showSwitch="true" @type-change="handleTypeChange">
-    <template #left>
-      <Echart :option="chartOption" />
-    </template>
-    <template #right>
-      <el-input
-        v-model="varName"
-        placeholder="请输入内容"
-        :prefix-icon="Search"
-        style="margin-bottom: 10px"
-      />
-      <el-tree
-        :data="treeData"
-        show-checkbox
-        node-key="id"
-        ref="treeRef"
-        default-expand-all
-        @check="varCheckChangeHandle"
-        :default-checked-keys="[8, 9, 10, 11]"
-        :filter-node-method="filterNode"
-      />
-    </template>
-  </EchartTreeContainer>
+        <el-tree
+          :data="treeData"
+          show-checkbox
+          node-key="id"
+          ref="treeRef"
+          default-expand-all
+          @check="varCheckChangeHandle"
+          :default-checked-keys="[8, 9, 10, 11]"
+          :filter-node-method="filterNode"
+        />
+      </template>
+    </EchartTreeContainer>
+  </div>
 </template>
 
 <script setup>
@@ -155,3 +161,8 @@ onMounted(() => {
   varCheckChangeHandle();
 });
 </script>
+<style lang="scss" scoped>
+.search {
+  margin-bottom: 10px;
+}
+</style>

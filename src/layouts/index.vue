@@ -1,79 +1,73 @@
 <template>
-    <el-container class="basic-layout-container">
-      <el-aside width="240px">
-        <div class="logo-container">
-          <el-image
-            style="width: 70px; height: 53px"
-            :src="logoUrl"
-            fit="fill"
-          />
-          <el-image
-            style="width: 154px; height: 31px"
-            :src="logoTextUrl"
-            fit="fill"
-          />
-        </div>
-        <el-menu router :default-active="defaultMenuKey">
-          <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
-            <template #title>
-              <el-icon>
-                <component :is="item.icon"></component>
-              </el-icon>
-              <span style="font-size: 16px">{{ item.name }}</span>
-            </template>
-            <el-menu-item
-              v-for="v in item.children"
-              :index="v.path"
-              @click="handleMenuClick(v)"
-              >{{ v.name }}</el-menu-item
-            >
-          </el-sub-menu>
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <el-header class="header-content-container">
-          <el-row :gutter="30" align="middle">
-            <el-col :span="7">
-              <div class="menu-container">
-                <div class="current-menu">{{ currentMenu }}</div>
-                <el-select
-                  v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
-                  v-model="appStore.global.projectName"
-                  @change="projectChange"
-                  placeholder="选择项目"
-                >
-                  <el-option
-                    v-for="item in projects"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </div>
-            </el-col>
-            <el-col :span="5" :offset="12">
-              <div class="menu-container">
-                <el-button class="custom-btn" type="primary"
-                  >主页大屏</el-button
-                >
-                <el-dropdown>
-                  <span class="el-dropdown-link">
-                    <el-avatar size="small" :src="imgUrl" />
-                    <span class="user-name">管理员</span>
-                    <el-icon class="el-icon--right">
-                      <arrow-down />
-                    </el-icon>
-                  </span>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item>退出</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-              </div>
-            </el-col>
-          </el-row>
-        </el-header>
+  <el-container class="basic-layout-container">
+    <el-aside width="240px">
+      <div class="logo-container">
+        <el-image style="width: 70px; height: 53px" :src="logoUrl" fit="fill" />
+        <el-image
+          style="width: 154px; height: 31px"
+          :src="logoTextUrl"
+          fit="fill"
+        />
+      </div>
+      <el-menu router :default-active="defaultMenuKey">
+        <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
+          <template #title>
+            <el-icon>
+              <component :is="item.icon"></component>
+            </el-icon>
+            <span style="font-size: 16px">{{ item.name }}</span>
+          </template>
+          <el-menu-item
+            v-for="v in item.children"
+            :index="v.path"
+            @click="handleMenuClick(v)"
+            >{{ v.name }}</el-menu-item
+          >
+        </el-sub-menu>
+      </el-menu>
+    </el-aside>
+    <el-container>
+      <el-header class="header-content-container">
+        <el-row :gutter="30" align="middle">
+          <el-col :span="7">
+            <div class="menu-container">
+              <div class="current-menu">{{ currentMenu }}</div>
+              <el-select
+                v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
+                v-model="appStore.global.projectName"
+                @change="projectChange"
+                placeholder="选择项目"
+              >
+                <el-option
+                  v-for="item in projects"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+          </el-col>
+          <el-col :span="5" :offset="12">
+            <div class="menu-container">
+              <el-button class="custom-btn" type="primary">主页大屏</el-button>
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  <el-avatar size="small" :src="imgUrl" />
+                  <span class="user-name">管理员</span>
+                  <el-icon class="el-icon--right">
+                    <arrow-down />
+                  </el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>退出</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </el-col>
+        </el-row>
+      </el-header>
 
       <el-main>
         <router-view />
@@ -134,7 +128,6 @@ const projectChange = (val) => {
     color: var(--el-text-color-primary);
   }
   .el-menu {
-    height: 100%;
     border-right: none;
     background-color: var(--menu-color);
     :deep() {
@@ -179,6 +172,18 @@ const projectChange = (val) => {
     .menu-container {
       display: flex;
       align-items: center;
+      :deep() {
+        .el-select {
+          .el-input__wrapper {
+            background-color: var(--highlight-color) !important;
+          }
+          .el-input__inner,
+          .el-input .el-select__caret,
+          .el-input__inner::placeholder {
+            color: #ffffff !important;
+          }
+        }
+      }
     }
     .current-menu {
       font-weight: 700;
