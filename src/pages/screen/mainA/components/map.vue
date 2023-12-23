@@ -7,12 +7,13 @@
       <img src="@/assets/img/screen/mainA/bim.png">
     </div>
     <ul class="cs-center-tab">
-      <li v-for="item in tabs" :key="item.value" :class="state.activeTab === item.value ? 'active' : ''" @click="changeTab(item.value)">
+      <li v-for="item in tabs" :key="item.value" :class="state.activeTab === item.value ? 'active' : ''"
+        @click="changeTab(item.value)">
         <div class="cs-tab-icon"><img :src="item.url"></div>
         <div class="cs-tab-text">{{ item.value }}</div>
       </li>
     </ul>
-    <a href="" class="cs-link">进入B屏</a>
+    <a href="javascript:void(0)" class="cs-link" @click="gotoB">进入B屏</a>
     <el-select id="select2" v-model="state.selectVal">
       <el-option v-for="item in state.opts" :key="item.id" :label="item.text" :value="item.id" />
     </el-select>
@@ -20,6 +21,7 @@
 </template>
 <script setup name="Map">
 import { reactive, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import areaInfo from "@/constant/320000.json";
 import { registerMap } from "echarts/core";
 import Echart from "@/components/Echart.vue";
@@ -37,7 +39,8 @@ const tabs = [
     value: "BIM",
     url: bim
   }
-]
+];
+const router = useRouter();
 const state = reactive({
   selectVal: 1,
   activeTab: "GIS",
@@ -82,12 +85,16 @@ const changeTab = (tab) => {
   if (state.activeTab !== tab) {
     state.activeTab = tab;
   }
+};
+
+const gotoB = () => {
+  router.push({ path: "/mainB" });
 }
 
 onMounted(() => {
   registerMap("jsMap", areaInfo);
   option.value = MAP_OPT(state.mapData, mapPointData)
-})
+});
 </script>
 <style lang="scss" scoped>
 .cs-center-wrap1 {
@@ -149,11 +156,28 @@ onMounted(() => {
   }
 
   :deep() {
+
     .el-select {
       position: absolute;
       right: 0;
       top: 20px;
-      width: 113px;
+      width: 150px;
+      .el-input__wrapper {
+        background: rgba(5, 11, 27, 0.4) !important;
+      }
+
+      .el-input__inner {
+        color: rgba(110, 215, 254, 1) !important;
+      }
+    }
+    .el-select .el-input__wrapper {
+      box-shadow: 0 0 0 1px rgba(110, 215, 254, 0.4) inset;
+    }
+    .el-select:hover:not(.el-select--disabled) .el-input__wrapper {
+      box-shadow: 0 0 0 1px rgba(110, 215, 254, 1) inset;
+    }
+    .el-input .el-select__caret {
+      color: rgba(110, 215, 254, 0.4) !important;
     }
 
   }
@@ -180,5 +204,4 @@ onMounted(() => {
     width: 100%;
     height: 100%;
   }
-}
-</style>
+}</style>

@@ -227,12 +227,9 @@ export const LINE_OPT = {
       name: '碳排放总量',
       type: 'line',
       lineStyle: {
-        normal: {},
       },
       areaStyle: {
-        normal: {
-          opacity: 0,
-        },
+        opacity: 0,
       },
       data: [435, 552, 453, 230, 210, 211, 120, 132, 101, 134, 90, 110],
     },
@@ -256,10 +253,12 @@ export const MAP_OPT = (mapPointData, mapData) => {
         opacity: 0.8,
         shadowColor: '#1f4366',
         shadowBlur: 10,
-        emphasis: {
-          areaColor: '#1f4366',
-        },
       },
+      emphasis: {
+        itemStyle: {
+          areaColor: '#1f4366',
+        }
+      }
     },
     tooltip: {
       show: false,
@@ -279,9 +278,14 @@ export const MAP_OPT = (mapPointData, mapData) => {
         label: {
           show: true,
           color: '#fff',
-          emphasis: {
+        },
+        emphasis: {
+          label: {
             show: false,
           },
+          itemStyle: {
+            areaColor: '#112e40',
+          }
         },
         roam: false,
         itemStyle: {
@@ -290,9 +294,6 @@ export const MAP_OPT = (mapPointData, mapData) => {
           borderWidth: 2,
           shadowColor: '#50f1ff',
           shadowBlur: 6,
-          emphasis: {
-            areaColor: '#112e40',
-          },
         },
         markPoint: {
           symbol: 'circle',
@@ -313,21 +314,21 @@ export const MAP_OPT = (mapPointData, mapData) => {
           show: false,
         },
         label: {
-          normal: {
-            show: true,
-            formatter: function (params) {
-              const name = params.name
-              return name
-            },
-            position: 'insideTopLeft',
-            color: '#fff',
-            fontWeight: '800',
-            fontSize: 14,
-            lineHeight: 20,
+          show: true,
+          formatter: function (params) {
+            const name = params.name
+            return name
           },
-          emphasis: {
+          position: 'insideTopLeft',
+          color: '#fff',
+          fontWeight: '800',
+          fontSize: 14,
+          lineHeight: 20,
+        },
+        emphasis: {
+          label: {
             show: true,
-          },
+          }
         },
         itemStyle: {
           color: '#00FFF6',
@@ -345,24 +346,22 @@ export const MAP_OPT = (mapPointData, mapData) => {
           show: false,
         },
         label: {
-          normal: {
-            show: false,
-          },
-          emphasis: {
-            show: false,
-          },
+          show: false,
         },
-        itemStyle: {
-          normal: {
-            color: '#00FFF6',
-            shadowColor: '#00FFF6',
-            shadowBlur: 10,
+        emphasis: {
+          label: {
+            show: false,
           },
-          emphasis: {
+          itemStyle: {
             color: '#FFCC00',
             shadowColor: '#FFCC00',
             shadowBlur: 15,
-          },
+          }
+        },
+        itemStyle: {
+          color: '#00FFF6',
+          shadowColor: '#00FFF6',
+          shadowBlur: 10,
         },
         symbol: 'circle',
         symbolSize: 10,
@@ -495,14 +494,14 @@ export const COLUM_OPT = (imageDom1, imageDom2, imageDom3, imageDom4, imageDom5,
         stack: '总量',
         barWidth: 24,
         itemStyle: {
-          normal: {
+          borderColor: 'rgba(0,0,0,0)',
+          color: 'rgba(0,0,0,0)',
+        },
+        emphasis: {
+          itemStyle: {
             borderColor: 'rgba(0,0,0,0)',
             color: 'rgba(0,0,0,0)',
-          },
-          emphasis: {
-            borderColor: 'rgba(0,0,0,0)',
-            color: 'rgba(0,0,0,0)',
-          },
+          }
         },
         data: [0, 644, 507, 765, 722, 614],
       },
@@ -512,11 +511,9 @@ export const COLUM_OPT = (imageDom1, imageDom2, imageDom3, imageDom4, imageDom5,
         stack: '总量',
         barWidth: 24,
         label: {
-          normal: {
-            show: true,
-            position: 'top',
-            color: '#acabb4',
-          },
+          show: true,
+          position: 'top',
+          color: '#acabb4',
         },
         data: [
           {
@@ -600,8 +597,8 @@ export const LINE_OPT2 = {
       'BAU照常情景',
       '能源使用量减少',
       '电网碳排因子降低',
-      '柴油',
-      '其他',
+      // '柴油',
+      // '其他',
     ],
   },
   grid: {
@@ -621,9 +618,7 @@ export const LINE_OPT2 = {
         },
       },
       axisLabel: {
-        textStyle: {
-          color: '#7a7886',
-        },
+        color: '#7a7886',
       },
       data: ['2020', '2021', '2022', '2023', '2024', '2025'],
     },
@@ -644,9 +639,7 @@ export const LINE_OPT2 = {
         show: false,
       },
       axisLabel: {
-        textStyle: {
-          color: '#7a7886',
-        },
+        color: '#7a7886',
       },
     },
   ],
@@ -657,14 +650,10 @@ export const LINE_OPT2 = {
       smooth: true,
       data: [250, 318, 480, 674, 884, 925],
       lineStyle: {
-        normal: {
-          type: 'dashed',
-        },
+        type: 'dashed',
       },
       areaStyle: {
-        normal: {
-          opacity: 0.2,
-        },
+        opacity: 0.2,
       },
     },
     {
@@ -673,9 +662,7 @@ export const LINE_OPT2 = {
       smooth: true,
       data: [250, 268, 310, 274, 202, 123],
       areaStyle: {
-        normal: {
-          opacity: 0.2,
-        },
+        opacity: 0.2,
       },
     },
     {
@@ -684,9 +671,7 @@ export const LINE_OPT2 = {
       smooth: true,
       data: [250, 352, 501, 554, 690, 700],
       areaStyle: {
-        normal: {
-          opacity: 0.2,
-        },
+        opacity: 0.2,
       },
     },
     {
@@ -695,9 +680,7 @@ export const LINE_OPT2 = {
       smooth: true,
       data: [250, 332, 451, 504, 650, 650],
       areaStyle: {
-        normal: {
-          opacity: 0.2,
-        },
+        opacity: 0.2,
       },
     },
     {
@@ -706,9 +689,7 @@ export const LINE_OPT2 = {
       smooth: true,
       data: [250, 310, 460, 650, 800, 900],
       areaStyle: {
-        normal: {
-          opacity: 0.2,
-        },
+        opacity: 0.2,
       },
     },
   ],
