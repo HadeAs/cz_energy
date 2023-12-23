@@ -1,16 +1,39 @@
 <template>
+  <TimeRangeSearch
+    @time-change="handleTimeChange"
+    @export-click="handleExport"
+  />
   <EchartTreeContainer>
     <template #left>
       <Echart :option="chartOption" />
       <ul class="time-type" id="timeType1">
-        <li v-for="item in state.tabList" :key="item.id" :class="state.activeTab === item.id ? 'active' : ''"
-          @click="handleChangeTab(item.id)">{{ item.label }}</li>
+        <li
+          v-for="item in state.tabList"
+          :key="item.id"
+          :class="state.activeTab === item.id ? 'active' : ''"
+          @click="handleChangeTab(item.id)"
+        >
+          {{ item.label }}
+        </li>
       </ul>
     </template>
     <template #right>
-      <el-input v-model="varName" placeholder="请输入内容" :prefix-icon="Search" style="margin-bottom: 10px" />
-      <el-tree :data="treeData" show-checkbox node-key="id" ref="treeRef" default-expand-all
-        @check="initChart(state.activeTab)" :default-checked-keys="[11, 12, 13]" :filter-node-method="filterNode" />
+      <el-input
+        v-model="varName"
+        placeholder="请输入内容"
+        :prefix-icon="Search"
+        style="margin-bottom: 10px"
+      />
+      <el-tree
+        :data="treeData"
+        show-checkbox
+        node-key="id"
+        ref="treeRef"
+        default-expand-all
+        @check="initChart(state.activeTab)"
+        :default-checked-keys="[11, 12, 13]"
+        :filter-node-method="filterNode"
+      />
     </template>
   </EchartTreeContainer>
 </template>
@@ -19,7 +42,12 @@
 import { ref, watch, reactive, onMounted, nextTick } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import Echart from "@/components/Echart.vue";
-import { POWER_ECHART_OPT, POWER_TREE_DATA, UNIT_MAP } from "@/constant/workMonitor";
+import TimeRangeSearch from "@/components/TimeRangeSearch.vue";
+import {
+  POWER_ECHART_OPT,
+  POWER_TREE_DATA,
+  UNIT_MAP,
+} from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
 const varName = ref("");
@@ -31,9 +59,9 @@ const state = reactive({
     { id: 0, label: "时能耗" },
     { id: 1, label: "天能耗" },
     { id: 2, label: "月能耗" },
-    { id: 3, label: "年能耗" }
+    { id: 3, label: "年能耗" },
   ],
-  activeTab: 0
+  activeTab: 0,
 });
 
 const randomArr = (times, num) => {
@@ -65,9 +93,15 @@ const initChart = (type) => {
       data: randomArr(unit.num, 1000),
     });
   });
-  chartOption.value.xAxis[0].data = new Array(unit.num)
-    .fill("")
-    .map((v, i) => `${i}${unit.unit}`);
+  chartOption.value.xAxis[0].data = new Array(unit.num).fill("").map((v, i) => {
+    if (type === 0) {
+      return `${i}${unit.unit}`;
+    }
+    if ([1, 2].includes(type)) {
+      return `${i + 1}${unit.unit}`;
+    }
+    return `${i + 2010}${unit.unit}`;
+  });
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
@@ -95,24 +129,30 @@ const initChart = (type) => {
   nextTick(() => {
     treeRef.value.setCheckedNodes(checks);
   });
-}
+};
 
 const handleChangeTab = (tab) => {
   if (state.activeTab !== tab) {
     state.activeTab = tab;
     initChart(tab);
   }
-}
+};
 
 onMounted(() => {
   initChart(0);
 });
+
+const handleTimeChange = (val) => {};
+const handleExport = () => {};
 </script>
 <style lang="scss" scoped>
 .time-type {
   list-style: none;
   padding: 0;
   margin: 0;
+  position: absolute;
+  top: 5px;
+  right: 41px;
 }
 
 .time-type li {
@@ -121,18 +161,19 @@ onMounted(() => {
   line-height: 40px;
   padding: 0 12px;
   cursor: pointer;
+  color: #333;
 }
 
 .time-type li.active {
-  color: #2B3EB1;
+  color: #2b3eb1;
   position: relative;
 }
 
 .time-type li.active::after {
-  content: '';
+  content: "";
   width: 100%;
   height: 2px;
-  background-color: #2B3EB1;
+  background-color: #2b3eb1;
   position: absolute;
   left: 0;
   bottom: 0;

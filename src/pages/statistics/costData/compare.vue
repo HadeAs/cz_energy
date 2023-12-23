@@ -7,22 +7,10 @@
 -->
 <template>
   <div>
-    <MainContentContainer class="search">
-      <el-form :inline="true" :model="formData">
-        <el-form-item label="时间范围">
-          <el-date-picker
-            v-model="formData.timeRange"
-            type="datetimerange"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            value-format="YYYY-MM-DD hh:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item style="float: right">
-          <el-button type="primary">导出</el-button>
-        </el-form-item>
-      </el-form>
-    </MainContentContainer>
+    <TimeRangeSearch
+      @time-change="handleTimeChange"
+      @export-click="handleExport"
+    />
     <EchartTreeContainer
       style="height: calc(100vh - 203px)"
       :showSwitch="true"
@@ -160,9 +148,6 @@ const varCheckChangeHandle = () => {
 onMounted(() => {
   varCheckChangeHandle();
 });
+const handleTimeChange = (val) => {};
+const handleExport = () => {};
 </script>
-<style lang="scss" scoped>
-.search {
-  margin-bottom: 10px;
-}
-</style>

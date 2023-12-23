@@ -10,6 +10,7 @@ export const SHOW_PROJ_CHANGE_PATH = [
   "/costData",
   "workMonitor",
   "/deviceMaintain",
+  "/workMonitor"
 ];
 export const MENU_DATA = [
   {

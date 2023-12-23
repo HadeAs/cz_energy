@@ -7,22 +7,10 @@
 -->
 <template>
   <div>
-    <MainContentContainer class="search">
-      <el-form :inline="true" :model="formData">
-        <el-form-item label="时间范围">
-          <el-date-picker
-            v-model="formData.timeRange"
-            type="datetimerange"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            value-format="YYYY-MM-DD hh:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item style="float: right">
-          <el-button type="primary">导出</el-button>
-        </el-form-item>
-      </el-form>
-    </MainContentContainer>
+    <TimeRangeSearch
+      @time-change="handleTimeChange"
+      @export-click="handleExport"
+    />
     <EchartTreeContainer
       style="height: calc(100vh - 203px)"
       :showSwitch="true"
@@ -54,12 +42,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from "vue";
+import { ref, watch, onMounted, nextTick } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import Echart from "@/components/Echart.vue";
 import { COMMON_ECHART_OPTION, DEVICE_CATEGORY_DATA } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import MainContentContainer from "@/components/MainContentContainer.vue";
 
 const varName = ref("");
 const treeRef = ref();
@@ -67,9 +54,6 @@ const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const chartOption = ref(COMMON_ECHART_OPTION);
 const treeData = ref(DEVICE_CATEGORY_DATA);
-const formData = reactive({
-  timeRange: "",
-});
 
 const randomArr = (count, num) => {
   return new Array(count).fill("").map((v) => (Math.random() * num).toFixed(0));
@@ -160,9 +144,7 @@ const varCheckChangeHandle = () => {
 onMounted(() => {
   varCheckChangeHandle();
 });
+
+const handleTimeChange = (val) => {};
+const handleExport = () => {};
 </script>
-<style lang="scss" scoped>
-.search {
-  margin-bottom: 10px;
-}
-</style>

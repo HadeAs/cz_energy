@@ -6,7 +6,7 @@ export const UNIT_MAP = {
   0: { unit: ":00", num: 24 },
   1: { unit: "日", num: 31 },
   2: { unit: "月", num: 12 },
-  3: { unit: "年", num: 10 }
+  3: { unit: "年", num: 11 }
 }
 
 export const POWER_TREE_DATA = [
