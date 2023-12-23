@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 14:06:08
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 16:50:19
+ * @LastEditTime: 2023-12-23 20:08:06
  * @Description: 
 -->
 <template>
@@ -20,6 +20,7 @@
   }
   background-color: #ffffff;
   border-radius: 5px;
+  overflow: auto;
   // min-height: 220px;
   // margin-bottom: 10px;
 }

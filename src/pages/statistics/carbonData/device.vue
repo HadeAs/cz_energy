@@ -12,7 +12,7 @@
       @export-click="handleExport"
     />
     <EchartTreeContainer
-      style="height: calc(100vh - 203px)"
+      style="height: calc(100vh - 198px)"
       :showSwitch="true"
       @type-change="handleTypeChange"
     >

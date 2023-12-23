@@ -2,70 +2,104 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 17:45:56
+ * @LastEditTime: 2023-12-23 20:08:36
  * @Description: 
 -->
 <template>
-  <MainContentContainer>
-    <ProTable
-      :multiple="true"
-      :column="column"
-      :pageInfo="pageInfo"
-      :datasource="datasource"
-      v-loading="loading"
-      @page-change="pageChange"
-      @page-prev-click="pagePrevClick"
-      @page-next-click="pageNextClick"
-      @selection-change="selectionChange"
-    >
-      <template #toolbar>
-        <el-row align="middle" :gutter="5">
-          <el-col :span="3">
-            <el-button :disabled="!selectRows.length" @click="batchExport"
-              >批量导出</el-button
-            >
-          </el-col>
-          <el-col :offset="6" :span="7">
-            <el-date-picker
-              v-model="timeRange"
-              type="datetimerange"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              value-format="YYYY-MM-DD hh:mm:ss"
-            />
-          </el-col>
-          <el-col :span="4">
-            <el-select v-model="sysClass" placeholder="全部所属系统分类">
-              <el-option
-                v-for="item in sysCategory"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+  <div class="detail-container">
+    <div class="dashboard-bar">
+      <div>
+        <img :src="totalImg" alt="" />
+        <div>
+          <div class="price-title">整体用能费用（万元）</div>
+          <div class="price-num">1,000</div>
+        </div>
+      </div>
+      <div>
+        <img :src="electricImg" alt="" />
+        <div>
+          <div class="price-title">电费（万元）</div>
+          <div class="price-num">600</div>
+        </div>
+      </div>
+      <div>
+        <img :src="gasImg" alt="" />
+        <div>
+          <div class="price-title">燃气（万元）</div>
+          <div class="price-num">300</div>
+        </div>
+      </div>
+      <div>
+        <img :src="waterImg" alt="" />
+        <div>
+          <div class="price-title">水费（万元）</div>
+          <div class="price-num">100</div>
+        </div>
+      </div>
+    </div>
+    <MainContentContainer style="height: calc(100vh - 219px)">
+      <ProTable
+        :multiple="true"
+        :column="column"
+        :pageInfo="pageInfo"
+        :datasource="datasource"
+        v-loading="loading"
+        @page-change="pageChange"
+        @page-prev-click="pagePrevClick"
+        @page-next-click="pageNextClick"
+        @selection-change="selectionChange"
+      >
+        <template #toolbar>
+          <el-row align="middle" :gutter="5">
+            <el-col :span="3">
+              <el-button :disabled="!selectRows.length" @click="batchExport"
+                >批量导出</el-button
+              >
+            </el-col>
+            <el-col :offset="6" :span="7">
+              <el-date-picker
+                v-model="timeRange"
+                type="datetimerange"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                value-format="YYYY-MM-DD hh:mm:ss"
               />
-            </el-select>
-          </el-col>
-          <el-col :span="4">
-            <el-input
-              clearable
-              v-model="projName"
-              placeholder="用能系统名称"
-              :suffix-icon="Search"
-              @keyup.enter="handleSearch"
-            />
-          </el-col>
-        </el-row>
-      </template>
-    </ProTable>
-  </MainContentContainer>
+            </el-col>
+            <el-col :span="4">
+              <el-select v-model="sysClass" placeholder="全部所属系统分类">
+                <el-option
+                  v-for="item in sysCategory"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="4">
+              <el-input
+                clearable
+                v-model="projName"
+                placeholder="用能系统名称"
+                :suffix-icon="Search"
+                @keyup.enter="handleSearch"
+              />
+            </el-col>
+          </el-row>
+        </template>
+      </ProTable>
+    </MainContentContainer>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
+import gasImg from "@/assets/img/gas_price.jpg";
+import totalImg from "@/assets/img/total_price.jpg";
+import waterImg from "@/assets/img/water_price.jpg";
+import electricImg from "@/assets/img/electric_price.jpg";
 import { ElMessage, ElMessageBox } from "element-plus";
-import ProPopConfirm from "@/components/ProPopConfirm.vue";
-import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 
 const projName = ref("");
@@ -83,16 +117,8 @@ const sysCategory = [
   { label: "石油", value: "石油" },
 ];
 
-const editRow = (scope) => {
-  console.log(scope.row);
-};
-
 const handleSearch = () => {
   console.log(projName.value);
-};
-
-const confirmDelete = () => {
-  console.log("confirm delete");
 };
 
 const pageChange = (currentPage, pageSize) => {
@@ -282,9 +308,34 @@ onMounted(async () => {
 });
 </script>
 <style lang="scss" scoped>
-.table-operator-btn {
-  margin-right: 10px;
-  cursor: pointer;
-  color: #ff3300;
+.detail-container {
+  .dashboard-bar {
+    display: flex;
+    margin-bottom: 10px;
+    > div {
+      width: 25%;
+      padding: 15px 20px 0px;
+      display: flex;
+      background-color: #ffffff;
+      border-radius: 0px 50px 50px 0px;
+      &:not(:last-child) {
+        margin-right: 10px;
+      }
+      img {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+      }
+      .price-title {
+        color: #878d99;
+        font-size: 14px;
+      }
+      .price-num {
+        color: #333333;
+        font-size: 30px;
+        font-weight: bold;
+      }
+    }
+  }
 }
 </style>
