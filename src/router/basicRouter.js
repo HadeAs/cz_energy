@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 19:13:50
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-19 19:27:52
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-24 17:06:27
  * @Description:
  */
 const BasicRouter = [
@@ -19,6 +19,14 @@ const BasicRouter = [
     hidden: true,
     component: () =>
       import(/* webpackChunkName: "404" */ "@/pages/error/404.vue"),
+  },
+  {
+    path: "/deviceDetail/:id",
+    name: "deviceDetail",
+    component: () =>
+      import(
+        /* webpackChunkName: "deviceDetail" */ "@/pages/operationMgr/deviceMaintain/components/deviceDetail.vue"
+      ),
   },
 ];
 

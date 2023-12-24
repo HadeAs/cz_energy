@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 17:30:36
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-24 18:58:21
  * @Description: 
 -->
 <template>
@@ -14,8 +14,6 @@
       :datasource="datasource"
       v-loading="loading"
       @page-change="pageChange"
-      @page-prev-click="pagePrevClick"
-      @page-next-click="pageNextClick"
       @selection-change="selectionChange"
     >
       <template #toolbar>
@@ -57,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -86,14 +84,6 @@ const pageChange = (currentPage, pageSize) => {
   console.log(currentPage, pageSize);
 };
 
-const pagePrevClick = (val) => {
-  console.log(val);
-};
-
-const pageNextClick = (val) => {
-  console.log(val);
-};
-
 const selectionChange = (data) => {
   selectRows.value = data;
 };
@@ -118,12 +108,12 @@ const batchDelete = () => {
     });
 };
 
-const pageInfo = {
+const pageInfo = reactive({
   total: 100,
   currentPage: 3,
   pageSize: 10,
   pageSizes: [10, 15, 20, 50],
-};
+});
 
 const column = [
   {

@@ -2,16 +2,16 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 00:05:01
+ * @LastEditTime: 2023-12-24 18:58:52
  * @Description: 
 -->
 <template>
   <div>
     <MainContentContainer class="search">
-      <el-form :inline="true" :model="state.formData">
+      <el-form :inline="true" :model="state.searchFormData">
         <el-form-item label="时间范围">
           <el-date-picker
-            v-model="state.formData.timeRange"
+            v-model="state.searchFormData.timeRange"
             type="datetimerange"
             start-placeholder="请选择开始时间"
             end-placeholder="请选择结束时间"
@@ -19,7 +19,7 @@
           />
         </el-form-item>
         <el-form-item label="报警设备">
-          <el-input v-model="state.formData.deviceName" clearable />
+          <el-input v-model="state.searchFormData.deviceName" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearch">搜索</el-button>
@@ -33,21 +33,47 @@
         :datasource="state.dataSource"
         v-loading="state.loading"
         @page-change="pageChange"
-        @page-prev-click="pagePrevClick"
-        @page-next-click="pageNextClick"
       >
         <template #operation="scope">
-          <a class="table-operator-btn handle" v-if="!scope.row.time2">立即处理</a>
+          <a
+            class="table-operator-btn handle"
+            v-if="!scope.row.time2"
+            @click="handle(scope.row)"
+            >立即处理</a
+          >
           <span class="table-operator-btn disabled" v-else>已处理</span>
         </template>
       </ProTable>
     </MainContentContainer>
+    <ProDrawer title="立即处理" ref="drawerRef" @confirm="confirmAddVar">
+      <el-form
+        ref="formRef"
+        v-bind="COMMON_FORM_CONFIG"
+        :model="state.formData"
+        :rules="rules"
+      >
+        <el-form-item label="报警名称" prop="name">
+          <el-input v-model="state.formData.name" />
+        </el-form-item>
+        <el-form-item label="处理人" prop="user">
+          <el-input v-model="state.formData.user" />
+        </el-form-item>
+        <el-form-item label="处理详情" prop="desc">
+          <el-input
+            v-model="state.formData.desc"
+            type="textarea"
+            placeholder="请输入至少5个字符"
+          />
+        </el-form-item>
+      </el-form>
+    </ProDrawer>
   </div>
 </template>
 
 <script setup lang="jsx">
-import { reactive, onMounted } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const DEVICE_MAP = {
   0: "空气源热泵",
@@ -60,17 +86,32 @@ const category_MAP = {
   0: "空调系统",
   1: "照明插座",
   2: "动力系统",
-  3: "动力系统",
-  4: "照明插座",
 };
 const STATUS_MAP = {
   0: "停用",
   1: "启用",
 };
+
+const rules = {
+  name: { required: true, message: "请输入报警名称", trigger: "blur" },
+  user: { required: true, message: "请输入处理人", trigger: "blur" },
+  desc: [
+    { required: true, message: "请输入至少5个字符", trigger: "blur" },
+    { min: 5, message: "请输入至少5个字符", trigger: "blur" },
+  ],
+};
+
+const drawerRef = ref();
+const formRef = ref();
 const state = reactive({
-  formData: {
+  searchFormData: {
     deviceName: "",
     timeRange: "",
+  },
+  formData: {
+    name: "",
+    user: "",
+    desc: "",
   },
   dataSource: [],
   loading: true,
@@ -82,7 +123,11 @@ const column = [
     label: "报警设备名称",
     width: 110,
     render: (scope) => {
-      return <b>{scope.row.name}</b>;
+      return (
+        <div className="text-overflow" title={scope.row.name}>
+          <b>{scope.row.name}</b>
+        </div>
+      );
     },
   },
   {
@@ -127,27 +172,19 @@ const column = [
 ];
 
 const onSearch = () => {
-  console.log(state.formData);
+  console.log(state.searchFormData);
 };
 
 const pageChange = (currentPage, pageSize) => {
   console.log(currentPage, pageSize);
 };
 
-const pagePrevClick = (val) => {
-  console.log(val);
-};
-
-const pageNextClick = (val) => {
-  console.log(val);
-};
-
-const pageInfo = {
+const pageInfo = reactive({
   total: 100,
   currentPage: 1,
   pageSize: 10,
   pageSizes: [10, 15, 20, 50],
-};
+});
 
 const getList = async () => {
   const res = await new Promise((resolve) => {
@@ -155,6 +192,7 @@ const getList = async () => {
       state.loading = false;
       resolve([
         {
+          id: 0,
           name: "空气源热泵1",
           info: "用水异常",
           deviceType: 0,
@@ -164,6 +202,7 @@ const getList = async () => {
           time2: null,
         },
         {
+          id: 1,
           name: "空气源热泵2",
           info: "空气源热泵维护",
           deviceType: 0,
@@ -173,6 +212,7 @@ const getList = async () => {
           time2: null,
         },
         {
+          id: 2,
           name: "冷却水泵1",
           info: "水泵维护",
           deviceType: 1,
@@ -182,6 +222,7 @@ const getList = async () => {
           time2: null,
         },
         {
+          id: 3,
           name: "水箱",
           info: "水箱维护",
           deviceType: 1,
@@ -196,6 +237,24 @@ const getList = async () => {
   state.dataSource = res;
 };
 getList();
+
+const handle = (row) => {
+  state.formData.name = row.name;
+  state.formData.user = row.user;
+  state.formData.desc = row.desc;
+  drawerRef.value.open();
+};
+const confirmAddVar = () => {
+  formRef.value
+    .validate()
+    .then(() => {
+      console.log("success");
+      drawerRef.value.close();
+    })
+    .catch(() => {
+      console.log("fail");
+    });
+};
 </script>
 <style lang="scss" scoped>
 .search {
@@ -206,6 +265,6 @@ getList();
   cursor: pointer;
 }
 .disabled {
-  color: #959BA7;
+  color: #959ba7;
 }
 </style>

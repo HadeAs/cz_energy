@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 12:03:37
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-24 14:19:46
  * @Description: 
 -->
 <template>
@@ -32,13 +32,12 @@
         <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
           <el-form
             ref="formRef"
-            label-position="left"
+            v-bind="COMMON_FORM_CONFIG"
             :model="varForm"
-            label-width="120px"
           >
             <el-form-item label="变量组" required prop="groupName">
               <el-select v-model="varForm.groupName" placeholder="选择变量组">
-                <el-option v-for="item in varGroupOptions" v-bind="item" />
+                <el-option v-for="item in varGroupOptions" :key="item" v-bind="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="变量名称" required prop="varName">
@@ -88,6 +87,7 @@ import { ref, watch, nextTick, onMounted, reactive } from "vue";
 import Echart from "@/components/Echart.vue";
 import { Search } from "@element-plus/icons-vue";
 import ProDrawer from "@/components/ProDrawer.vue";
+import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const props = defineProps({
   showSwitch: {

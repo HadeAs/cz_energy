@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-23 23:54:50
+ * @LastEditTime: 2023-12-24 18:51:32
  * @Description: 
 -->
 <template>
@@ -15,10 +15,16 @@
       row-key="id"
       :data="datasource"
       style="width: 100%"
+      v-bind="$attrs"
       @selection-change="handleSelectionChange"
     >
       <el-table-column v-if="!!multiple" type="selection" width="55" />
-      <el-table-column v-for="item in column" v-bind="item" v-slot="scope">
+      <el-table-column
+        v-for="(item, index) in column"
+        :key="index"
+        v-bind="item"
+        v-slot="scope"
+      >
         <!-- 自定义render -->
         <component
           :is="item.render"
@@ -31,6 +37,7 @@
         fixed="right"
         label="操作"
         width="250"
+        v-bind="$attrs"
       >
         <template #default="scope">
           <slot name="operation" v-bind="scope"></slot>
@@ -42,19 +49,17 @@
     </el-table>
     <el-pagination
       background
-      :total="pageInfo.total"
-      :page-sizes="pageInfo.pageSizes"
+      :total="state.pageConfig.total"
+      :page-sizes="state.pageConfig.pageSizes"
       layout="total, sizes, prev, pager, next"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
+      v-model:current-page="state.pageConfig.currentPage"
+      v-model:page-size="state.pageConfig.pageSize"
       @change="handlePageChange"
-      @prev-click="handlePrevClick"
-      @next-click="handleNextClick"
     />
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, reactive, watch } from "vue";
 
 const props = defineProps({
   column: { type: Array, default: [] },
@@ -78,8 +83,9 @@ const emits = defineEmits([
   "page-next-click",
 ]);
 
-const pageSize = ref(props.pageInfo.pageSize);
-const currentPage = ref(props.pageInfo.currentPage);
+const state = reactive({
+  pageConfig: props.pageInfo,
+});
 
 const handleSelectionChange = (selection) => {
   emits("selection-change", selection);
@@ -88,12 +94,13 @@ const handleSelectionChange = (selection) => {
 const handlePageChange = (currentPage, pageSize) => {
   emits("page-change", currentPage, pageSize);
 };
-const handlePrevClick = (val) => {
-  emits("page-prev-click", val);
-};
-const handleNextClick = (val) => {
-  emits("page-next-click", val);
-};
+
+watch(
+  () => props.pageInfo,
+  (val) => {
+    state.pageConfig = val;
+  }
+);
 </script>
 <style lang="scss" scoped>
 .pro-table-container {
