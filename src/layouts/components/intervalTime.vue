@@ -1,3 +1,10 @@
+<!--
+ * @Author: ymZhang
+ * @Date: 2023-12-22 23:12:58
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-23 20:00:55
+ * @Description: 
+-->
 <template>
   <span class="cs-right-text">{{ state.currentTime }}</span>
   <span class="cs-right-text">{{ state.currentDate }}</span>

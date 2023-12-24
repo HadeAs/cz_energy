@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 17:26:48
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-23 23:54:50
  * @Description: 
 -->
 <template>
@@ -18,7 +18,14 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column v-if="!!multiple" type="selection" width="55" />
-      <el-table-column v-for="item in column" v-bind="item" />
+      <el-table-column v-for="item in column" v-bind="item" v-slot="scope">
+        <!-- 自定义render -->
+        <component
+          :is="item.render"
+          :row="scope.row"
+          v-if="item.render"
+        ></component>
+      </el-table-column>
       <el-table-column
         v-if="$slots.operation"
         fixed="right"

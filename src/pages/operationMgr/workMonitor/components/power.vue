@@ -1,21 +1,22 @@
+<!--
+ * @Author: ymZhang
+ * @Date: 2023-12-23 17:47:00
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-23 20:51:21
+ * @Description: 
+-->
 <template>
   <TimeRangeSearch
     @time-change="handleTimeChange"
     @export-click="handleExport"
   />
-  <EchartTreeContainer>
+  <EchartTreeContainer
+    style="height: calc(100vh - 203px)"
+    :showSwitch="true"
+    @type-change="handleChangeTab"
+  >
     <template #left>
       <Echart :option="chartOption" />
-      <ul class="time-type" id="timeType1">
-        <li
-          v-for="item in state.tabList"
-          :key="item.id"
-          :class="state.activeTab === item.id ? 'active' : ''"
-          @click="handleChangeTab(item.id)"
-        >
-          {{ item.label }}
-        </li>
-      </ul>
     </template>
     <template #right>
       <el-input
@@ -47,6 +48,7 @@ import {
   POWER_ECHART_OPT,
   POWER_TREE_DATA,
   UNIT_MAP,
+  TYPES_MAP
 } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
@@ -55,12 +57,6 @@ const treeRef = ref();
 const chartOption = ref(POWER_ECHART_OPT);
 const treeData = ref(POWER_TREE_DATA);
 const state = reactive({
-  tabList: [
-    { id: 0, label: "时能耗" },
-    { id: 1, label: "天能耗" },
-    { id: 2, label: "月能耗" },
-    { id: 3, label: "年能耗" },
-  ],
   activeTab: 0,
 });
 
@@ -132,10 +128,8 @@ const initChart = (type) => {
 };
 
 const handleChangeTab = (tab) => {
-  if (state.activeTab !== tab) {
-    state.activeTab = tab;
-    initChart(tab);
-  }
+  state.activeTab = TYPES_MAP[tab];
+  initChart(TYPES_MAP[tab]);
 };
 
 onMounted(() => {
@@ -145,37 +139,3 @@ onMounted(() => {
 const handleTimeChange = (val) => {};
 const handleExport = () => {};
 </script>
-<style lang="scss" scoped>
-.time-type {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  position: absolute;
-  top: 5px;
-  right: 41px;
-}
-
-.time-type li {
-  display: inline-block;
-  height: 40px;
-  line-height: 40px;
-  padding: 0 12px;
-  cursor: pointer;
-  color: #333;
-}
-
-.time-type li.active {
-  color: #2b3eb1;
-  position: relative;
-}
-
-.time-type li.active::after {
-  content: "";
-  width: 100%;
-  height: 2px;
-  background-color: #2b3eb1;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-}
-</style>

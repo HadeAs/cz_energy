@@ -49,7 +49,7 @@
           </el-col>
           <el-col :span="5" :offset="12">
             <div class="menu-container">
-              <el-button class="custom-btn" type="primary">主页大屏</el-button>
+              <el-button class="custom-btn" type="primary" @click="gotoScreen">主页大屏</el-button>
               <el-dropdown>
                 <span class="el-dropdown-link">
                   <el-avatar size="small" :src="imgUrl" />
@@ -83,9 +83,10 @@ import { MENU_DATA, SHOW_PROJ_CHANGE_PATH } from "@/constant";
 import imgUrl from "@/assets/img/user.png";
 import logoUrl from "@/assets/img/logo.png";
 import logoTextUrl from "@/assets/img/logo-text.png";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 const defaultMenuKey = route.path;
 const projects = [
   { label: "项目001", value: "项目001" },
@@ -112,6 +113,10 @@ const handleMenuClick = (item) => {
 const projectChange = (val) => {
   appStore.global.changeName(val);
 };
+
+const gotoScreen = () => {
+  router.push({ path: "/mainA" });
+}
 </script>
 
 <style scoped lang="scss">
