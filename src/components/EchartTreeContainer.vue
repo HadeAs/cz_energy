@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 14:19:46
+ * @LastEditTime: 2023-12-24 21:11:13
  * @Description: 
 -->
 <template>
@@ -30,14 +30,14 @@
           +添加
         </div>
         <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
-          <el-form
-            ref="formRef"
-            v-bind="COMMON_FORM_CONFIG"
-            :model="varForm"
-          >
+          <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="varForm">
             <el-form-item label="变量组" required prop="groupName">
               <el-select v-model="varForm.groupName" placeholder="选择变量组">
-                <el-option v-for="item in varGroupOptions" :key="item" v-bind="item" />
+                <el-option
+                  v-for="item in varGroupOptions"
+                  :key="item"
+                  v-bind="item"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="变量名称" required prop="varName">
@@ -71,7 +71,7 @@
           >
             <span>{{ node.label }}</span>
             <span
-              @click="treeNodeDelete(data)"
+              @click="confirmDelVar(node, data)"
               v-if="hoverNodeId === data.id && allowDelVar"
               class="del-btn"
               >删除</span
@@ -84,6 +84,7 @@
 </template>
 <script setup>
 import { ref, watch, nextTick, onMounted, reactive } from "vue";
+import uniqueId from "lodash/uniqueId";
 import Echart from "@/components/Echart.vue";
 import { Search } from "@element-plus/icons-vue";
 import ProDrawer from "@/components/ProDrawer.vue";
@@ -197,29 +198,67 @@ const confirmAddVar = () => {
   formRef.value
     .validate()
     .then(() => {
-      console.log("success");
       drawerRef.value.close();
+      treeNodeAdd();
     })
-    .catch(() => {
-      console.log("fail");
-    });
+    .catch(() => {});
 };
 
-const treeNodeAdd = () => {};
+const treeNodeAdd = () => {
+  const checks = treeRef.value.getCheckedNodes();
+  //模拟树增加节点
+  treeData.value.forEach((v) => {
+    if (v.label === varForm.groupName) {
+      v.children.push({
+        id: uniqueId("var_tree_"),
+        label: varForm.varName,
+      });
+      //如果当前父节点已经处于check状态，新增完子节点之后，记得去掉它的check状态！！！
+      const idx = checks.findIndex((item) => item.id === v.id);
+      if (idx !== -1) {
+        checks.splice(idx, 1);
+      }
+    }
+  });
+  treeData.value = [...treeData.value];
+  nextTick(() => {
+    treeRef.value.setCheckedNodes(checks);
+  });
+};
 
-const treeNodeDelete = (data) => {
+const confirmDelVar = (node, data) => {
   ElMessageBox.confirm("确认删除该变量嘛？", "警告", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning",
   })
     .then(() => {
+      treeNodeDel(node, data);
       ElMessage({
         type: "success",
         message: "删除成功",
       });
     })
     .catch(() => {});
+};
+
+const treeNodeDel = (node, data) => {
+  const checks = treeRef.value.getCheckedNodes();
+  const idx = checks.findIndex((v) => v.id === data.id);
+  if (idx !== -1) {
+    checks.splice(idx, 1);
+  }
+  //模拟树删除节点
+  const parent = node.parent;
+  const children = parent.data.children || parent.data;
+  const index = children.findIndex((d) => d.id === data.id);
+  children.splice(index, 1);
+  treeData.value = [...treeData.value];
+
+  nextTick(() => {
+    treeRef.value.setCheckedNodes(checks);
+    treeCheckChangeHandle();
+  });
 };
 
 const handleTabChange = (val) => {
