@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 10:06:09
+ * @LastEditTime: 2023-12-24 12:03:37
  * @Description: 
 -->
 <template>
@@ -25,8 +25,27 @@
     </div>
     <div class="right">
       <div class="right-title">
-        <span>选择变量</span>
-        <div v-if="allowAddVar">+添加</div>
+        <span class="select-var">选择变量</span>
+        <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">
+          +添加
+        </div>
+        <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
+          <el-form
+            ref="formRef"
+            label-position="left"
+            :model="varForm"
+            label-width="120px"
+          >
+            <el-form-item label="变量组" required prop="groupName">
+              <el-select v-model="varForm.groupName" placeholder="选择变量组">
+                <el-option v-for="item in varGroupOptions" v-bind="item" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="变量名称" required prop="varName">
+              <el-input v-model="varForm.varName" />
+            </el-form-item>
+          </el-form>
+        </ProDrawer>
       </div>
       <el-input
         v-model="varName"
@@ -65,9 +84,10 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, nextTick, onMounted } from "vue";
+import { ref, watch, nextTick, onMounted, reactive } from "vue";
 import Echart from "@/components/Echart.vue";
 import { Search } from "@element-plus/icons-vue";
+import ProDrawer from "@/components/ProDrawer.vue";
 
 const props = defineProps({
   showSwitch: {
@@ -101,9 +121,16 @@ const emits = defineEmits(["type-change", "tree-check-change"]);
 
 const treeRef = ref();
 const varName = ref("");
+const drawerRef = ref();
+const formRef = ref();
 const hoverNodeId = ref("");
 const activeTab = ref("hour");
 const treeData = ref(props.treeData);
+const varGroupOptions = ref([]);
+const varForm = reactive({
+  groupName: "",
+  varName: "",
+});
 
 watch(varName, (val) => {
   treeRef.value && treeRef.value.filter(val);
@@ -155,6 +182,31 @@ const treeCheckChangeHandle = () => {
   treeCheckValid();
 };
 
+const openAddVarForm = () => {
+  drawerRef.value.open();
+  varForm.groupName = "";
+  varForm.varName = "";
+  const options = [];
+  treeData.value.forEach((v) => {
+    options.push({ label: v.label, value: v.label });
+  });
+  varGroupOptions.value = options;
+};
+
+const confirmAddVar = () => {
+  formRef.value
+    .validate()
+    .then(() => {
+      console.log("success");
+      drawerRef.value.close();
+    })
+    .catch(() => {
+      console.log("fail");
+    });
+};
+
+const treeNodeAdd = () => {};
+
 const treeNodeDelete = (data) => {
   ElMessageBox.confirm("确认删除该变量嘛？", "警告", {
     confirmButtonText: "确认",
@@ -203,12 +255,12 @@ onMounted(() => {
     padding: 10px;
     display: flex;
     justify-content: space-between;
-    span {
+    .select-var {
       font-size: 16px;
       font-weight: 700;
       color: #000;
     }
-    div {
+    .btn-add {
       color: red;
       cursor: pointer;
     }

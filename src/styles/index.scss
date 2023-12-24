@@ -27,3 +27,9 @@ body {
 .el-button.is-disabled {
   background-color: #f4f7fd !important;
 }
+.el-drawer__header {
+  margin-bottom: 10px !important;
+}
+.el-form-item__content > div {
+  width: 100%;
+}
