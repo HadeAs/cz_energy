@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 09:37:47
+ * @LastEditTime: 2023-12-24 10:06:46
  * @Description: 
 -->
 <template>
@@ -15,6 +15,7 @@
       ref="echartTreeRef"
       :showSwitch="true"
       :allowAddVar="true"
+      :allowDelVar="true"
       :chartOption="chartOption"
       :defaultTreeCheckKeys="[2, 3]"
       :treeData="CHARGE_CATEGORY_DATA"

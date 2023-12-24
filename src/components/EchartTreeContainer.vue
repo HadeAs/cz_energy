@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 09:59:53
+ * @LastEditTime: 2023-12-24 10:06:09
  * @Description: 
 -->
 <template>
@@ -54,7 +54,7 @@
             <span>{{ node.label }}</span>
             <span
               @click="treeNodeDelete(data)"
-              v-if="hoverNodeId === data.id"
+              v-if="hoverNodeId === data.id && allowDelVar"
               class="del-btn"
               >删除</span
             >
@@ -75,6 +75,10 @@ const props = defineProps({
     default: false,
   },
   allowAddVar: {
+    type: Boolean,
+    default: false,
+  },
+  allowDelVar: {
     type: Boolean,
     default: false,
   },
