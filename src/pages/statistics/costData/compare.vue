@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 16:21:41
+ * @LastEditTime: 2023-12-24 09:37:47
  * @Description: 
 -->
 <template>
@@ -12,64 +12,31 @@
       @export-click="handleExport"
     />
     <EchartTreeContainer
-      style="height: calc(100vh - 198px)"
+      ref="echartTreeRef"
       :showSwitch="true"
+      :allowAddVar="true"
+      :chartOption="chartOption"
+      :defaultTreeCheckKeys="[2, 3]"
+      :treeData="CHARGE_CATEGORY_DATA"
       @type-change="handleTypeChange"
-    >
-      <template #left>
-        <Echart :option="chartOption" />
-      </template>
-      <template #right>
-        <el-input
-          v-model="varName"
-          placeholder="请输入内容"
-          :prefix-icon="Search"
-          style="margin-bottom: 10px"
-        />
-        <el-tree
-          :data="treeData"
-          show-checkbox
-          node-key="id"
-          ref="treeRef"
-          default-expand-all
-          @check="varCheckChangeHandle"
-          :default-checked-keys="[2, 3, 4]"
-          :filter-node-method="filterNode"
-        />
-      </template>
-    </EchartTreeContainer>
+      @tree-check-change="initChart"
+      style="height: calc(100vh - 198px)"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from "vue";
-import { Search } from "@element-plus/icons-vue";
-import Echart from "@/components/Echart.vue";
+import { ref, onMounted } from "vue";
 import { COMMON_ECHART_OPTION, CHARGE_CATEGORY_DATA } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import MainContentContainer from "@/components/MainContentContainer.vue";
 
-const varName = ref("");
-const treeRef = ref();
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
+const echartTreeRef = ref();
 const chartOption = ref(COMMON_ECHART_OPTION);
-const treeData = ref(CHARGE_CATEGORY_DATA);
-const formData = reactive({
-  timeRange: "",
-});
 
 const randomArr = (count, num) => {
   return new Array(count).fill("").map((v) => (Math.random() * num).toFixed(0));
-};
-
-watch(varName, (val) => {
-  treeRef.value && treeRef.value.filter(val);
-});
-
-const filterNode = (value, data) => {
-  if (!value) return true;
-  return data.label.includes(value);
 };
 
 const handleTypeChange = (val) => {
@@ -93,11 +60,11 @@ const handleTypeChange = (val) => {
     default:
       break;
   }
-  varCheckChangeHandle();
+  initChart();
 };
 
-const varCheckChangeHandle = () => {
-  const checks = treeRef.value.getCheckedNodes();
+const initChart = () => {
+  const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
   // 动态更改图表数据
   const seriesData = [];
@@ -120,34 +87,12 @@ const varCheckChangeHandle = () => {
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
-  //跨父节点节点禁止点击
-  if (checkchilds.length) {
-    const node = checkchilds[0];
-    treeData.value.forEach((v) => {
-      if (!v.children.find((item) => item.id === node.id)) {
-        v.disabled = true;
-        v.children.forEach((j) => {
-          j.disabled = true;
-        });
-      }
-    });
-  } else {
-    treeData.value.forEach((v) => {
-      v.disabled = false;
-      v.children.forEach((j) => {
-        j.disabled = false;
-      });
-    });
-  }
-  treeData.value = [...treeData.value];
-  nextTick(() => {
-    treeRef.value.setCheckedNodes(checks);
-  });
 };
 
 onMounted(() => {
-  varCheckChangeHandle();
+  initChart();
 });
 const handleTimeChange = (val) => {};
 const handleExport = () => {};
 </script>
+<style></style>
