@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 21:43:28
+ * @LastEditTime: 2023-12-25 19:38:54
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -386,4 +386,22 @@ export const WORK_SYSTEM = [
   { label: "动力用电", value: "3" },
   { label: "特殊用电", value: "4" },
   { label: "市政给水", value: "5" },
+];
+
+export const LOCK_STATUS = [
+  { label: "正常", value: "1" },
+  { label: "锁定", value: "0" },
+];
+
+export const COMMON_ROLE = [
+  { label: "超级管理员", value: "1" },
+  { label: "企业管理员", value: "2" },
+  { label: "一般用户", value: "3" },
+  { label: "远程监管用户", value: "4" },
+];
+
+export const VARIABLE_TYPE = [
+  { label: "用水", value: "1" },
+  { label: "用电", value: "2" },
+  { label: "用气", value: "3" },
 ];

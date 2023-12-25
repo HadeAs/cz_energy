@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 14:30:27
+ * @LastEditTime: 2023-12-25 16:24:39
  * @Description: 
 -->
 <template>
@@ -14,19 +14,31 @@
       @button-click="onSearch"
     />
     <MainContentContainer>
-      <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="date" label="Date" width="180" />
-        <el-table-column prop="name" label="Name" width="180" />
-        <el-table-column prop="address" label="Address" />
-      </el-table>
+      <ProTable
+        :column="column"
+        :pageInfo="pageInfo"
+        :datasource="datasource"
+        v-loading="loading"
+        @page-change="pageChange"
+      />
     </MainContentContainer>
   </div>
 </template>
 
-<script setup>
-import { reactive } from "vue";
+<script setup lang="jsx">
+import { ref, onMounted } from "vue";
+import ProTable from "@/components/ProTable.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+
+const loading = ref(false);
+const datasource = ref([]);
+const pageInfo = ref({
+  total: 4,
+  currentPage: 1,
+  pageSize: 10,
+  pageSizes: [10, 15, 20, 50],
+});
 
 const searchFormCfg = [
   {
@@ -37,32 +49,88 @@ const searchFormCfg = [
   },
   { label: "操作用户", prop: "userName", type: "input", value: "" },
 ];
+
 const onSearch = (data) => {
   console.log(data);
 };
 
-const tableData = [
+const pageChange = (currentPage, pageSize) => {
+  console.log(currentPage, pageSize);
+};
+
+const column = [
   {
-    date: "2016-05-03",
-    name: "Tom11",
-    address: "No. 189, Grove St, Los Angeles",
+    prop: "userName",
+    label: "操作用户",
+    render: (scope) => {
+      return (
+        <div className="text-overflow" title={scope.row.userName}>
+          <b>{scope.row.userName}</b>
+        </div>
+      );
+    },
   },
   {
-    date: "2016-05-02",
-    name: "Tom22",
-    address: "No. 189, Grove St, Los Angeles",
+    prop: "role",
+    label: "用户角色",
   },
   {
-    date: "2016-05-04",
-    name: "Tom33",
-    address: "No. 189, Grove St, Los Angeles",
+    prop: "operTime",
+    label: "操作时间",
   },
   {
-    date: "2016-05-01",
-    name: "Tom44",
-    address: "No. 189, Grove St, Los Angeles",
+    prop: "operContent",
+    label: "操作内容",
+    width: 500,
+    render: (scope) => {
+      return (
+        <div className="text-overflow" title={scope.row.operContent}>
+          <span>{scope.row.operContent}</span>
+        </div>
+      );
+    },
   },
 ];
+
+onMounted(async () => {
+  loading.value = true;
+  const res = await new Promise((resolve) => {
+    setTimeout(() => {
+      loading.value = false;
+      resolve([
+        {
+          id: "1",
+          userName: "admin1",
+          operTime: "2018-03-03  15:20:40",
+          operContent: "添加某某项目信息",
+          role: "企业管理员",
+        },
+        {
+          id: "2",
+          userName: "admin2",
+          operTime: "2018-03-03  15:20:40",
+          operContent: "添加某某项目信息添加某某项目信息添加某某项目信息",
+          role: "企业管理员",
+        },
+        {
+          id: "3",
+          userName: "admin3",
+          operTime: "2018-03-03  15:20:40",
+          operContent: "更新某某账号信息更新某某账号信息",
+          role: "超级管理员",
+        },
+        {
+          id: "4",
+          userName: "admin4",
+          operTime: "2018-03-03  15:20:40",
+          operContent: "添加某某项目信息",
+          role: "超级管理员",
+        },
+      ]);
+    }, 1000);
+  });
+  datasource.value = res;
+});
 </script>
 <style lang="scss" scoped>
 .search {

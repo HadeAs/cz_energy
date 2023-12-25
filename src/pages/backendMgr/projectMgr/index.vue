@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 15:53:36
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-25 18:55:20
  * @Description: 
 -->
 <template>
@@ -38,12 +38,12 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" @click="editRow(scope)">编辑</a>
+        <a class="table-operator-btn" @click="editRow(scope.row)">编辑</a>
         <ProPopConfirm
           title="你确定要删除该项目嘛?"
           :icon="CircleCloseFilled"
           iconColor="red"
-          @confirm="confirmDelete"
+          @confirm="confirmDelete(scope.row)"
         >
           <a class="table-operator-btn">删除</a>
         </ProPopConfirm>
@@ -71,7 +71,7 @@
   </MainContentContainer>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { ref, onMounted } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
@@ -97,6 +97,12 @@ const projectImageRef = ref();
 const projectDetailRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
+const pageInfo = ref({
+  total: 4,
+  currentPage: 1,
+  pageSize: 10,
+  pageSizes: [10, 15, 20, 50],
+});
 
 const addRow = () => {
   operateType.value = "add";
@@ -105,10 +111,10 @@ const addRow = () => {
   detailDrawerRef.value.open();
 };
 
-const editRow = (scope) => {
+const editRow = (data) => {
   operateType.value = "edit";
   detailDrawerTitle.value = "编辑项目信息";
-  initDetailData.value = scope.row;
+  initDetailData.value = data;
   detailDrawerRef.value.open();
 };
 
@@ -138,6 +144,7 @@ const confirmImage = async () => {
 const confirmPrice = async () => {
   const res = await priceConfigRef.value.validate();
   if (res) {
+    // 费用配置确认逻辑
     priceDrawerRef.value.close();
   }
 };
@@ -146,8 +153,11 @@ const handleSearch = () => {
   console.log(projName.value);
 };
 
-const confirmDelete = () => {
-  console.log("confirm delete");
+const confirmDelete = (data) => {
+  // 项目删除逻辑
+  const idx = datasource.value.findIndex((v) => v.id === data.id);
+  datasource.value.splice(idx, 1);
+  datasource.value = [...datasource.value];
 };
 
 const pageChange = (currentPage, pageSize) => {
@@ -165,30 +175,29 @@ const batchDelete = () => {
     type: "warning",
   })
     .then(() => {
+      // 项目批量删除逻辑
+      datasource.value = datasource.value.filter((v) => {
+        return !selectRows.value.find((item) => item.id === v.id);
+      });
       ElMessage({
         type: "success",
-        message: "Delete completed",
+        message: "删除成功",
       });
     })
-    .catch(() => {
-      ElMessage({
-        type: "info",
-        message: "Delete canceled",
-      });
-    });
-};
-
-const pageInfo = {
-  total: 4,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
+    .catch(() => {});
 };
 
 const column = [
   {
     prop: "projectName",
     label: "项目名称",
+    render: (scope) => {
+      return (
+        <div className="text-overflow" title={scope.row.projectName}>
+          <b>{scope.row.projectName}</b>
+        </div>
+      );
+    },
   },
   {
     prop: "district",
@@ -247,7 +256,7 @@ onMounted(async () => {
           area: "4",
         },
       ]);
-    }, 2000);
+    }, 1000);
   });
   datasource.value = res;
 });
