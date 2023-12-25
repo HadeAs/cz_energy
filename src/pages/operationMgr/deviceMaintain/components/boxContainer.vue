@@ -2,13 +2,14 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 17:30:44
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 18:01:13
+ * @LastEditTime: 2023-12-25 13:22:58
  * @Description: 
 -->
 <template>
   <MainContentContainer class="contain">
     <div class="cs-box-title">
       <span class="cs-title-text">{{ title }}</span>
+      <slot name="extra"></slot>
     </div>
     <div class="cs-box-wrap">
       <slot></slot>
@@ -21,8 +22,6 @@ defineProps(["title"]);
 </script>
 <style lang="scss" scoped>
 .contain {
-  margin-bottom: 10px;
-  margin-top: 10px;
   .cs-box-title {
     height: 48px;
     padding: 0 24px;

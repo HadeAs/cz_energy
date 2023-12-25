@@ -17,6 +17,16 @@ body {
   border-top: var(--common-border);
   border-left: var(--common-border);
   border-right: var(--common-border) !important;
+  .table-operator-btn {
+    color: rgba(255, 48, 0, 0.898039215686275);
+    cursor: pointer;
+    margin-right: 10px;
+    &.disabled {
+      color: #959ba7;
+      cursor: auto;
+    }
+  }
+ 
 }
 .el-table th.el-table__cell {
   background-color: rgba(236, 241, 249, 1) !important;
@@ -54,6 +64,17 @@ body {
     font-weight: bold;
     color: #fff;
   }
+  .cs-main-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    .main-content-container.contain {
+      margin-bottom: 16px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+}
   .el-descriptions__body .el-descriptions__table.is-bordered .el-descriptions__cell {
     padding: 4px 11px;
   }

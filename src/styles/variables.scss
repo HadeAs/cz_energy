@@ -20,3 +20,9 @@
 .el-date-editor.el-input, .el-date-editor.el-input__wrapper {
   --el-date-editor-width: 100%;
 }
+.el-upload--picture-card {
+  --el-upload-picture-card-size: 90px !important;
+}
+.el-upload-list--picture-card {
+  --el-upload-list-picture-card-size: 90px !important;
+}

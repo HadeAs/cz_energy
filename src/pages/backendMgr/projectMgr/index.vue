@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 14:24:04
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-25 15:53:36
  * @Description: 
 -->
 <template>
@@ -252,10 +252,3 @@ onMounted(async () => {
   datasource.value = res;
 });
 </script>
-<style lang="scss" scoped>
-.table-operator-btn {
-  margin-right: 10px;
-  cursor: pointer;
-  color: #ff3300;
-}
-</style>

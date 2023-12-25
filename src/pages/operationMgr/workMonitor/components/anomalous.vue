@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 18:58:52
+ * @LastEditTime: 2023-12-25 13:29:39
  * @Description: 
 -->
 <template>
@@ -36,7 +36,7 @@
       >
         <template #operation="scope">
           <a
-            class="table-operator-btn handle"
+            class="table-operator-btn"
             v-if="!scope.row.time2"
             @click="handle(scope.row)"
             >立即处理</a
@@ -71,8 +71,9 @@
 </template>
 
 <script setup lang="jsx">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const DEVICE_MAP = {
@@ -259,12 +260,5 @@ const confirmAddVar = () => {
 <style lang="scss" scoped>
 .search {
   margin-bottom: 10px;
-}
-.handle {
-  color: rgba(255, 48, 0, 0.898039215686275);
-  cursor: pointer;
-}
-.disabled {
-  color: #959ba7;
 }
 </style>

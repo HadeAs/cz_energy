@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 19:00:30
+ * @LastEditTime: 2023-12-25 12:50:28
  * @Description: 
 -->
 <template>
@@ -38,10 +38,8 @@
         @page-change="pageChange"
       >
         <template #operation="scope">
-          <a class="table-operator-btn handle" @click="viewDetail(scope.row)"
-            >详情</a
-          >
-          <span class="table-operator-btn handle" @click="editRow(scope.row)"
+          <a class="table-operator-btn" @click="viewDetail(scope.row)">详情</a>
+          <span class="table-operator-btn" @click="editRow(scope.row)"
             >编辑</span
           >
         </template>
@@ -71,7 +69,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="设备数量" prop="num">
-          <el-input-number :mim="0" v-model="state.formData.num" />
+          <el-input-number :min="0" v-model="state.formData.num" />
         </el-form-item>
         <el-form-item label="计划保养时间" prop="time">
           <el-date-picker
@@ -92,6 +90,7 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Search } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const category_MAP = {
@@ -245,7 +244,7 @@ const getList = async () => {
   const res = await new Promise((resolve) => {
     setTimeout(() => {
       state.loading = false;
-      const data = new Array(15).fill("").map((num, index) => {
+      const data = new Array(10).fill("").map((num, index) => {
         const i = index % 4;
         return { ...COMMON_DATA_MAPS[i], id: index };
       });
@@ -305,10 +304,5 @@ span.warn {
 }
 .search {
   margin-bottom: 10px;
-}
-.handle {
-  color: rgba(255, 48, 0, 0.898039215686275);
-  cursor: pointer;
-  margin-right: 10px;
 }
 </style>

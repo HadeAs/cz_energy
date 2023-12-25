@@ -1,12 +1,12 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-24 10:20:40
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 11:42:46
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-25 13:00:06
  * @Description: 
 -->
 <template>
-  <el-drawer v-model="visibile" destroy-on-close>
+  <el-drawer v-model="visibile" destroy-on-close v-bind="$attrs">
     <template #header>
       <div class="drawer-title">{{ title }}</div>
     </template>
