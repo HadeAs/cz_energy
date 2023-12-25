@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 15:24:19
+ * @LastEditTime: 2023-12-24 21:43:28
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -10,7 +10,7 @@ export const SHOW_PROJ_CHANGE_PATH = [
   "/costData",
   "workMonitor",
   "/deviceMaintain",
-  "/workMonitor"
+  "/workMonitor",
 ];
 export const MENU_DATA = [
   {
@@ -369,4 +369,21 @@ export const CHARGE_CATEGORY_DATA = [
       },
     ],
   },
+];
+
+export const BUILD_TYPE = [
+  { label: "办公建筑", value: "1" },
+  { label: "商场建筑", value: "2" },
+  { label: "宾馆饭店建筑", value: "3" },
+  { label: "文化教育建筑", value: "4" },
+  { label: "医疗卫生建筑", value: "5" },
+  { label: "体育建筑", value: "6" },
+];
+
+export const WORK_SYSTEM = [
+  { label: "照明插座用电", value: "1" },
+  { label: "空调用电", value: "2" },
+  { label: "动力用电", value: "3" },
+  { label: "特殊用电", value: "4" },
+  { label: "市政给水", value: "5" },
 ];
