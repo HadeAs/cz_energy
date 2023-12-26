@@ -2,15 +2,18 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 14:36:48
+ * @LastEditTime: 2023-12-26 22:02:57
  * @Description: 
 -->
 
 <template>
   <div>
-    <TimeRangeSearch
-      @time-change="handleTimeChange"
-      @export-click="handleExport"
+    <ProSearchContainer
+      class="search"
+      buttonContent="导出"
+      :form-info="searchFormCfg"
+      @button-click="onSearch"
+      authKey=""
     />
     <EchartTreeContainer
       ref="echartTreeRef"
@@ -27,7 +30,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import TimeRangeSearch from "@/components/TimeRangeSearch.vue";
+import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import {
   WATER_ECHART_OPT,
   WATER_TREE_DATA,
@@ -42,6 +45,19 @@ const chartOption = ref(WATER_ECHART_OPT);
 const state = reactive({
   activeTab: 0,
 });
+
+const searchFormCfg = [
+  {
+    label: "时间范围",
+    prop: "timeRange",
+    type: "datetimerange",
+    value: "",
+  },
+];
+
+const onSearch = (data) => {
+  console.log(data);
+};
 
 const randomArr = (times, num) => {
   return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));
@@ -80,7 +96,18 @@ const handleChangeTab = (tab) => {
 onMounted(() => {
   initChart(0);
 });
-
-const handleTimeChange = (val) => {};
-const handleExport = () => {};
 </script>
+<style lang="scss" scoped>
+.search {
+  margin-bottom: 10px;
+  :deep() {
+    .el-form {
+      .el-form-item:last-child {
+        float: right;
+        text-align: right;
+        margin-right: 0;
+      }
+    }
+  }
+}
+</style>

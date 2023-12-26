@@ -1,15 +1,17 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:26:49
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-26 22:10:05
  * @Description: 
 -->
 <template>
   <div>
-    <TimeRangeSearch
-      @time-change="handleTimeChange"
-      @export-click="handleExport"
+    <ProSearchContainer
+      class="search"
+      buttonContent="导出"
+      :form-info="searchFormCfg"
+      @button-click="onSearch"
       authKey="cost_compare_export"
     />
     <EchartTreeContainer
@@ -37,6 +39,18 @@ const suffix = ref(":00");
 const echartTreeRef = ref();
 const chartOption = ref(COMMON_ECHART_OPTION);
 
+const searchFormCfg = [
+  {
+    label: "时间范围",
+    prop: "timeRange",
+    type: "datetimerange",
+    value: "",
+  },
+];
+
+const onSearch = (data) => {
+  console.log(data);
+};
 const randomArr = (count, num) => {
   return new Array(count).fill("").map((v) => (Math.random() * num).toFixed(0));
 };
@@ -94,7 +108,18 @@ const initChart = () => {
 onMounted(() => {
   initChart();
 });
-const handleTimeChange = (val) => {};
-const handleExport = () => {};
 </script>
-<style></style>
+<style lang="scss" scoped>
+.search {
+  margin-bottom: 10px;
+  :deep() {
+    .el-form {
+      .el-form-item:last-child {
+        float: right;
+        text-align: right;
+        margin-right: 0;
+      }
+    }
+  }
+}
+</style>

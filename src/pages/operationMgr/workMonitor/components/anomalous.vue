@@ -2,30 +2,18 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 13:29:39
+ * @LastEditTime: 2023-12-26 22:05:28
  * @Description: 
 -->
 <template>
   <div>
-    <MainContentContainer class="search">
-      <el-form :inline="true" :model="state.searchFormData">
-        <el-form-item label="时间范围">
-          <el-date-picker
-            v-model="state.searchFormData.timeRange"
-            type="datetimerange"
-            start-placeholder="请选择开始时间"
-            end-placeholder="请选择结束时间"
-            value-format="YYYY-MM-DD hh:mm:ss"
-          />
-        </el-form-item>
-        <el-form-item label="报警设备">
-          <el-input v-model="state.searchFormData.deviceName" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSearch">搜索</el-button>
-        </el-form-item>
-      </el-form>
-    </MainContentContainer>
+    <ProSearchContainer
+      class="search"
+      buttonContent="搜索"
+      :form-info="searchFormCfg"
+      @button-click="onSearch"
+      authKey=""
+    />
     <MainContentContainer>
       <ProTable
         :column="column"
@@ -102,13 +90,23 @@ const rules = {
   ],
 };
 
+const searchFormCfg = [
+  {
+    label: "时间范围",
+    prop: "timeRange",
+    type: "datetimerange",
+    value: "",
+  },
+  { label: "报警设备", prop: "deviceName", type: "input", value: "" },
+];
+
+const onSearch = (data) => {
+  console.log(data);
+};
+
 const drawerRef = ref();
 const formRef = ref();
 const state = reactive({
-  searchFormData: {
-    deviceName: "",
-    timeRange: "",
-  },
   formData: {
     name: "",
     user: "",
@@ -171,10 +169,6 @@ const column = [
     width: 170,
   },
 ];
-
-const onSearch = () => {
-  console.log(state.searchFormData);
-};
 
 const pageChange = (currentPage, pageSize) => {
   console.log(currentPage, pageSize);
