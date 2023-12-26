@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-23 19:28:34
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-23 20:00:41
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-26 21:24:54
  * @Description: 
 -->
 <template>
@@ -19,7 +19,9 @@
         />
       </el-form-item>
       <el-form-item style="float: right">
-        <el-button type="primary" @click="handleExport">导出</el-button>
+        <el-button v-auth="authKey" type="primary" @click="handleExport"
+          >导出</el-button
+        >
       </el-form-item>
     </el-form>
   </MainContentContainer>
@@ -28,20 +30,26 @@
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import { reactive } from "vue";
 
+defineProps({
+  authKey: {
+    type: String,
+  },
+});
+
 const emits = defineEmits(["export-click", "time-change"]);
 const state = reactive({
   formData: {
-    timeRange: ""
-  }
+    timeRange: "",
+  },
 });
 
 const handleDateChange = (val) => {
-  emits("time-change", val)
-}
+  emits("time-change", val);
+};
 
 const handleExport = () => {
   emits("export-click");
-}
+};
 </script>
 <style lang="scss" scoped>
 .search {

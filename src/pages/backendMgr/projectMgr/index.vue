@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 19:26:14
+ * @LastEditTime: 2023-12-26 21:02:44
  * @Description: 
 -->
 <template>
@@ -55,12 +55,18 @@
           iconColor="red"
           @confirm="confirmDelete(scope.row)"
         >
-          <a class="table-operator-btn">删除</a>
+          <a v-auth="'project_delete'" class="table-operator-btn">删除</a>
         </ProPopConfirm>
-        <a class="table-operator-btn" @click="imageDrawerRef.open()"
+        <a
+          v-auth="'project_upload_img'"
+          class="table-operator-btn"
+          @click="imageDrawerRef.open()"
           >项目图片</a
         >
-        <a class="table-operator-btn" @click="priceDrawerRef.open()"
+        <a
+          v-auth="'project_price_config'"
+          class="table-operator-btn"
+          @click="priceDrawerRef.open()"
           >费用配置</a
         >
       </template>

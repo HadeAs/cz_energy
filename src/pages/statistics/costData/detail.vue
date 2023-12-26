@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 18:59:15
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-26 21:27:45
  * @Description: 
 -->
 <template>
@@ -50,7 +50,10 @@
         <template #toolbar>
           <el-row align="middle" :gutter="5">
             <el-col :span="3">
-              <el-button :disabled="!selectRows.length" @click="batchExport"
+              <el-button
+                v-auth="'cost_detail_batch_export'"
+                :disabled="!selectRows.length"
+                @click="batchExport"
                 >批量导出</el-button
               >
             </el-col>

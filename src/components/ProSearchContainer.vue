@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-25 13:16:28
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 14:21:14
+ * @LastEditTime: 2023-12-26 21:08:17
  * @Description: 
 -->
 <template>
@@ -29,7 +29,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">{{
+        <el-button v-auth="authKey" type="primary" @click="onSubmit">{{
           buttonContent
         }}</el-button>
       </el-form-item>
@@ -48,6 +48,9 @@ const props = defineProps({
   buttonContent: {
     type: String,
     default: "搜索",
+  },
+  authKey: {
+    type: String,
   },
 });
 

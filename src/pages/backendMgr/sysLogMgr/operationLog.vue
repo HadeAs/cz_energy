@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 21:02:58
+ * @LastEditTime: 2023-12-26 21:15:46
  * @Description: 
 -->
 <template>
@@ -12,6 +12,7 @@
       buttonContent="搜索"
       :form-info="searchFormCfg"
       @button-click="onSearch"
+      authKey="systemlog_operation_search"
     />
     <MainContentContainer style="height: calc(100vh - 198px)">
       <ProTable

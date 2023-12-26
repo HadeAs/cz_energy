@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 18:03:38
+ * @LastEditTime: 2023-12-26 21:06:02
  * @Description: 
 -->
 <template>
@@ -19,10 +19,15 @@
       <template #toolbar>
         <el-row align="middle" :gutter="5">
           <el-col :span="2">
-            <el-button type="primary" @click="addRow">新增</el-button>
+            <el-button type="primary" v-auth="'auth_add'" @click="addRow"
+              >新增</el-button
+            >
           </el-col>
           <el-col :span="2">
-            <el-button :disabled="!selectRows.length" @click="batchDelete"
+            <el-button
+              :disabled="!selectRows.length"
+              v-auth="'auth_batch_delete'"
+              @click="batchDelete"
               >批量删除</el-button
             >
           </el-col>
@@ -38,16 +43,26 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" @click="editRow(scope.row)">编辑</a>
+        <a
+          class="table-operator-btn"
+          v-auth="'auth_edit'"
+          @click="editRow(scope.row)"
+          >编辑</a
+        >
         <ProPopConfirm
           title="你确定要删除该角色嘛?"
           :icon="CircleCloseFilled"
           iconColor="red"
           @confirm="confirmDelete(scope.row)"
         >
-          <a class="table-operator-btn">删除</a>
+          <a class="table-operator-btn" v-auth="'auth_delete'">删除</a>
         </ProPopConfirm>
-        <a class="table-operator-btn" @click="distribute">分配</a>
+        <a
+          class="table-operator-btn"
+          v-auth="'auth_distribute'"
+          @click="distribute"
+          >分配</a
+        >
       </template>
     </ProTable>
     <ProDrawer

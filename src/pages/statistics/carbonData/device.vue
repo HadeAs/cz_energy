@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 09:56:57
+ * @LastEditTime: 2023-12-26 21:25:28
  * @Description: 
 -->
 <template>
@@ -10,6 +10,7 @@
     <TimeRangeSearch
       @time-change="handleTimeChange"
       @export-click="handleExport"
+      authKey="carbon_device_export"
     />
     <EchartTreeContainer
       ref="echartTreeRef"

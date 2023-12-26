@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 20:48:51
+ * @LastEditTime: 2023-12-26 21:20:09
  * @Description: 
 -->
 <template>
@@ -17,7 +17,12 @@
       <template #toolbar>
         <el-row align="middle" :gutter="5">
           <el-col :span="2">
-            <el-button type="primary" @click="addRow">新增</el-button>
+            <el-button
+              type="primary"
+              v-auth="'platform_build_add'"
+              @click="addRow"
+              >新增</el-button
+            >
           </el-col>
           <el-col :offset="18" :span="4">
             <el-input
@@ -37,7 +42,9 @@
           iconColor="red"
           @confirm="confirmDelete(scope.row)"
         >
-          <a class="table-operator-btn">删除</a>
+          <a class="table-operator-btn" v-auth="'platform_build_delete'"
+            >删除</a
+          >
         </ProPopConfirm>
       </template>
     </ProTable>
