@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:56:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 14:01:59
+ * @LastEditTime: 2023-12-25 16:24:00
  * @Description: 
 -->
 <template>
@@ -32,7 +32,7 @@
 </template>
 <script setup name="MainTainPlan">
 import { reactive, ref } from "vue";
-import BoxContainer from "./boxContainer.vue";
+import BoxContainer from "../boxContainer.vue";
 
 const rules = {
   desc: [

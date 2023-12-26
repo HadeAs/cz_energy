@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:10:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 13:53:08
+ * @LastEditTime: 2023-12-25 16:24:05
  * @Description: 
 -->
 <template>
@@ -45,7 +45,7 @@
 </template>
 <script setup name="MainTainPlan">
 import { reactive, ref } from "vue";
-import BoxContainer from "./boxContainer.vue";
+import BoxContainer from "../boxContainer.vue";
 
 const rules = {
   desc: [

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:04:50
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 18:05:01
+ * @LastEditTime: 2023-12-25 16:33:15
  * @Description: 
 -->
 <template>
@@ -12,16 +12,18 @@
         v-for="(item, index) in state.exclData"
         :key="index"
         :label="item.label"
+        label-align="right"
+        label-class-name="detail-label"
       >
         {{ item.value }}
       </el-descriptions-item>
     </el-descriptions>
   </BoxContainer>
 </template>
-<script setup name="Detail1">
+<script setup name="Detail">
 import { reactive } from "vue";
 import { useRoute } from "vue-router";
-import BoxContainer from "./boxContainer.vue";
+import BoxContainer from "../boxContainer.vue";
 
 const route = useRoute();
 const state = reactive({
@@ -41,3 +43,9 @@ const state = reactive({
   ],
 });
 </script>
+<style lang="scss">
+.detail-label {
+  width: 200px;
+  padding: 0 15px;
+}
+</style>

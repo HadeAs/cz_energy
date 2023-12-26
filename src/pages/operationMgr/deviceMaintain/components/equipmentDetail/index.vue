@@ -1,0 +1,24 @@
+<!--
+ * @Author: ymZhang
+ * @Date: 2023-12-25 16:30:39
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-25 19:48:32
+ * @Description: 
+-->
+<template>
+  <div class="cs-detail-container">
+    <div class="cs-header">设备保养详情</div>
+    <div class="cs-main-wrap">
+      <Detail />
+      <History />
+    </div>
+  </div>
+</template>
+<script setup name="EquipmentDetail">
+import { reactive } from "vue";
+import { useRoute } from "vue-router";
+import Detail from "./detail.vue";
+import History from "./history.vue";
+
+const route = useRoute();
+</script>

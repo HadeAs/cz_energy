@@ -2,12 +2,13 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 14:07:09
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 15:51:13
+ * @LastEditTime: 2023-12-26 14:51:06
  * @Description: 
 -->
 <template>
   <span>
     <el-upload
+      class="upload-file"
       v-if="listType === 'text'"
       v-model:file-list="state.fileList"
       list-type="text"
@@ -24,6 +25,7 @@
       <slot name="default">
         <el-button type="primary" :icon="Upload">上传文件</el-button>
       </slot>
+      <slot name="tip"></slot>
     </el-upload>
     <template v-else>
       <!-- 多图片模式不需要请求接口 -->
@@ -167,5 +169,15 @@ defineExpose({ getFileList });
 .preview-img {
   width: 100%;
   height: 100%;
+}
+.upload-file {
+  :deep() {
+    .el-upload {
+      display: block;
+    }
+    .el-upload__tip {
+      margin-top: 4px;
+    }
+  }
 }
 </style>

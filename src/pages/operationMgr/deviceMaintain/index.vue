@@ -2,49 +2,53 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 12:50:28
+ * @LastEditTime: 2023-12-26 12:15:59
  * @Description: 
 -->
 <template>
-  <div>
-    <MainContentContainer class="search">
-      <el-form class="search-form" :inline="true" :model="state.searchFormData">
-        <el-form-item>
-          <el-select v-model="state.searchFormData.classify">
-            <el-option
-              v-for="item in state.opts"
-              :key="item.id"
-              :label="item.text"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            v-model="state.searchFormData.type"
-            placeholder="设别名称/型号"
-            :suffix-icon="Search"
-          />
-        </el-form-item>
-      </el-form>
-    </MainContentContainer>
-    <MainContentContainer>
-      <ProTable
-        :column="column"
-        :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        :default-sort="{ prop: 'time', order: 'descending' }"
-        v-loading="state.loading"
-        @page-change="pageChange"
-      >
-        <template #operation="scope">
-          <a class="table-operator-btn" @click="viewDetail(scope.row)">详情</a>
-          <span class="table-operator-btn" @click="editRow(scope.row)"
-            >编辑</span
-          >
-        </template>
-      </ProTable>
-    </MainContentContainer>
+  <MainContentContainer>
+    <ProTable
+      :column="column"
+      :pageInfo="pageInfo"
+      :datasource="state.dataSource"
+      :default-sort="{ prop: 'time', order: 'descending' }"
+      v-loading="state.loading"
+      @page-change="pageChange"
+    >
+      <template #toolbar>
+        <el-row align="middle" :gutter="5">
+          <el-col :span="24">
+            <el-form
+              class="search-form"
+              :inline="true"
+              :model="state.searchFormData"
+            >
+              <el-form-item>
+                <el-select v-model="state.searchFormData.classify">
+                  <el-option
+                    v-for="item in state.opts"
+                    :key="item.id"
+                    :label="item.text"
+                    :value="item.id"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-input
+                  v-model="state.searchFormData.type"
+                  placeholder="设别名称/型号"
+                  :suffix-icon="Search"
+                />
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
+      </template>
+      <template #operation="scope">
+        <a class="table-operator-btn" @click="viewDetail(scope.row)">详情</a>
+        <span class="table-operator-btn" @click="editRow(scope.row)">编辑</span>
+      </template>
+    </ProTable>
     <ProDrawer title="编辑" ref="drawerRef" @confirm="confirmAddVar">
       <el-form
         ref="formRef"
@@ -82,7 +86,7 @@
         </el-form-item>
       </el-form>
     </ProDrawer>
-  </div>
+  </MainContentContainer>
 </template>
 
 <script setup lang="jsx">
@@ -296,13 +300,11 @@ span.warn {
   :deep() {
     .el-form-item {
       margin-right: 15px;
+      margin-bottom: 0;
       &:last-child {
         margin-right: 0;
       }
     }
   }
-}
-.search {
-  margin-bottom: 10px;
 }
 </style>

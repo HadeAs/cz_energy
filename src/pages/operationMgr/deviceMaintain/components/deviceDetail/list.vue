@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 15:46:12
+ * @LastEditTime: 2023-12-25 16:39:57
  * @Description: 
 -->
 <template>
@@ -62,11 +62,12 @@
     </ProDrawer>
   </BoxContainer>
 </template>
-<script setup lang="jsx" name="List1">
+<script setup lang="jsx" name="List">
 import { ElTag } from "element-plus";
 import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import ProDrawer from "@/components/ProDrawer.vue";
-import BoxContainer from "./boxContainer.vue";
+import BoxContainer from "../boxContainer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import ProUpload from "@/components/ProUpload.vue";
 
@@ -101,6 +102,7 @@ const COMMON_DATA_MAPS = [
   },
 ];
 
+const router = useRouter();
 const rules = {
   time: { required: true, message: "请选择设备保养时间", trigger: "blur" },
   detailImgs: { required: true, message: "请上传设备保养图", trigger: "blur" },
@@ -207,6 +209,17 @@ const editRow = (row) => {
   state.formData.detailImgs = [];
   state.formData.desc = row.desc;
   drawerRef.value.open();
+};
+
+const viewDetail = (row) => {
+  const { id } = row;
+  const path = router.resolve({
+    name: "equipmentDetail",
+    params: {
+      id,
+    },
+  }).href;
+  window.open(path, "_blank");
 };
 
 const handleChange = (fileList) => {

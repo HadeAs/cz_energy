@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 18:51:32
+ * @LastEditTime: 2023-12-26 12:36:04
  * @Description: 
 -->
 <template>
@@ -22,6 +22,7 @@
       <el-table-column
         v-for="(item, index) in column"
         :key="index"
+        show-overflow-tooltip
         v-bind="item"
         v-slot="scope"
       >
