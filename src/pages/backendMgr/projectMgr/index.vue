@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 18:55:20
+ * @LastEditTime: 2023-12-26 19:26:14
  * @Description: 
 -->
 <template>
@@ -19,10 +19,15 @@
       <template #toolbar>
         <el-row align="middle" :gutter="5">
           <el-col :span="2">
-            <el-button type="primary" @click="addRow">新增</el-button>
+            <el-button type="primary" @click="addRow" v-auth="'project_add'"
+              >新增</el-button
+            >
           </el-col>
           <el-col :span="2">
-            <el-button :disabled="!selectRows.length" @click="batchDelete"
+            <el-button
+              :disabled="!selectRows.length"
+              @click="batchDelete"
+              v-auth="'project_batch_delete'"
               >批量删除</el-button
             >
           </el-col>
@@ -38,7 +43,12 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" @click="editRow(scope.row)">编辑</a>
+        <a
+          class="table-operator-btn"
+          v-auth="'project_edit'"
+          @click="editRow(scope.row)"
+          >编辑</a
+        >
         <ProPopConfirm
           title="你确定要删除该项目嘛?"
           :icon="CircleCloseFilled"
@@ -134,11 +144,12 @@ const confirmDetail = async () => {
 };
 
 const confirmImage = async () => {
-  // const res = await projectImageRef.value.validate();
-  // if (res) {
-  //   // 项目图片上传
-  //   imageDrawerRef.value.close();
-  // }
+  const res = await projectImageRef.value.getPictures();
+  if (res) {
+    // 项目图片上传
+    console.log(res);
+    imageDrawerRef.value.close();
+  }
 };
 
 const confirmPrice = async () => {

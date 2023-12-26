@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 19:13:50
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 16:30:26
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-26 19:07:48
  * @Description:
  */
 const BasicRouter = [
@@ -12,13 +12,6 @@ const BasicRouter = [
     hidden: true,
     component: () =>
       import(/* webpackChunkName: "loginPage" */ "@/pages/login/index.vue"),
-  },
-  {
-    path: "/404",
-    name: "404",
-    hidden: true,
-    component: () =>
-      import(/* webpackChunkName: "404" */ "@/pages/error/404.vue"),
   },
   {
     path: "/deviceDetail/:id",

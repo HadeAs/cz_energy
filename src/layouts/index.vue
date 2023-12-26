@@ -9,7 +9,7 @@
           fit="fill"
         />
       </div>
-      <el-menu router :default-active="defaultMenuKey">
+      <el-menu :default-active="defaultMenuKey">
         <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
           <template #title>
             <el-icon>
@@ -31,7 +31,7 @@
         <el-row :gutter="30" align="middle">
           <el-col :span="7">
             <div class="menu-container">
-              <div class="current-menu">{{ currentMenu }}</div>
+              <div class="current-menu">{{ route.meta.title }}</div>
               <el-select
                 v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
                 v-model="appStore.global.projectName"
@@ -49,7 +49,9 @@
           </el-col>
           <el-col :span="5" :offset="12">
             <div class="menu-container">
-              <el-button class="custom-btn" type="primary" @click="gotoScreen">主页大屏</el-button>
+              <el-button class="custom-btn" type="primary" @click="gotoScreen"
+                >主页大屏</el-button
+              >
               <el-dropdown>
                 <span class="el-dropdown-link">
                   <el-avatar size="small" :src="imgUrl" />
@@ -95,28 +97,17 @@ const projects = [
   { label: "项目004", value: "项目004" },
 ];
 
-//查找当前url对应的菜单
-let defaultMenu = "";
-MENU_DATA.forEach((v) => {
-  v.children.forEach((item) => {
-    if (item.path === defaultMenuKey) {
-      defaultMenu = item.name;
-    }
-  });
-});
-const currentMenu = ref(defaultMenu);
-
-const handleMenuClick = (item) => {
-  currentMenu.value = item.name;
-};
-
 const projectChange = (val) => {
   appStore.global.changeName(val);
 };
 
+const handleMenuClick = (item) => {
+  router.push({ path: item.path });
+};
+
 const gotoScreen = () => {
   router.push({ path: "/mainA" });
-}
+};
 </script>
 
 <style scoped lang="scss">
