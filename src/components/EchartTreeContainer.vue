@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-24 21:11:13
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-27 11:15:04
  * @Description: 
 -->
 <template>
@@ -24,61 +24,63 @@
       <Echart :option="chartOption" />
     </div>
     <div class="right">
-      <div class="right-title">
-        <span class="select-var">选择变量</span>
-        <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">
-          +添加
-        </div>
-        <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
-          <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="varForm">
-            <el-form-item label="变量组" required prop="groupName">
-              <el-select v-model="varForm.groupName" placeholder="选择变量组">
-                <el-option
-                  v-for="item in varGroupOptions"
-                  :key="item"
-                  v-bind="item"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="变量名称" required prop="varName">
-              <el-input v-model="varForm.varName" />
-            </el-form-item>
-          </el-form>
-        </ProDrawer>
-      </div>
-      <el-input
-        v-model="varName"
-        placeholder="请输入内容"
-        :prefix-icon="Search"
-        style="margin-bottom: 10px"
-      />
-      <el-tree
-        :data="treeData"
-        show-checkbox
-        node-key="id"
-        ref="treeRef"
-        default-expand-all
-        @check="treeCheckChangeHandle"
-        :expand-on-click-node="false"
-        :filter-node-method="filterNode"
-        :default-checked-keys="defaultTreeCheckKeys"
-      >
-        <template #default="{ node, data }">
-          <div
-            class="custom-tree-node"
-            @mouseenter="enterTreeNode(data.id)"
-            @mouseleave="leaveTreeNode()"
-          >
-            <span>{{ node.label }}</span>
-            <span
-              @click="confirmDelVar(node, data)"
-              v-if="hoverNodeId === data.id && allowDelVar"
-              class="del-btn"
-              >删除</span
-            >
+      <el-scrollbar>
+        <div class="right-title">
+          <span class="select-var">选择变量</span>
+          <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">
+            +添加
           </div>
-        </template>
-      </el-tree>
+          <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
+            <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="varForm">
+              <el-form-item label="变量组" required prop="groupName">
+                <el-select v-model="varForm.groupName" placeholder="选择变量组">
+                  <el-option
+                    v-for="item in varGroupOptions"
+                    :key="item"
+                    v-bind="item"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="变量名称" required prop="varName">
+                <el-input v-model="varForm.varName" />
+              </el-form-item>
+            </el-form>
+          </ProDrawer>
+        </div>
+        <el-input
+          v-model="varName"
+          placeholder="请输入内容"
+          :prefix-icon="Search"
+          style="margin-bottom: 10px"
+        />
+        <el-tree
+          :data="treeData"
+          show-checkbox
+          node-key="id"
+          ref="treeRef"
+          default-expand-all
+          @check="treeCheckChangeHandle"
+          :expand-on-click-node="false"
+          :filter-node-method="filterNode"
+          :default-checked-keys="defaultTreeCheckKeys"
+        >
+          <template #default="{ node, data }">
+            <div
+              class="custom-tree-node"
+              @mouseenter="enterTreeNode(data.id)"
+              @mouseleave="leaveTreeNode()"
+            >
+              <span>{{ node.label }}</span>
+              <span
+                @click="confirmDelVar(node, data)"
+                v-if="hoverNodeId === data.id && allowDelVar"
+                class="del-btn"
+                >删除</span
+              >
+            </div>
+          </template>
+        </el-tree>
+      </el-scrollbar>
     </div>
   </div>
 </template>

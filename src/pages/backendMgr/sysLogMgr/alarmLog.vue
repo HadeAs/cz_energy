@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:15:26
+ * @LastEditTime: 2023-12-27 11:34:01
  * @Description: 
 -->
 <template>
@@ -14,7 +14,7 @@
       @button-click="onSearch"
       authKey="systemlog_alarm_search"
     />
-    <MainContentContainer style="height: calc(100vh - 198px)">
+    <MainContentContainer>
       <ProTable
         :column="column"
         :pageInfo="pageInfo"

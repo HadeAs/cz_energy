@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-24 09:42:11
+ * @LastEditTime: 2023-12-27 11:26:24
  * @Description: 
 -->
 <template>
@@ -12,6 +12,7 @@
     :defaultTreeCheckKeys="[8, 9, 10, 11]"
     :treeData="CARBON_CATEGORY_DATA"
     @tree-check-change="initChart"
+    style="height: calc(100vh - 123px)"
   >
   </EchartTreeContainer>
 </template>

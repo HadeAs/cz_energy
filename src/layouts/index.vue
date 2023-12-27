@@ -9,22 +9,24 @@
           fit="fill"
         />
       </div>
-      <el-menu :default-active="defaultMenuKey">
-        <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
-          <template #title>
-            <el-icon>
-              <component :is="item.icon"></component>
-            </el-icon>
-            <span style="font-size: 16px">{{ item.name }}</span>
-          </template>
-          <el-menu-item
-            v-for="v in item.children"
-            :index="v.path"
-            @click="handleMenuClick(v)"
-            >{{ v.name }}</el-menu-item
-          >
-        </el-sub-menu>
-      </el-menu>
+      <el-scrollbar style="height: calc(100% - 95px)">
+        <el-menu :default-active="defaultMenuKey">
+          <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
+            <template #title>
+              <el-icon>
+                <component :is="item.icon"></component>
+              </el-icon>
+              <span style="font-size: 16px">{{ item.name }}</span>
+            </template>
+            <el-menu-item
+              v-for="v in item.children"
+              :index="v.path"
+              @click="handleMenuClick(v)"
+              >{{ v.name }}</el-menu-item
+            >
+          </el-sub-menu>
+        </el-menu>
+      </el-scrollbar>
     </el-aside>
     <el-container>
       <el-header class="header-content-container">
@@ -72,7 +74,9 @@
       </el-header>
 
       <el-main>
-        <router-view />
+        <el-scrollbar>
+          <router-view />
+        </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>

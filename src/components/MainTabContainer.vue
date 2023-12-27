@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 21:44:09
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-27 11:12:45
  * @Description: 
 -->
 <template>
@@ -13,11 +13,13 @@
         :label="item.label"
         :name="item.name"
       >
-        <component
-          class="tab-content-container"
-          v-if="activeName === item.name"
-          :is="item.component"
-        ></component>
+        <el-scrollbar style="height: calc(100vh - 123px)">
+          <component
+            class="tab-content-container"
+            v-if="activeName === item.name"
+            :is="item.component"
+          ></component>
+        </el-scrollbar>
       </el-tab-pane>
     </el-tabs>
     <slot name="extra"></slot>
@@ -34,7 +36,6 @@ const activeName = ref(props.defaultTab);
 .main-tab-container {
   position: relative;
   .tab-content-container {
-    height: calc(100vh - 123px);
     overflow: auto;
   }
   :deep() {
