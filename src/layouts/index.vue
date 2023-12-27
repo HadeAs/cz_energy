@@ -14,7 +14,7 @@
           <el-sub-menu v-for="item in MENU_DATA" :index="item.path">
             <template #title>
               <el-icon>
-                <component :is="item.icon"></component>
+                <img :width="16" :height="16" :src="item.icon" />
               </el-icon>
               <span style="font-size: 16px">{{ item.name }}</span>
             </template>

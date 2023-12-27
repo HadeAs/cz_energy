@@ -2,13 +2,14 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 16:52:42
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-19 20:03:53
+ * @LastEditTime: 2023-12-27 15:14:22
  * @Description:
  */
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
+import ViteSvgPlugin from "vite-plugin-svg";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
@@ -37,16 +38,19 @@ export default defineConfig({
     vue(),
     vueJsx(),
     AutoImport({
-      resolvers: [ElementPlusResolver({
-        importStyle: 'sass'
-      })],
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: "sass",
+        }),
+      ],
     }),
     Components({
       resolvers: [
         ElementPlusResolver({
-          importStyle: "sass"
+          importStyle: "sass",
         }),
       ],
-    })
+    }),
+    ViteSvgPlugin(),
   ],
 });

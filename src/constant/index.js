@@ -2,9 +2,14 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 16:15:46
+ * @LastEditTime: 2023-12-27 15:26:10
  * @Description:
  */
+import Device from "@/assets/svg/device.svg";
+import Backend from "@/assets/svg/backend.svg";
+import Operation from "@/assets/svg/operation.svg";
+import Statistics from "@/assets/svg/statistics.svg";
+
 export const SHOW_PROJ_CHANGE_PATH = [
   "/carbonData",
   "/costData",
@@ -16,7 +21,7 @@ export const MENU_DATA = [
   {
     name: "后台管理",
     path: "/backendMgr",
-    icon: "message",
+    icon: Backend,
     children: [
       {
         name: "项目管理",
@@ -47,7 +52,7 @@ export const MENU_DATA = [
   {
     name: "数据统计",
     path: "/statistics",
-    icon: "menu",
+    icon: Statistics,
     children: [
       {
         name: "能碳数据",
@@ -62,7 +67,7 @@ export const MENU_DATA = [
   {
     name: "设备管理",
     path: "/deviceMgr",
-    icon: "setting",
+    icon: Device,
     children: [
       {
         name: "设备台账",
@@ -89,7 +94,7 @@ export const MENU_DATA = [
   {
     name: "运维管理",
     path: "/operationMgr",
-    icon: "setting",
+    icon: Operation,
     children: [
       {
         name: "运行监测",
