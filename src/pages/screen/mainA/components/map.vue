@@ -1,21 +1,30 @@
 <template>
   <div class="cs-center-wrap1">
     <div class="cs-center-map" v-show="state.activeTab === 'GIS'">
-      <Echart id="map" :option="option" />
+      <Echart ref="chartRef" id="map" :option="option" @click="handleClick" />
     </div>
     <div class="cs-center-map" v-show="state.activeTab === 'BIM'">
-      <img src="@/assets/img/screen/mainA/bim.png">
+      <img src="@/assets/img/screen/mainA/bim.png" />
     </div>
     <ul class="cs-center-tab">
-      <li v-for="item in tabs" :key="item.value" :class="state.activeTab === item.value ? 'active' : ''"
-        @click="changeTab(item.value)">
-        <div class="cs-tab-icon"><img :src="item.url"></div>
+      <li
+        v-for="item in tabs"
+        :key="item.value"
+        :class="state.activeTab === item.value ? 'active' : ''"
+        @click="changeTab(item.value)"
+      >
+        <div class="cs-tab-icon"><img :src="item.url" /></div>
         <div class="cs-tab-text">{{ item.value }}</div>
       </li>
     </ul>
     <a href="javascript:void(0)" class="cs-link" @click="gotoB">进入B屏</a>
     <el-select id="select2" v-model="state.selectVal">
-      <el-option v-for="item in state.opts" :key="item.id" :label="item.text" :value="item.id" />
+      <el-option
+        v-for="item in state.opts"
+        :key="item.id"
+        :label="item.text"
+        :value="item.id"
+      />
     </el-select>
   </div>
 </template>
@@ -23,22 +32,22 @@
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import areaInfo from "@/constant/320000.json";
+import districtInfo from "@/constant/320400.json";
 import { registerMap } from "echarts/core";
 import Echart from "@/components/Echart.vue";
-import { MAP_OPT } from "./constant";
+import { MAP_OPT, MAP_OPT2 } from "./constant";
 import gis from "@/assets/img/screen/mainA/u2705.png";
 import bim from "@/assets/img/screen/mainA/u2710.png";
 
-const mapPointData = [{ value: ['119.63', '32.02'], name: '武家嘴办公楼' }];
 const tabs = [
   {
     value: "GIS",
-    url: gis
+    url: gis,
   },
   {
     value: "BIM",
-    url: bim
-  }
+    url: bim,
+  },
 ];
 const router = useRouter();
 const state = reactive({
@@ -47,38 +56,24 @@ const state = reactive({
   opts: [
     {
       id: 1,
-      text: '武家嘴大酒店',
+      text: "武家嘴大酒店",
     },
     {
       id: 2,
-      text: '徐州沛县中金商贸',
+      text: "徐州沛县中金商贸",
     },
     {
       id: 3,
-      text: '连云港白虎山小商品',
+      text: "连云港白虎山小商品",
     },
     {
       id: 4,
-      text: '葛洲坝融创南京紫郡',
+      text: "葛洲坝融创南京紫郡",
     },
   ],
-  mapData: [
-    { value: 4, name: '徐州市' },
-    { value: 6, name: '南京市' },
-    { value: 12, name: '泰州市' },
-    { value: 16, name: '镇江市' },
-    { value: 21, name: '连云港市' },
-    { value: 21, name: '扬州市' },
-    { value: 21, name: '常州市' },
-    { value: 21, name: '南通市' },
-    { value: 26, name: '苏州市' },
-    { value: 26, name: '淮安市' },
-    { value: 32, name: '宿迁市' },
-    { value: 32, name: '盐城市' },
-    { value: 32, name: '无锡市' },
-  ]
-})
+});
 
+const chartRef = ref();
 const option = ref({});
 
 const changeTab = (tab) => {
@@ -89,12 +84,19 @@ const changeTab = (tab) => {
 
 const gotoB = () => {
   router.push({ path: "/mainB" });
-}
+};
 
 onMounted(() => {
   registerMap("jsMap", areaInfo);
-  option.value = MAP_OPT(state.mapData, mapPointData)
+  option.value = MAP_OPT;
 });
+
+const handleClick = (param) => {
+  if (["武家嘴办公楼", "常州市"].includes(param.name)) {
+    registerMap("czMap", districtInfo);
+    option.value = MAP_OPT2;
+  }
+};
 </script>
 <style lang="scss" scoped>
 .cs-center-wrap1 {
@@ -120,19 +122,19 @@ onMounted(() => {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        border: 2px solid #0059A2;
+        border: 2px solid #0059a2;
         // font-size: 22px;
         color: rgba(38, 239, 249, 0.5);
         line-height: 44px;
       }
 
       .cs-tab-text {
-        color: #A9C5E7;
+        color: #a9c5e7;
       }
 
       &.active .cs-tab-icon {
-        border-color: #008AFF;
-        color: #26EFF9;
+        border-color: #008aff;
+        color: #26eff9;
       }
 
       &.active .cs-tab-text {
@@ -156,7 +158,6 @@ onMounted(() => {
   }
 
   :deep() {
-
     .el-select {
       position: absolute;
       right: 0;
@@ -179,7 +180,6 @@ onMounted(() => {
     .el-input .el-select__caret {
       color: rgba(110, 215, 254, 0.4) !important;
     }
-
   }
 
   .cs-center-map:first-child {
@@ -204,4 +204,5 @@ onMounted(() => {
     width: 100%;
     height: 100%;
   }
-}</style>
+}
+</style>

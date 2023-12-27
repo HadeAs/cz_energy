@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-23 20:00:50
+ * @LastEditTime: 2023-12-27 16:08:05
  * @Description: 
 -->
 <template>
@@ -10,14 +10,20 @@
     <div class="cs-main-header">
       <span class="cs-header-info"></span>
       <div class="cs-left-header">
-        <span class="cs-left-text1"><img src="@/assets/img/screen/u196.png" />{{ state.city }}</span>
-        <span class="cs-left-text2"><img src="@/assets/img/screen/weather1.png" />{{
-          state.degree
-        }}℃</span>
+        <span class="cs-left-text1"
+          ><img src="@/assets/img/screen/u196.png" />{{ state.city }}</span
+        >
+        <span class="cs-left-text2"
+          ><img src="@/assets/img/screen/weather1.png" />{{
+            state.degree
+          }}℃</span
+        >
       </div>
       <div class="cs-right-header">
         <IntervalTime />
-        <span class="cs-right-text2"><img src="@/assets/img/screen/u1684.png" />{{ state.role }}</span>
+        <span class="cs-right-text2"
+          ><img src="@/assets/img/screen/u1684.png" />{{ state.role }}</span
+        >
         <span class="cs-quit"><img src="@/assets/img/screen/u2156.png" /></span>
       </div>
     </div>
@@ -41,26 +47,34 @@ const state = reactive({
 });
 
 // useResizeObserver(pageContainer, () => {
-//   var ratioX = window.innerWidth / 1920;
+//   const ratioX = window.innerWidth / 1920;
 //   scaleX.value = ratioX;
 //   scaleY.value = ratioX;
 // })
 const getRate = () => {
-  var ratioX = window.innerWidth / 1920;
+  const ratioX = window.innerWidth / 1920;
+  // const ratioY = window.innerHeight / 1080;
   scaleX.value = ratioX;
   scaleY.value = ratioX;
-}
+};
 window.onresize = () => {
   getRate();
-}
+};
 onMounted(() => {
-  getRate()
-})
+  getRate();
+});
 </script>
 <style lang="scss">
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: auto !important;
+}
 body {
   margin: 0;
-  font-family: Arial, "Microsoft YaHei", "微软雅黑", "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-family: Arial, "Microsoft YaHei", "微软雅黑", "Helvetica Neue", Helvetica,
+    "PingFang SC", "Hiragino Sans GB", sans-serif;
   font-size: 14px;
   line-height: 1.618;
   color: #6ed7fe;
@@ -97,6 +111,8 @@ ul {
 
 .pull-right {
   float: right;
+  display: flex;
+  align-items: center;
 }
 
 .margin-left-large-4 {
@@ -110,22 +126,30 @@ ul {
 .el-button.btn {
   color: #b4feff;
   background-color: transparent;
-  background-image: linear-gradient(to bottom, rgba(0, 249, 255, .6) 0, rgba(0, 249, 255, .2) 100%);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0, 249, 255, 0.6) 0,
+    rgba(0, 249, 255, 0.2) 100%
+  );
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#9900F9FF', endColorstr='#3300F9FF', GradientType=0);
   border-color: #00f9ff;
-  box-shadow: 0 0 10px rgba(0, 249, 255, .6) inset;
+  box-shadow: 0 0 10px rgba(0, 249, 255, 0.6) inset;
   padding: 2px 8px;
   line-height: 1.5;
   border-radius: 3px;
   &:hover {
     background-color: transparent;
-    background-image: linear-gradient(to bottom,rgba(0,249,255,.8) 0,rgba(0,249,255,.4) 100%);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 249, 255, 0.8) 0,
+      rgba(0, 249, 255, 0.4) 100%
+    );
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#CC00F9FF', endColorstr='#6600F9FF', GradientType=0);
     border-color: #00f9ff;
     color: #b4feff;
-    box-shadow: 0 0 10px rgba(0,249,255,.6) inset;
+    box-shadow: 0 0 10px rgba(0, 249, 255, 0.6) inset;
   }
 }
 
@@ -143,7 +167,7 @@ ul {
     font-size: 16px;
     position: relative;
 
-    >img {
+    > img {
       margin-right: 12px;
     }
 
@@ -153,7 +177,7 @@ ul {
       padding: 0;
       margin-bottom: 0;
       font-weight: normal;
-      height: 32px;
+      height: 26px;
       margin: 0;
 
       li {
@@ -184,14 +208,15 @@ ul {
 
     .cs-btn-group {
       font-size: 14px;
-      line-height: 30px;
+      line-height: 26px;
 
       li {
         padding: 0 16px;
         text-align: center;
         border: 1px solid #426981;
-        color: #6ED7FE;
+        color: #6ed7fe;
         cursor: pointer;
+        margin-right: 3px;
 
         &:first-child {
           border-radius: 3px 0 0 3px;
@@ -214,7 +239,7 @@ ul {
         }
       }
 
-      li+li {
+      li + li {
         margin-left: -5px;
       }
     }
@@ -240,7 +265,6 @@ ul {
       .select2-selection__arrow b {
         top: 3px !important;
       }
-
     }
   }
 }
@@ -260,7 +284,7 @@ ul {
 }
 
 .cs-sub-header .cs-sub-header-text::before {
-  content: '';
+  content: "";
   display: inline-block;
   width: 3px;
   height: 16px;

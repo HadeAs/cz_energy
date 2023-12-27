@@ -237,86 +237,286 @@ export const LINE_OPT = {
   color: ['#459bda'],
 }
 
-export const MAP_OPT = (mapPointData, mapData) => {
-  return {
-    geo: {
-      map: 'jsMap',
-      show: true,
-      roam: false,
-      aspectScale: 1, //长宽比
-      layoutCenter: ['48%', '55%'],
-      layoutSize: '100%',
+export const mapPointData = [{ value: ["119.63", "32.02"], name: "武家嘴办公楼" }];
+export const mapData = [
+  { value: 4, name: "徐州市" },
+  { value: 6, name: "南京市" },
+  { value: 12, name: "泰州市" },
+  { value: 16, name: "镇江市" },
+  { value: 21, name: "连云港市" },
+  { value: 21, name: "扬州市" },
+  { value: 21, name: "常州市" },
+  { value: 21, name: "南通市" },
+  { value: 26, name: "苏州市" },
+  { value: 26, name: "淮安市" },
+  { value: 32, name: "宿迁市" },
+  { value: 32, name: "盐城市" },
+  { value: 32, name: "无锡市" },
+]
+
+export const MAP_OPT = {
+  geo: {
+    map: 'jsMap',
+    show: true,
+    roam: false,
+    aspectScale: 1, //长宽比
+    layoutCenter: ['48%', '55%'],
+    layoutSize: '100%',
+    itemStyle: {
+      areaColor: '#1f4366',
+      borderColor: '#1f4366',
+      borderWidth: 0,
+      opacity: 0.8,
+      shadowColor: '#1f4366',
+      shadowBlur: 10,
+    },
+    emphasis: {
       itemStyle: {
         areaColor: '#1f4366',
-        borderColor: '#1f4366',
+      }
+    }
+  },
+  tooltip: {
+    show: false,
+  },
+  series: [
+    {
+      type: 'map',
+      map: 'jsMap',
+      geoIndex: 1,
+      aspectScale: 1, //长宽比
+      layoutCenter: ['50%', '53%'],
+      layoutSize: '100%',
+      showLegendSymbol: false, // 存在legend时显示
+      tooltip: {
+        show: false,
+      },
+      label: {
+        show: true,
+        color: '#fff',
+      },
+      emphasis: {
+        label: {
+          show: false,
+        },
+        itemStyle: {
+          areaColor: '#112e40',
+        }
+      },
+      roam: false,
+      itemStyle: {
+        areaColor: '#1C4E8B',
+        borderColor: '#02d4fb',
+        borderWidth: 2,
+        shadowColor: '#50f1ff',
+        shadowBlur: 6,
+      },
+      markPoint: {
+        symbol: 'circle',
+        symbolSize: 100,
+        // symbolOffset: [18, 20],
+        itemStyle: {
+          color: '#00FFF6',
+          shadowColor: '#00FFF6',
+          shadowBlur: 10,
+        },
+      },
+      data: mapData,
+    },
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      tooltip: {
+        show: false,
+      },
+      label: {
+        show: true,
+        formatter: function (params) {
+          const name = params.name
+          return name
+        },
+        position: 'insideTopLeft',
+        color: '#fff',
+        fontWeight: '800',
+        fontSize: 14,
+        lineHeight: 20,
+        offset: [0, 12]
+      },
+      emphasis: {
+        label: {
+          show: true,
+        }
+      },
+      itemStyle: {
+        color: '#00FFF6',
+      },
+      symbol: "image://src/assets/img/screen/mainA/u59.png",
+      symbolSize: [100, 80],
+      symbolOffset: [20, 0],
+      z: 999,
+      data: mapPointData,
+    },
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      tooltip: {
+        show: false,
+      },
+      label: {
+        show: false,
+      },
+      emphasis: {
+        label: {
+          show: false,
+        },
+        itemStyle: {
+          color: '#FFCC00',
+          shadowColor: '#FFCC00',
+          shadowBlur: 15,
+        }
+      },
+      itemStyle: {
+        color: '#00FFF6',
+        shadowColor: '#00FFF6',
+        shadowBlur: 10,
+      },
+      symbol: 'circle',
+      symbolSize: 10,
+      symbolOffset: [18, 20],
+      z: 1000,
+      data: mapPointData,
+    },
+  ],
+  visualMap: {
+    type: 'piecewise',
+    show: false,
+    realtime: false,
+    calculable: true,
+    inRange: {
+      color: [
+        '#87cae7',
+        '#519ed3',
+        '#87cae7',
+        '#4179b1',
+        '#1f6dc4',
+        '#1f4366',
+      ],
+    },
+    splitList: [
+      { start: 1, end: 10 },
+      { start: 11, end: 15 },
+      { start: 16, end: 20 },
+      { start: 21, end: 25 },
+      { start: 26, end: 30 },
+      { start: 31, end: 40 },
+    ],
+    outOfRange: {
+      color: ['#0470DD'],
+    },
+  },
+}
+
+export const mapPointData2 = [
+  { value: ['119.33', '31.43'], name: '溧阳市', num: 14 },
+  { value: ['119.43', '31.77'], name: '金坛市', num: 25 },
+  { value: ['119.92', '31.70'], name: '武进区', num: 35 },
+  { value: ['119.86', '31.97'], name: '新北区', num: 26 },
+  { value: ['119.86', '31.88'], name: '钟楼区', num: 4 },
+  { value: ['119.95', '31.86'], name: '天宁区', num: 6 },
+  { value: ['120.02', '31.83'], name: '戚墅堰区', num: 8 },
+]
+
+export const mapData2 = [
+  { value: 14, name: '溧阳市' },
+  { value: 25, name: '金坛市' },
+  { value: 35, name: '武进区' },
+  { value: 26, name: '新北区' },
+  { value: 4, name: '钟楼区' },
+  { value: 6, name: '天宁区' },
+  { value: 8, name: '戚墅堰区' },
+];
+
+export const MAP_OPT2 = {
+  geo: {
+    map: 'czMap',
+    show: true,
+    roam: false,
+    aspectScale: 1, //长宽比
+    layoutCenter: ['47%', '53%'],
+    layoutSize: '100%',
+    itemStyle: {
+      normal: {
+        areaColor: '#1f4366',
+        borderColor: '#2ADAFA',
         borderWidth: 0,
         opacity: 0.8,
         shadowColor: '#1f4366',
         shadowBlur: 10,
       },
       emphasis: {
-        itemStyle: {
-          areaColor: '#1f4366',
-        }
-      }
+        areaColor: '#1f4366',
+      },
     },
-    tooltip: {
-      show: false,
-    },
-    series: [
-      {
-        type: 'map',
-        map: 'jsMap',
-        geoIndex: 1,
-        aspectScale: 1, //长宽比
-        layoutCenter: ['50%', '53%'],
-        layoutSize: '100%',
-        showLegendSymbol: false, // 存在legend时显示
-        tooltip: {
+  },
+  tooltip: {
+    show: false,
+  },
+  series: [
+    {
+      type: 'map',
+      map: 'czMap',
+      geoIndex: 1,
+      aspectScale: 1, //长宽比
+      layoutCenter: ['50%', '50%'],
+      layoutSize: '100%',
+      showLegendSymbol: false, // 存在legend时显示
+      tooltip: {
+        show: false,
+      },
+      label: {
+        normal: {
           show: false,
         },
-        label: {
-          show: true,
-          color: '#fff',
-        },
         emphasis: {
-          label: {
-            show: false,
-          },
-          itemStyle: {
-            areaColor: '#112e40',
-          }
+          show: false,
         },
-        roam: false,
-        itemStyle: {
+      },
+      roam: false,
+      itemStyle: {
+        normal: {
           areaColor: '#1C4E8B',
           borderColor: '#02d4fb',
-          borderWidth: 2,
-          shadowColor: '#50f1ff',
-          shadowBlur: 6,
+          borderWidth: 3,
         },
-        markPoint: {
-          symbol: 'circle',
-          symbolSize: 100,
-          // symbolOffset: [18, 20],
-          itemStyle: {
+        emphasis: {
+          areaColor: '#4179b1',
+        },
+      },
+      markPoint: {
+        symbol: 'circle',
+        symbolSize: 100,
+        // symbolOffset: [18, 20],
+        itemStyle: {
+          normal: {
             color: '#00FFF6',
             shadowColor: '#00FFF6',
             shadowBlur: 10,
           },
         },
-        data: mapData,
       },
-      {
-        type: 'scatter',
-        coordinateSystem: 'geo',
-        tooltip: {
-          show: false,
-        },
-        label: {
+      data: mapData2,
+    },
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      tooltip: {
+        show: false,
+      },
+      label: {
+        normal: {
           show: true,
           formatter: function (params) {
-            const name = params.name
+            var name = params.name + '(' + params.data.num + ')'
             return name
           },
           position: 'insideTopLeft',
@@ -326,93 +526,69 @@ export const MAP_OPT = (mapPointData, mapData) => {
           lineHeight: 20,
         },
         emphasis: {
-          label: {
-            show: true,
-          }
+          show: true,
         },
-        itemStyle: {
-          color: '#00FFF6',
-        },
-        symbol: 'image://../../images/u59.png',
-        symbolSize: [100, 50],
-        symbolOffset: [20, 0],
-        z: 999,
-        data: mapPointData,
       },
-      {
-        type: 'scatter',
-        coordinateSystem: 'geo',
-        tooltip: {
-          show: false,
-        },
-        label: {
+      symbol: "image://src/assets/img/screen/mainA/u59.png",
+      symbolSize: [80, 48],
+      symbolOffset: [20, 0],
+      z: 999,
+      data: mapPointData2,
+    },
+    {
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      tooltip: {
+        show: false,
+      },
+      label: {
+        normal: {
           show: false,
         },
         emphasis: {
-          label: {
-            show: false,
-          },
-          itemStyle: {
-            color: '#FFCC00',
-            shadowColor: '#FFCC00',
-            shadowBlur: 15,
-          }
+          show: false,
         },
-        itemStyle: {
-          color: '#00FFF6',
-          shadowColor: '#00FFF6',
+      },
+      itemStyle: {
+        normal: {
+          color: '#bafffb',
+          shadowColor: '#bafffb',
           shadowBlur: 10,
         },
-        symbol: 'circle',
-        symbolSize: 10,
-        symbolOffset: [18, 20],
-        z: 1000,
-        data: mapPointData,
+        emphasis: {
+          color: '#FFCC00',
+          shadowColor: '#FFCC00',
+          shadowBlur: 15,
+        },
       },
-    ],
-    visualMap: {
-      type: 'piecewise',
-      show: false,
-      realtime: false,
-      calculable: true,
-      inRange: {
-        color: [
-          '#87cae7',
-          '#519ed3',
-          '#87cae7',
-          '#4179b1',
-          '#1f6dc4',
-          '#1f4366',
-        ],
-      },
-      splitList: [
-        { start: 1, end: 10 },
-        { start: 11, end: 15 },
-        { start: 16, end: 20 },
-        { start: 21, end: 25 },
-        { start: 26, end: 30 },
-        { start: 31, end: 40 },
-      ],
-      outOfRange: {
-        color: ['#0470DD'],
-      },
+      symbol: 'circle',
+      symbolSize: 10,
+      symbolOffset: [18, 20],
+      z: 1000,
+      data: mapPointData2,
     },
-  }
+  ],
+  visualMap: {
+    type: 'piecewise',
+    show: false,
+    realtime: false,
+    calculable: true,
+    inRange: {
+      color: ['#35a2ee', '#0470dd', '#1c6bba', '#1c4e8b'],
+    },
+    splitList: [
+      { start: 1, end: 10 },
+      { start: 11, end: 20 },
+      { start: 21, end: 30 },
+      { start: 31, end: 40 },
+    ],
+    outOfRange: {
+      color: ['#0470DD'],
+    },
+  },
 }
 
 export const COLUM_OPT = (imageDom1, imageDom2, imageDom3, imageDom4, imageDom5, imageDom6) => {
-  // const imageDom1 = new Image()
-  // imageDom1.src = '@/assets/img/screen/mainA/bar1.png'
-  // const imageDom2 = new Image()
-  // imageDom2.src = '@/assets/img/screen/mainA/bar2.png'
-  // const imageDom3 = new Image()
-  // imageDom3.src = '@/assets/img/screen/mainA/bar3.png'
-  // const imageDom4 = new Image()
-  // imageDom4.src = '@/assets/img/screen/mainA/bar4.png'
-  // const imageDom5 = new Image()
-  // imageDom5.src = '@/assets/img/screen/mainA/bar5.png'
-  // const imageDom6 = new Image()
-  // imageDom6.src = '@/assets/img/screen/mainA/bar6.png'
   return {
     tooltip: {
       show: false,
