@@ -85,3 +85,10 @@ body {
     padding: 4px 11px;
   }
 }
+.el-message {
+  padding: 10px !important;
+  width: 105px !important;
+  .el-message__content {
+    color: #5A5E66 !important;
+  }
+}
