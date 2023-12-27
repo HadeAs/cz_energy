@@ -2,12 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-24 20:16:45
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 19:42:43
+ * @LastEditTime: 2023-12-27 19:46:57
  * @Description: 
 -->
 <template>
   <el-form
     ref="formRef"
+    :rules="rules"
     label-position="left"
     :model="state.detailForm"
     label-width="180px"
@@ -40,7 +41,19 @@ const props = defineProps({
     type: Object,
   },
 });
-
+const rules = {
+  varType: { required: true, message: "请选择变量类型", trigger: "change" },
+  classOneName: {
+    required: true,
+    message: "请输入一级变量名称",
+    trigger: "blur",
+  },
+  classTwoName: {
+    required: true,
+    message: "请输入二级变量名称",
+    trigger: "blur",
+  },
+};
 defineExpose({
   validate: () => {
     return formRef.value

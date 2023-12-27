@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 11:35:14
+ * @LastEditTime: 2023-12-27 19:14:38
  * @Description: 
 -->
 <template>
@@ -78,10 +78,12 @@ const column = [
   {
     prop: "loginTime",
     label: "登录时间",
+    sortable: true,
   },
   {
     prop: "logoutTime",
     label: "退出时间",
+    sortable: true,
   },
 ];
 

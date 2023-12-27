@@ -2,12 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-24 20:16:45
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 16:00:17
+ * @LastEditTime: 2023-12-27 19:33:21
  * @Description: 
 -->
 <template>
   <el-form
     ref="formRef"
+    :rules="rules"
     label-position="left"
     :model="state.detailForm"
     label-width="180px"
@@ -110,6 +111,50 @@ const init = {
   tempSetTag: "",
   startStopTag: "",
   switchTag: "",
+};
+const rules = {
+  projectName: { required: true, message: "请输入项目名称", trigger: "blur" },
+  district: { required: true, message: "请输入所在地区", trigger: "blur" },
+  area: { required: true, message: "请输入建筑面积", trigger: "blur" },
+  buildType: { required: true, message: "请选择建筑分类", trigger: "change" },
+  system: { required: true, message: "请选择运行系统", trigger: "change" },
+  startTime: {
+    type: "date",
+    required: true,
+    message: "请选择起始时间",
+    trigger: "change",
+  },
+  maxColdLoad: {
+    required: true,
+    message: "请输入项目最大冷负荷",
+    trigger: "blur",
+  },
+  maxHotLoad: {
+    required: true,
+    message: "请输入项目最大热负荷",
+    trigger: "blur",
+  },
+  mode: { required: true, message: "请选择项目模式", trigger: "change" },
+  mqtt: { required: true, message: "请输入Mqtt  Topic", trigger: "blur" },
+  tempSetTag: {
+    required: true,
+    message: "请输入出水温度设定标识符",
+    trigger: "blur",
+  },
+  startStopTag: {
+    required: true,
+    message: "请输入一键启停标识符",
+    trigger: "blur",
+  },
+  switchTag: {
+    required: true,
+    message: "请输入冬夏切换标识符",
+    trigger: "blur",
+  },
+  desc: [
+    { required: true, message: "请输入项目介绍", trigger: "blur" },
+    { min: 5, message: "请输入至少5个字符", trigger: "blur" },
+  ],
 };
 const props = defineProps({
   initData: {

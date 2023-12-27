@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:06:02
+ * @LastEditTime: 2023-12-27 19:13:03
  * @Description: 
 -->
 <template>
@@ -220,11 +220,13 @@ const column = [
     prop: "createTime",
     label: "创建时间",
     width: 200,
+    sortable: true,
   },
   {
     prop: "updateTime",
     label: "更新时间",
     width: 200,
+    sortable: true,
   },
   {
     prop: "remark",

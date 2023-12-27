@@ -2,12 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-24 20:16:45
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-25 17:04:49
+ * @LastEditTime: 2023-12-27 19:49:45
  * @Description: 
 -->
 <template>
   <el-form
     ref="formRef"
+    :rules="rules"
     label-position="left"
     :model="state.detailForm"
     label-width="180px"
@@ -52,7 +53,20 @@ const props = defineProps({
     type: Object,
   },
 });
-
+const rules = {
+  gatewayId: { required: true, message: "请输入网关ID", trigger: "blur" },
+  gatewayName: { required: true, message: "请输入网关名称", trigger: "blur" },
+  gatewayVersion: {
+    required: true,
+    message: "请输入网关版本",
+    trigger: "blur",
+  },
+  interface: { required: true, message: "请输入通讯接口", trigger: "blur" },
+  remark: [
+    { required: true, message: "请输入备注信息", trigger: "blur" },
+    { min: 5, message: "请输入至少5个字符", trigger: "blur" },
+  ],
+};
 defineExpose({
   validate: () => {
     return formRef.value

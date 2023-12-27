@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 11:34:11
+ * @LastEditTime: 2023-12-27 19:15:02
  * @Description: 
 -->
 <template>
@@ -78,6 +78,7 @@ const column = [
   {
     prop: "operTime",
     label: "操作时间",
+    sortable: true,
   },
   {
     prop: "operContent",

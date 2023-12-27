@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:02:44
+ * @LastEditTime: 2023-12-27 19:13:57
  * @Description: 
 -->
 <template>
@@ -231,6 +231,7 @@ const column = [
   {
     prop: "startTime",
     label: "项目起始时间",
+    sortable: true,
   },
 ];
 

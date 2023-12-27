@@ -2,12 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-24 20:16:45
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 11:34:05
+ * @LastEditTime: 2023-12-27 19:42:57
  * @Description: 
 -->
 <template>
   <el-form
     ref="formRef"
+    :rules="rules"
     label-position="left"
     :model="state.detailForm"
     label-width="180px"
@@ -41,7 +42,14 @@ const props = defineProps({
     type: Object,
   },
 });
-
+const rules = {
+  roleName: { required: true, message: "请输入角色名称", trigger: "blur" },
+  roleKey: { required: true, message: "请输入角色key", trigger: "blur" },
+  remark: [
+    { required: true, message: "请输入备注信息", trigger: "blur" },
+    { min: 5, message: "请输入至少5个字符", trigger: "blur" },
+  ],
+};
 defineExpose({
   validate: () => {
     return formRef.value
