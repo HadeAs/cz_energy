@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 22:01:27
+ * @LastEditTime: 2023-12-27 13:45:04
  * @Description: 
 -->
 <template>
@@ -12,7 +12,7 @@
       buttonContent="导出"
       :form-info="searchFormCfg"
       @button-click="onSearch"
-      authKey=""
+      authKey="monitor_electric_export"
     />
     <EchartTreeContainer
       ref="echartTreeRef"

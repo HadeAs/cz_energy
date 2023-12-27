@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 22:02:57
+ * @LastEditTime: 2023-12-27 13:45:30
  * @Description: 
 -->
 
@@ -13,7 +13,7 @@
       buttonContent="导出"
       :form-info="searchFormCfg"
       @button-click="onSearch"
-      authKey=""
+      authKey="monitor_water_export"
     />
     <EchartTreeContainer
       ref="echartTreeRef"

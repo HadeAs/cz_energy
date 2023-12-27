@@ -2,12 +2,12 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 15:59:51
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 16:22:35
+ * @LastEditTime: 2023-12-27 13:55:42
  * @Description: 
 -->
 <template>
   <BoxContainer class="attach-container" title="附件">
-    <ProUpload :fileList="state.fileList">
+    <ProUpload :fileList="state.fileList" authKey="maintain_device_upload">
       <template #tip>
         <div class="el-upload__tip tip">支持文件类型：.rar .zip .doc .pdf</div>
       </template>

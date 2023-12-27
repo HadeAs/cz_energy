@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 15:26:10
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-27 16:22:56
  * @Description:
  */
 import Device from "@/assets/svg/device.svg";
@@ -644,6 +644,11 @@ export const AUTH_POINT_CONFIG = [
         type: "page",
         children: [
           {
+            key: "group_recycle",
+            label: "设备组管理_回收站",
+            type: "component",
+          },
+          {
             key: "group_index_add",
             label: "设备组管理_新增",
             type: "component",
@@ -671,11 +676,6 @@ export const AUTH_POINT_CONFIG = [
           {
             key: "group_work_batch_export",
             label: "设备运行_批量导出",
-            type: "component",
-          },
-          {
-            key: "group_work_recycle",
-            label: "设备运行_回收站",
             type: "component",
           },
           {
@@ -767,6 +767,11 @@ export const AUTH_POINT_CONFIG = [
           {
             key: "maintain_device_add",
             label: "单个设备_添加保养计划",
+            type: "component",
+          },
+          {
+            key: "maintain_device_edit",
+            label: "单个设备_编辑5年保养计划",
             type: "component",
           },
           {

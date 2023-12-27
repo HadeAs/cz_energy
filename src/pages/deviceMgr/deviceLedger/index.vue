@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 14:53:15
+ * @LastEditTime: 2023-12-27 13:58:33
  * @Description: 
 -->
 <template>
@@ -17,8 +17,12 @@
       <template #toolbar>
         <el-row align="middle" :gutter="5">
           <el-col :span="6">
-            <el-button type="primary" @click="addRow">新增</el-button>
-            <el-button @click="imports">批量导入</el-button>
+            <el-button type="primary" v-auth="'ledger_add'" @click="addRow"
+              >新增</el-button
+            >
+            <el-button @click="imports" v-auth="'ledger_batch_import'"
+              >批量导入</el-button
+            >
           </el-col>
           <el-col :span="18">
             <el-form
@@ -58,14 +62,19 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" @click="editRow(scope.row)">编辑</a>
+        <a
+          class="table-operator-btn"
+          @click="editRow(scope.row)"
+          v-auth="'ledger_edit'"
+          >编辑</a
+        >
         <ProPopConfirm
           title="你确定要删除该配置吗?"
           :icon="CircleCloseFilled"
           iconColor="red"
           @confirm="deleteRow(scope.row)"
         >
-          <a class="table-operator-btn">删除</a>
+          <a class="table-operator-btn" v-auth="'ledger_delete'">删除</a>
         </ProPopConfirm>
       </template>
     </ProTable>

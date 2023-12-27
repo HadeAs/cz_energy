@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 22:05:28
+ * @LastEditTime: 2023-12-27 13:46:36
  * @Description: 
 -->
 <template>
@@ -12,7 +12,7 @@
       buttonContent="搜索"
       :form-info="searchFormCfg"
       @button-click="onSearch"
-      authKey=""
+      authKey="monitor_exception_search"
     />
     <MainContentContainer>
       <ProTable
@@ -26,6 +26,7 @@
           <a
             class="table-operator-btn"
             v-if="!scope.row.time2"
+            v-auth="'monitor_exception_deal'"
             @click="handle(scope.row)"
             >立即处理</a
           >

@@ -2,13 +2,18 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:56:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 16:24:00
+ * @LastEditTime: 2023-12-27 13:55:09
  * @Description: 
 -->
 <template>
   <BoxContainer title="五年保养计划">
     <template #extra>
-      <el-button type="primary" @click="handleEdit">编辑</el-button>
+      <el-button
+        type="primary"
+        @click="handleEdit"
+        v-auth="'maintain_device_edit'"
+        >编辑</el-button
+      >
     </template>
     <div class="cs-text-wrap">{{ state.desc }}</div>
     <ProDrawer title="编辑保养计划" ref="drawerRef" @confirm="confirmAddVar">

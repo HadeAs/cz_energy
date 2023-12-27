@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 19:13:50
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 19:07:48
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-26 22:17:41
  * @Description:
  */
 const BasicRouter = [
@@ -27,6 +27,14 @@ const BasicRouter = [
     component: () =>
       import(
         /* webpackChunkName: "equipmentDetail" */ "@/pages/operationMgr/deviceMaintain/components/equipmentDetail/index.vue"
+      ),
+  },
+  {
+    path: "/recycleBin",
+    name: "recycleBin",
+    component: () =>
+      import(
+        /* webpackChunkName: "recycleBin" */ "@/pages/deviceMgr/deviceGroupMgr/components/recycleBin/index.vue"
       ),
   },
 ];

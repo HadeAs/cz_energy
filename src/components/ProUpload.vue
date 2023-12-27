@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 14:07:09
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 14:51:06
+ * @LastEditTime: 2023-12-27 13:56:19
  * @Description: 
 -->
 <template>
@@ -23,7 +23,9 @@
       v-bind="$attrs"
     >
       <slot name="default">
-        <el-button type="primary" :icon="Upload">上传文件</el-button>
+        <el-button v-auth="authKey" type="primary" :icon="Upload"
+          >上传文件</el-button
+        >
       </slot>
       <slot name="tip"></slot>
     </el-upload>
@@ -81,11 +83,12 @@
   </span>
 </template>
 <script setup name="ProUpload">
-import { reactive, ref, watch } from "vue";
+import { reactive, watch } from "vue";
 import { Delete, Plus, ZoomIn, Upload } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 const props = defineProps({
+  authKey: { type: String, default: "" },
   listType: { type: String, default: "text" },
   fileList: { type: Array, default: [] },
   accepts: { type: Array, default: [] },

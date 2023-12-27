@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 18:14:16
+ * @LastEditTime: 2023-12-27 14:00:04
  * @Description: 
 -->
 <template>
@@ -11,6 +11,7 @@
       class="search"
       buttonContent="搜索"
       :form-info="searchFormCfg"
+      authKey="alarm_actual_search"
       @button-click="onSearch"
     />
     <MainContentContainer>
@@ -26,10 +27,16 @@
         <template #toolbar>
           <el-row align="middle" :gutter="5">
             <el-col :span="6">
-              <el-button type="primary" @click="addRow">新增</el-button>
+              <el-button
+                type="primary"
+                @click="addRow"
+                v-auth="'alarm_actual_add'"
+                >新增</el-button
+              >
               <el-button
                 :disabled="!state.selectRows.length"
                 @click="batchExport"
+                v-auth="'alarm_actual_batch_export'"
                 >批量导出</el-button
               >
             </el-col>
@@ -68,6 +75,7 @@
             class="table-operator-btn"
             :class="scope.row.status === 1 ? '' : 'disabled'"
             @click="handleRow(scope.row)"
+            v-auth="'alarm_actual_deal'"
             >{{ scope.row.status === 1 ? "立即处理" : "已处理成功" }}</a
           >
         </template>

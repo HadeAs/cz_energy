@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 12:15:59
+ * @LastEditTime: 2023-12-27 13:47:53
  * @Description: 
 -->
 <template>
@@ -45,8 +45,18 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" @click="viewDetail(scope.row)">详情</a>
-        <span class="table-operator-btn" @click="editRow(scope.row)">编辑</span>
+        <a
+          class="table-operator-btn"
+          v-auth="'maintain_detail'"
+          @click="viewDetail(scope.row)"
+          >详情</a
+        >
+        <span
+          class="table-operator-btn"
+          v-auth="'maintain_edit'"
+          @click="editRow(scope.row)"
+          >编辑</span
+        >
       </template>
     </ProTable>
     <ProDrawer title="编辑" ref="drawerRef" @confirm="confirmAddVar">

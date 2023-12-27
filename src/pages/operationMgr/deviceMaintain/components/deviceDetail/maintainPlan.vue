@@ -2,13 +2,18 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:10:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 16:24:05
+ * @LastEditTime: 2023-12-27 13:54:04
  * @Description: 
 -->
 <template>
   <BoxContainer title="保养计划">
     <template #extra>
-      <el-button type="primary" @click="handleAdd">添加</el-button>
+      <el-button
+        type="primary"
+        v-auth="'maintain_device_add'"
+        @click="handleAdd"
+        >添加</el-button
+      >
     </template>
     <el-descriptions
       class="maintain-plan-container"

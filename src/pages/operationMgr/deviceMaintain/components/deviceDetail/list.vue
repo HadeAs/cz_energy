@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 16:39:57
+ * @LastEditTime: 2023-12-27 13:53:33
  * @Description: 
 -->
 <template>
@@ -14,10 +14,16 @@
       @page-change="pageChange"
     >
       <template #operation="scope">
-        <a class="table-operator-btn" @click="viewDetail(scope.row)">详情</a>
+        <a
+          class="table-operator-btn"
+          v-auth="'maintain_device_detail'"
+          @click="viewDetail(scope.row)"
+          >详情</a
+        >
         <span
           class="table-operator-btn"
           :class="scope.row.status === 1 ? '' : 'disabled'"
+          v-auth="'maintain_device_maintenance'"
           @click="editRow(scope.row)"
           >设备保养</span
         >
