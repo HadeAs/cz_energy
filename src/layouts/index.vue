@@ -64,7 +64,7 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item>退出</el-dropdown-item>
+                    <el-dropdown-item @click="logout">退出</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -111,6 +111,10 @@ const handleMenuClick = (item) => {
 
 const gotoScreen = () => {
   router.push({ path: "/mainA" });
+};
+
+const logout = () => {
+  router.push({ path: "/login" });
 };
 </script>
 

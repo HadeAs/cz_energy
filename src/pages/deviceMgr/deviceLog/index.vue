@@ -6,7 +6,7 @@
       :form-info="searchFormCfg"
       @button-click="onSearch"
     />
-    <MainContentContainer>
+    <MainContentContainer style="height: calc(100vh - 145px)">
       <ProTable
         multiple
         :column="column"
