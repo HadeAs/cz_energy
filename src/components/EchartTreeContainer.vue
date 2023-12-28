@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 11:15:04
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-28 13:15:17
  * @Description: 
 -->
 <template>
@@ -281,6 +281,7 @@ onMounted(() => {
   border-radius: 5px;
   // margin-bottom: 10px;
   display: flex;
+  flex-direction: row !important;
   .left-title {
     display: flex;
     justify-content: space-between;

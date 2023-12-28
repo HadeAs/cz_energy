@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 14:06:08
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-23 20:08:06
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-28 12:51:04
  * @Description: 
 -->
 <template>
@@ -14,6 +14,7 @@
 .main-content-container {
   &:not(.search) {
     padding: var(--el-main-padding);
+    height: 100%;
   }
   &.search {
     padding: 15px var(--el-main-padding) 0px;

@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 14:03:49
+ * @LastEditTime: 2023-12-28 12:54:31
  * @Description: 
 -->
 <template>
-  <div>
+  <div style="height: 100%">
     <MainContentContainer>
       <ProTable
         multiple

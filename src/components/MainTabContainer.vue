@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 11:12:45
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-28 13:08:01
  * @Description: 
 -->
 <template>
@@ -37,6 +37,9 @@ const activeName = ref(props.defaultTab);
   position: relative;
   .tab-content-container {
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   :deep() {
     .el-tabs__header {

@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:46:36
+ * @LastEditTime: 2023-12-28 13:02:10
  * @Description: 
 -->
 <template>
-  <div>
+  <div style="height: 100%">
     <ProSearchContainer
       class="search"
       buttonContent="搜索"
@@ -14,7 +14,7 @@
       @button-click="onSearch"
       authKey="monitor_exception_search"
     />
-    <MainContentContainer>
+    <MainContentContainer style="flex: 1">
       <ProTable
         :column="column"
         :pageInfo="pageInfo"

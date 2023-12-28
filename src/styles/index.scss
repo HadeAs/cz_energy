@@ -76,6 +76,7 @@ body {
     padding: 16px;
     .main-content-container.contain {
       margin-bottom: 16px;
+      height: auto;
       &:last-child {
         margin-bottom: 0;
       }

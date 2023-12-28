@@ -1,13 +1,13 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 10:05:57
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-28 13:23:15
  * @Description: 
 -->
 <template>
   <div class="global-cfg-container">
-    <MainContentContainer style="margin-bottom: 10px">
+    <MainContentContainer style="margin-bottom: 10px; overflow: unset">
       <div class="title">
         <el-icon class="pic-icon"><Platform /></el-icon>
         <span>大屏A数据配置</span>
@@ -40,7 +40,7 @@
         </div>
       </div>
     </MainContentContainer>
-    <MainContentContainer>
+    <MainContentContainer style="overflow: unset">
       <div class="title">
         <el-icon class="pic-icon"><Platform /></el-icon>
         <span>大屏B数据配置</span>

@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 10:55:37
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2023-12-28 13:21:50
  * @Description: 
 -->
 <template>
@@ -49,6 +49,7 @@ const handleMenuClick = (data) => {
   display: flex;
   background-color: #ffffff;
   border-radius: 5px;
+  flex-direction: row !important;
   .left {
     width: 20%;
     height: 100%;

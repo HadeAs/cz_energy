@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 12:36:04
+ * @LastEditTime: 2023-12-28 12:51:05
  * @Description: 
 -->
 <template>
@@ -49,6 +49,7 @@
       </template>
     </el-table>
     <el-pagination
+      class="pagination"
       background
       :total="state.pageConfig.total"
       :page-sizes="state.pageConfig.pageSizes"
@@ -105,6 +106,9 @@ watch(
 </script>
 <style lang="scss" scoped>
 .pro-table-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   .tool-bar {
     margin-bottom: 15px;
     // :deep() {
@@ -115,9 +119,26 @@ watch(
     // }
   }
   :deep() {
+    .el-table--fit {
+      flex: 1;
+    }
     .el-pagination {
       margin-top: 20px;
-      justify-content: flex-end;
+      justify-content: space-between;
+      .el-pagination__sizes {
+        flex: auto;
+      }
+      > *.is-first {
+        padding-right: 28px;
+        position: relative;
+        &:after {
+          content: "记录";
+          position: absolute;
+          top: 0;
+          right: 0;
+          color: var(--el-text-color-regular);
+        }
+      }
     }
   }
 }

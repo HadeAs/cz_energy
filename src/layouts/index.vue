@@ -73,7 +73,7 @@
         </el-row>
       </el-header>
 
-      <el-main>
+      <el-main class="main-container">
         <el-scrollbar>
           <router-view />
         </el-scrollbar>
@@ -209,6 +209,13 @@ const gotoScreen = () => {
       .user-name {
         margin-left: 10px;
         color: #000000;
+      }
+    }
+  }
+  .main-container {
+    :deep() {
+      .el-scrollbar__view {
+        height: 100%;
       }
     }
   }

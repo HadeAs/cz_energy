@@ -2,86 +2,84 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 14:07:43
+ * @LastEditTime: 2023-12-28 12:55:30
  * @Description: 
 -->
 <template>
-  <div>
-    <MainContentContainer>
-      <ProTable
-        multiple
-        :column="column"
-        :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        v-loading="state.loading"
-        @page-change="pageChange"
-        @selection-change="selectionChange"
-      >
-        <template #toolbar>
-          <el-row align="middle" :gutter="5">
-            <el-col :span="6">
-              <el-button type="primary" @click="addRow" v-auth="'point_add'"
-                >新增</el-button
-              >
-              <el-button
-                :disabled="!state.selectRows.length"
-                @click="batchDelete"
-                v-auth="'point_batch_delete'"
-                >批量删除</el-button
-              >
-            </el-col>
-            <el-col :span="18">
-              <el-form
-                class="search-form"
-                :inline="true"
-                :model="state.searchFormData"
-              >
-                <el-form-item>
-                  <el-select v-model="state.searchFormData.nameType">
-                    <el-option
-                      v-for="item in state.nameOpts"
-                      :key="item.id"
-                      :label="item.text"
-                      :value="item.id"
-                    />
-                  </el-select>
-                </el-form-item>
-                <el-form-item>
-                  <el-input
-                    v-model="state.searchFormData.name"
-                    placeholder="项目名称"
-                    :suffix-icon="Search"
+  <MainContentContainer>
+    <ProTable
+      multiple
+      :column="column"
+      :pageInfo="pageInfo"
+      :datasource="state.dataSource"
+      v-loading="state.loading"
+      @page-change="pageChange"
+      @selection-change="selectionChange"
+    >
+      <template #toolbar>
+        <el-row align="middle" :gutter="5">
+          <el-col :span="6">
+            <el-button type="primary" @click="addRow" v-auth="'point_add'"
+              >新增</el-button
+            >
+            <el-button
+              :disabled="!state.selectRows.length"
+              @click="batchDelete"
+              v-auth="'point_batch_delete'"
+              >批量删除</el-button
+            >
+          </el-col>
+          <el-col :span="18">
+            <el-form
+              class="search-form"
+              :inline="true"
+              :model="state.searchFormData"
+            >
+              <el-form-item>
+                <el-select v-model="state.searchFormData.nameType">
+                  <el-option
+                    v-for="item in state.nameOpts"
+                    :key="item.id"
+                    :label="item.text"
+                    :value="item.id"
                   />
-                </el-form-item>
-              </el-form>
-            </el-col>
-          </el-row>
-        </template>
-        <template #operation="scope">
-          <a
-            class="table-operator-btn"
-            @click="editRow(scope.row)"
-            v-auth="'point_edit'"
-            >编辑</a
-          >
-          <ProPopConfirm
-            title="你确定要删除该设备吗?"
-            :icon="CircleCloseFilled"
-            iconColor="red"
-            @confirm="deleteRow(scope.row)"
-          >
-            <a class="table-operator-btn" v-auth="'point_delete'">删除</a>
-          </ProPopConfirm>
-        </template>
-      </ProTable>
-    </MainContentContainer>
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-input
+                  v-model="state.searchFormData.name"
+                  placeholder="项目名称"
+                  :suffix-icon="Search"
+                />
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
+      </template>
+      <template #operation="scope">
+        <a
+          class="table-operator-btn"
+          @click="editRow(scope.row)"
+          v-auth="'point_edit'"
+          >编辑</a
+        >
+        <ProPopConfirm
+          title="你确定要删除该设备吗?"
+          :icon="CircleCloseFilled"
+          iconColor="red"
+          @confirm="deleteRow(scope.row)"
+        >
+          <a class="table-operator-btn" v-auth="'point_delete'">删除</a>
+        </ProPopConfirm>
+      </template>
+    </ProTable>
     <Detail
       ref="detailRef"
       :title="state.title"
       :data="state.currentData"
       @submit="detailSubmit"
     />
-  </div>
+  </MainContentContainer>
 </template>
 <script lang="jsx" setup name="PointMgr">
 import { reactive, ref } from "vue";
