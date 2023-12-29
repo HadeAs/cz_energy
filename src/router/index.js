@@ -2,10 +2,10 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-29 16:36:26
+ * @LastEditTime: 2023-12-29 20:13:11
  * @Description:
  */
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import appStore from "@/store";
 import BasicRouter from "./basicRouter";
 import Layout from "@/layouts/index.vue";
@@ -193,7 +193,7 @@ const routesArray = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: routesArray,
 });
 
