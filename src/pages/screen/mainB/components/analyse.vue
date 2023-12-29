@@ -1,7 +1,14 @@
+<!--
+ * @Author: Zhicheng Huang
+ * @Date: 2023-12-23 19:54:13
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-29 15:36:55
+ * @Description: 
+-->
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="../images/new/u3.png">用气趋势分析
+      <img src="@/assets/img/screen/mainB/u3.png" />用气趋势分析
       <div class="pull-right">
         <span class="cs-title-unit margin-right-small-2">单位：m³</span>
         <ul class="cs-btn-group">
