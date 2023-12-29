@@ -3,22 +3,22 @@
  * @Author: komo-zz
  * @Date: 2023-02-08 14:33:52
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-29 16:33:14
+ * @LastEditTime: 2023-12-29 16:28:39
 -->
 <template>
   <div class="errPage-container">
     <div class="left-img">
-      <img :src="errGif" width="350" height="269" alt="404" />
+      <img :src="errGif" width="229" height="269" alt="401" />
     </div>
     <div>
-      <div class="text-ginormous">404</div>
-      <div class="text-sorry">抱歉，你访问的页面不存在</div>
+      <div class="text-ginormous">401</div>
+      <div class="text-sorry">抱歉，你无权访问该页面</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import errImage from "@/assets/img/404.png";
+import errImage from "@/assets/img/401.png";
 import { ref } from "vue";
 
 const errGif = ref(errImage + "?" + +new Date());

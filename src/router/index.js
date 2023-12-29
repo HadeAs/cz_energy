@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 22:17:32
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2023-12-29 16:31:55
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -18,11 +18,11 @@ const routesArray = [
     component: Layout,
     children: [
       {
-        path: "/404",
-        name: "404",
+        path: "/401",
+        name: "401",
         hidden: true,
         component: () =>
-          import(/* webpackChunkName: "404" */ "@/pages/error/404.vue"),
+          import(/* webpackChunkName: "401" */ "@/pages/error/401.vue"),
       },
       {
         path: "/projectMgr",
@@ -171,7 +171,7 @@ const routesArray = [
         name: "MainA",
         component: () =>
           import(
-            /* webpackChunkName: "404" */ "@/pages/screen/mainA/index.vue"
+            /* webpackChunkName: "MainA" */ "@/pages/screen/mainA/index.vue"
           ),
       },
       {
@@ -179,12 +179,17 @@ const routesArray = [
         name: "MainB",
         component: () =>
           import(
-            /* webpackChunkName: "404" */ "@/pages/screen/mainB/index.vue"
+            /* webpackChunkName: "MainB" */ "@/pages/screen/mainB/index.vue"
           ),
       },
     ],
   },
   ...BasicRouter,
+  {
+    path: "/:pathMatch(.*)",
+    component: () =>
+      import(/* webpackChunkName: "404" */ "@/pages/error/404.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -195,14 +200,14 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const userRole = appStore.global.userRole;
   const roleAuth = appStore.global.roleAuth;
-  const whitelist = ["404", "Login", "MainA", "MainB"];
+  const whitelist = ["401", "404", "Login", "MainA", "MainB"];
   if (whitelist.includes(to.name)) {
     return true;
   }
   //没有页面权限且不是超级管理员
   if (!roleAuth.includes(to.meta.auth) && userRole !== "1") {
     return {
-      path: "/404",
+      path: "/401",
     };
   }
 });
