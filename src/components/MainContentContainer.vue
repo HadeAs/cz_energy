@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 14:06:08
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-28 12:51:04
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-03 10:22:11
  * @Description: 
 -->
 <template>
@@ -22,7 +22,5 @@
   background-color: #ffffff;
   border-radius: 5px;
   overflow: auto;
-  // min-height: 220px;
-  // margin-bottom: 10px;
 }
 </style>

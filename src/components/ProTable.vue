@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-28 12:51:05
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-03 10:22:41
  * @Description: 
 -->
 <template>
@@ -111,12 +111,6 @@ watch(
   flex-direction: column;
   .tool-bar {
     margin-bottom: 15px;
-    // :deep() {
-    //   .el-input {
-    //     width: 250px;
-    //     float: right;
-    //   }
-    // }
   }
   :deep() {
     .el-table--fit {

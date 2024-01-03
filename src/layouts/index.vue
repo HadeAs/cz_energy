@@ -83,7 +83,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import appStore from "@/store";
 import { MENU_DATA, SHOW_PROJ_CHANGE_PATH } from "@/constant";
 import imgUrl from "@/assets/img/user.png";

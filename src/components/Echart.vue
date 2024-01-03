@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 10:35:38
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 14:54:24
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-03 10:21:37
  * @Description: 
 -->
 <template>
@@ -67,8 +67,3 @@ const dispose = () => {
 
 defineExpose({ resize, clear, dispose });
 </script>
-<style lang="scss" scoped>
-.chart {
-  // height: 100%;
-}
-</style>
