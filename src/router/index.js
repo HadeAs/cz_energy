@@ -2,10 +2,10 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-29 20:13:11
+ * @LastEditTime: 2024-01-04 17:26:22
  * @Description:
  */
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import appStore from "@/store";
 import BasicRouter from "./basicRouter";
 import Layout from "@/layouts/index.vue";
@@ -193,7 +193,7 @@ const routesArray = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory("/cz_energy/"),
   routes: routesArray,
 });
 

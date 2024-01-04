@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 16:52:42
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 15:14:22
+ * @LastEditTime: 2024-01-04 17:30:26
  * @Description:
  */
 import { defineConfig } from "vite";
@@ -15,6 +15,7 @@ import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 export default defineConfig({
+  base: "/cz_energy",
   server: {
     host: "localhost",
     port: 9999,
