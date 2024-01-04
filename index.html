@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 16:52:42
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-19 20:08:53
+ * @LastEditTime: 2024-01-04 17:04:47
  * @Description: 
 -->
 <!doctype html>
@@ -13,11 +13,27 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vite + Vue</title>
+  <script type="module" crossorigin src="/assets/index-C-tyC_6H.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-k1C_BCaM.css">
 </head>
 
 <body>
   <div id="energyapp"></div>
-  <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>
+<script type="text/javascript">
+  (function (l) {
+    if (l.search) {
+      var q = {};
+      l.search.slice(1).split('&').forEach(function (v) {
+        var a = v.split('=');
+        q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&');
+      });
+      if (q.p !== undefined) {
+        window.history
+          .replaceState(null, null, l.pathname.slice(0, -1) + (q.p || '') + (q.q ? ('?' + q.q) : '') + l.hash);
+      }
+    }
+  }(window.location));
+</script>
