@@ -17,6 +17,9 @@
         <div class="cs-tab-text">{{ item.value }}</div>
       </li>
     </ul>
+    <el-icon class="back-icon" v-show="state.district" @click="backToCity"
+      ><Back
+    /></el-icon>
     <a href="javascript:void(0)" class="cs-link" @click="gotoB">进入B屏</a>
     <el-select id="select2" v-model="state.selectVal">
       <el-option
@@ -31,6 +34,7 @@
 <script setup name="Map">
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { Back } from "@element-plus/icons-vue";
 import areaInfo from "@/constant/320000.json";
 import districtInfo from "@/constant/320400.json";
 import { registerMap } from "echarts/core";
@@ -53,6 +57,7 @@ const router = useRouter();
 const state = reactive({
   selectVal: 1,
   activeTab: "GIS",
+  district: false,
   opts: [
     {
       id: 1,
@@ -95,7 +100,13 @@ const handleClick = (param) => {
   if (["武家嘴办公楼", "常州市"].includes(param.name)) {
     registerMap("czMap", districtInfo);
     option.value = MAP_OPT2;
+    state.district = true;
   }
+};
+const backToCity = () => {
+  registerMap("jsMap", areaInfo);
+  option.value = MAP_OPT;
+  state.district = false;
 };
 </script>
 <style lang="scss" scoped>
@@ -103,6 +114,18 @@ const handleClick = (param) => {
   width: 100%;
   height: 658px;
   position: relative;
+
+  .back-icon {
+    position: absolute;
+    top: 20px;
+    left: 160px;
+    font-size: 38px;
+    color: #26eff9;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #008aff;
+  }
 
   .cs-center-tab {
     position: absolute;

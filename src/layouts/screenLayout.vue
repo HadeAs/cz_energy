@@ -2,13 +2,13 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 16:08:05
+ * @LastEditTime: 2024-01-05 14:32:25
  * @Description: 
 -->
 <template>
   <div ref="pageContainer" class="page-container">
     <div class="cs-main-header">
-      <span class="cs-header-info"></span>
+      <span class="cs-header-info" @click="handleClick"></span>
       <div class="cs-left-header">
         <span class="cs-left-text1"
           ><img src="@/assets/img/screen/u196.png" />{{ state.city }}</span
@@ -34,9 +34,10 @@
 </template>
 <script lang="ts" setup name="ScreenLayout">
 import { reactive, ref, onMounted } from "vue";
-// import { useResizeObserver } from '@vueuse/core'
+import { useRouter } from "vue-router";
 import IntervalTime from "./components/intervalTime.vue";
 
+const router = useRouter();
 const pageContainer = ref();
 const scaleX = ref(1);
 const scaleY = ref(1);
@@ -45,17 +46,11 @@ const state = reactive({
   degree: 30,
   role: "管理员",
 });
-
-// useResizeObserver(pageContainer, () => {
-//   const ratioX = window.innerWidth / 1920;
-//   scaleX.value = ratioX;
-//   scaleY.value = ratioX;
-// })
 const getRate = () => {
   const ratioX = window.innerWidth / 1920;
-  // const ratioY = window.innerHeight / 1080;
+  const ratioY = window.innerHeight / 1080;
   scaleX.value = ratioX;
-  scaleY.value = ratioX;
+  scaleY.value = ratioY;
 };
 window.onresize = () => {
   getRate();
@@ -63,13 +58,19 @@ window.onresize = () => {
 onMounted(() => {
   getRate();
 });
+const handleClick = () => {
+  const path = router.resolve({
+    name: "projectMgr",
+  }).href;
+  window.open(path, "_blank");
+};
 </script>
 <style lang="scss">
 html,
 body {
   width: 100%;
   height: 100%;
-  overflow: auto !important;
+  // overflow: auto !important;
 }
 body {
   margin: 0;
