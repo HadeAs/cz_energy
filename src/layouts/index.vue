@@ -22,8 +22,9 @@
               v-for="v in item.children"
               :index="v.path"
               @click="handleMenuClick(v)"
-              >{{ v.name }}</el-menu-item
             >
+              <span style="margin-left: 9px">{{ v.name }}</span>
+            </el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-scrollbar>
@@ -50,7 +51,7 @@
             </div>
           </el-col>
           <el-col :span="5" :offset="12">
-            <div class="menu-container">
+            <div class="menu-container flex-end">
               <el-button class="custom-btn" type="primary" @click="gotoScreen"
                 >主页大屏</el-button
               >
@@ -171,7 +172,7 @@ const logout = () => {
     justify-content: space-between;
   }
   .header-content-container {
-    padding: 15px 20px 20px;
+    padding: 15px 15px 20px;
     .menu-container {
       display: flex;
       align-items: center;
@@ -187,6 +188,9 @@ const logout = () => {
           }
         }
       }
+    }
+    .flex-end {
+      justify-content: flex-end;
     }
     .current-menu {
       font-weight: 700;

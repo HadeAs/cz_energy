@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-03 10:22:41
+ * @LastEditTime: 2024-01-05 19:16:10
  * @Description: 
 -->
 <template>
@@ -18,7 +18,7 @@
       v-bind="$attrs"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column v-if="!!multiple" type="selection" width="55" />
+      <el-table-column v-if="!!multiple" type="selection" width="35" />
       <el-table-column
         v-for="(item, index) in column"
         :key="index"

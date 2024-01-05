@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:58:33
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-05 21:36:50
  * @Description: 
 -->
 <template>
@@ -164,11 +164,11 @@ const column = [
   {
     prop: "project",
     label: "设备型号名称",
-    width: 110,
+    width: 120,
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.project}>
-          <b>{scope.row.project}</b>
+          <span className="table-first-col">{scope.row.project}</span>
         </div>
       );
     },

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 19:14:38
+ * @LastEditTime: 2024-01-05 18:49:12
  * @Description: 
 -->
 <template>
@@ -66,7 +66,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.userName}>
-          <b>{scope.row.userName}</b>
+          <span className="table-first-col">{scope.row.userName}</span>
         </div>
       );
     },

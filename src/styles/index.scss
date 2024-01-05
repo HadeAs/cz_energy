@@ -34,14 +34,10 @@ body {
 .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
   background-color: rgba(244, 247, 253, 1) !important;
 }
-.el-button:disabled, .el-button:disabled:hover {
-  cursor: not-allowed;
-  color: #a8abb2;
-  border-color: #e4e7ed;
-  background-color: #f4f7fd;
-}
 .el-button.is-disabled {
-  background-color: #f4f7fd !important;
+  background-color: #F4F7FD !important;
+  border-color: #E6EBF5 !important;
+  color: #C5CEDF !important;
 }
 .el-drawer__header {
   margin-bottom: 10px !important;
@@ -92,4 +88,25 @@ body {
   .el-message__content {
     color: #5A5E66 !important;
   }
+}
+.table-first-col {
+  color: #2D2F33;
+  font-weight: bold;
+}
+.el-table thead th {
+  font-weight: 400 !important;
+  color: #2D2F33 !important;
+}
+.el-table tbody tr td:first-child:not(.el-table-column--selection) .cell,
+.el-table thead tr th:first-child:not(.el-table-column--selection) .cell {
+  padding-left: 24px !important;
+}
+.el-table-column--selection .cell {
+  padding-left: 16px !important;
+}
+.el-form--inline .el-form-item:not(:last-child ) {
+  margin-right: 12px !important;
+}
+textarea {
+  height: 88px;
 }

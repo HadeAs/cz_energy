@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:04:21
+ * @LastEditTime: 2024-01-05 21:23:24
  * @Description: 
 -->
 <template>
@@ -15,7 +15,7 @@
       @page-change="pageChange"
     >
       <template #toolbar>
-        <el-row align="middle" :gutter="5">
+        <el-row align="middle" :gutter="12">
           <el-col :span="2">
             <el-button type="primary" v-auth="'account_add'" @click="addRow"
               >新增</el-button
@@ -163,7 +163,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.userName}>
-          <b>{scope.row.userName}</b>
+          <span className="table-first-col">{scope.row.userName}</span>
         </div>
       );
     },
@@ -216,7 +216,7 @@ const column = [
           <span
             style={{
               color: ifNormal ? "#00B050" : "#FA5555",
-              fontSize: "8px",
+              fontSize: "5px",
               marginRight: "5px",
             }}
           >

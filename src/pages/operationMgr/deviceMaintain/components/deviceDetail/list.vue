@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:53:33
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-05 21:09:06
  * @Description: 
 -->
 <template>
@@ -140,7 +140,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.project}>
-          <b>{scope.row.project}</b>
+          <span className="table-first-col">{scope.row.project}</span>
         </div>
       );
     },
@@ -163,7 +163,15 @@ const column = [
       const ifOpen = scope.row.status === 1;
       return (
         <>
-          <span style={{ color: ifOpen ? "#00B050" : "#FA5555" }}>● </span>
+          <span
+            style={{
+              color: ifOpen ? "#00B050" : "#FA5555",
+              marginRight: "5px",
+              fontSize: "5px",
+            }}
+          >
+            ●{" "}
+          </span>
           {ifOpen ? "启用" : "停用"}
         </>
       );

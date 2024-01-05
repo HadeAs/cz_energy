@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 19:13:57
+ * @LastEditTime: 2024-01-05 21:31:33
  * @Description: 
 -->
 <template>
@@ -18,12 +18,10 @@
     >
       <template #toolbar>
         <el-row align="middle" :gutter="5">
-          <el-col :span="2">
+          <el-col :span="4">
             <el-button type="primary" @click="addRow" v-auth="'project_add'"
               >新增</el-button
             >
-          </el-col>
-          <el-col :span="2">
             <el-button
               :disabled="!selectRows.length"
               @click="batchDelete"
@@ -211,7 +209,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.projectName}>
-          <b>{scope.row.projectName}</b>
+          <span className="table-first-col">{scope.row.projectName}</span>
         </div>
       );
     },
