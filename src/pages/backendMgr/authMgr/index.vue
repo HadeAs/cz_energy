@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 19:13:03
+ * @LastEditTime: 2024-01-05 21:32:29
  * @Description: 
 -->
 <template>
@@ -17,13 +17,11 @@
       @selection-change="selectionChange"
     >
       <template #toolbar>
-        <el-row align="middle" :gutter="5">
-          <el-col :span="2">
+        <el-row align="middle">
+          <el-col :span="4">
             <el-button type="primary" v-auth="'auth_add'" @click="addRow"
               >新增</el-button
             >
-          </el-col>
-          <el-col :span="2">
             <el-button
               :disabled="!selectRows.length"
               v-auth="'auth_batch_delete'"
@@ -207,7 +205,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.roleName}>
-          <b>{scope.row.roleName}</b>
+          <span className="table-first-col">{scope.row.roleName}</span>
         </div>
       );
     },

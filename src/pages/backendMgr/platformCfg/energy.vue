@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:20:42
+ * @LastEditTime: 2024-01-05 18:48:44
  * @Description: 
 -->
 <template>
@@ -114,7 +114,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.sysClassName}>
-          <b>{scope.row.sysClassName}</b>
+          <span className="table-first-col">{scope.row.sysClassName}</span>
         </div>
       );
     },

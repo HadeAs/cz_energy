@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:27:45
+ * @LastEditTime: 2024-01-05 21:25:39
  * @Description: 
 -->
 <template>
@@ -48,7 +48,7 @@
         @selection-change="selectionChange"
       >
         <template #toolbar>
-          <el-row align="middle" :gutter="5">
+          <el-row align="middle" :gutter="12">
             <el-col :span="3">
               <el-button
                 v-auth="'cost_detail_batch_export'"

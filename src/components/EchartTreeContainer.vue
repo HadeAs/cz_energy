@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-28 13:15:17
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-05 21:48:17
  * @Description: 
 -->
 <template>
@@ -152,8 +152,14 @@ const leaveTreeNode = () => {
   hoverNodeId.value = "";
 };
 
-const treeCheckValid = () => {
+const treeCheckValid = (data) => {
   const checks = treeRef.value.getCheckedNodes();
+  if (checks.length === 0 && data) {
+    nextTick(() => {
+      treeRef.value.setCheckedNodes([data]);
+    });
+    return false;
+  }
   const checkchilds = checks.filter((v) => !v.children);
   //跨父节点节点禁止点击
   if (checkchilds.length) {
@@ -178,11 +184,12 @@ const treeCheckValid = () => {
   nextTick(() => {
     treeRef.value.setCheckedNodes(checks);
   });
+  return true;
 };
 
-const treeCheckChangeHandle = () => {
-  emits("tree-check-change");
-  treeCheckValid();
+const treeCheckChangeHandle = (data) => {
+  const res = treeCheckValid(data);
+  res && emits("tree-check-change");
 };
 
 const openAddVarForm = () => {

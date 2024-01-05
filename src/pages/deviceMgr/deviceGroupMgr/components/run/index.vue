@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 14:05:14
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-05 21:08:03
  * @Description: 
 -->
 <template>
@@ -156,7 +156,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
-          <b>{scope.row.name}</b>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
@@ -201,7 +201,12 @@ const column = [
       const status = scope.row.status;
       return (
         <div className="badge">
-          <span className={status === 1 ? "success" : "danger"}>●</span>
+          <span
+            style={{ fontSize: "5px" }}
+            className={status === 1 ? "success" : "danger"}
+          >
+            ●
+          </span>
           {status === 1 ? "启用" : "停用"}
         </div>
       );

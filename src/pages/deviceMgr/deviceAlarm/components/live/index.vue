@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 14:00:04
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-05 18:49:24
  * @Description: 
 -->
 <template>
@@ -180,7 +180,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
-          <b>{scope.row.name}</b>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },

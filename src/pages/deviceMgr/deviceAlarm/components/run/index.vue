@@ -128,7 +128,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
-          <b>{scope.row.name}</b>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
