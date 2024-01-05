@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build:dev": "vite build --mode development",
+    "build": "vite build --mode production",
+    "preview": "vite preview --mode production"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -19,7 +20,10 @@
     "sass": "^1.69.5",
     "vue": "^3.3.11",
     "vue-echarts": "^6.6.5",
-    "vue-router": "4"
+    "vue-router": "4",
+    "axios": "^1.6.3",
+    "qs": "^6.11.2",
+    "js-cookie": "^3.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",

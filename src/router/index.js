@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-29 20:13:11
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-05 23:44:19
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -10,6 +10,7 @@ import appStore from "@/store";
 import BasicRouter from "./basicRouter";
 import Layout from "@/layouts/index.vue";
 import ScreenLayout from "@/layouts/screenLayout.vue";
+import { checkToken, logout } from "@/api/login";
 
 const routesArray = [
   {
@@ -197,9 +198,10 @@ const router = createRouter({
   routes: routesArray,
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const userRole = appStore.global.userRole;
   const roleAuth = appStore.global.roleAuth;
+  // const { userState } = storeToRefs(appStore.useUserStore);
   const whitelist = ["401", "404", "Login", "MainA", "MainB"];
   if (whitelist.includes(to.name)) {
     return true;
@@ -210,6 +212,10 @@ router.beforeEach((to, from) => {
       path: "/401",
     };
   }
+  const { code } = await checkToken();
+  // 判断是否有 Token，没有重定向到 login 页面
+  if (code !== 200) return { path: "/login", replace: true };
+  return true;
 });
 
 export default router;

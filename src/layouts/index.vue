@@ -113,6 +113,7 @@ const gotoScreen = () => {
 };
 
 const logout = () => {
+  appStore.useUserStore.userLogout();
   router.push({ path: "/login" });
 };
 </script>

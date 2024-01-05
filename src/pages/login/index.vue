@@ -20,8 +20,8 @@
               :rules="pwdRules"
               :model="state.pwdForm"
             >
-              <el-form-item prop="name">
-                <el-input v-model="state.pwdForm.name" placeholder="用户名">
+              <el-form-item prop="userName">
+                <el-input v-model="state.pwdForm.userName" placeholder="用户名">
                   <template #prefix>
                     <el-icon><UserFilled /></el-icon>
                   </template>
@@ -55,11 +55,11 @@
                   </template>
                 </el-input>
               </el-form-item>
-              <el-form-item prop="captcha">
+              <el-form-item prop="code">
                 <el-input
-                  v-model="state.msgForm.captcha"
+                  v-model="state.msgForm.code"
                   placeholder="验证码"
-                  class="captcha-input"
+                  class="code-input"
                 >
                   <template #prefix>
                     <el-icon><Message /></el-icon>
@@ -90,10 +90,15 @@
 <script lang="ts" setup name="Login">
 import { reactive, ref } from "vue";
 import { UserFilled, Lock, Iphone, Message } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { loginWithPwd, getCode, loginWithPhone } from "@/api/login";
+import basicStore from "@/store";
+import { ElMessage } from "element-plus";
 
+const { setUserInfo } = basicStore.useUserStore;
 const phoneTest = /^1[3456789]\d{9}$/;
 const pwdRules = reactive({
-  name: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  userName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   password: [{ required: true, message: "请输入密码", trigger: "blur" }],
 });
 const msgRules = reactive({
@@ -105,19 +110,20 @@ const msgRules = reactive({
       trigger: "blur",
     },
   ],
-  captcha: [{ required: true, message: "请输入短信验证码", trigger: "blur" }],
+  code: [{ required: true, message: "请输入短信验证码", trigger: "blur" }],
 });
+const router = useRouter();
 const formPwd = ref();
 const formMsg = ref();
 const state = reactive({
   activeName: "pwd",
   pwdForm: {
-    name: "",
+    userName: "",
     password: "",
   },
   msgForm: {
     phone: "",
-    captcha: "",
+    code: "",
   },
   msgText: "获取验证码",
   phoneValid: false,
@@ -130,7 +136,7 @@ const changeLogin = () => {
   }
 };
 const getCaptcha = async () => {
-  await formMsg.value.validateField("phone", (valid) => {
+  await formMsg.value.validateField("phone", async (valid) => {
     if (valid) {
       let n = 60;
       state.msgText = n + "S";
@@ -143,14 +149,21 @@ const getCaptcha = async () => {
           state.msgText = n + "S";
         }
       }, 1000);
+      const { data } = await getCode({ phone: state.msgForm.phone });
+      ElMessage.success("验证码发送成功");
     }
   });
 };
 const submitForm = async () => {
   const formRef = state.activeName === "pwd" ? formPwd.value : formMsg.value;
-  await formRef.validate((valid) => {
+  await formRef.validate(async (valid) => {
     if (valid) {
-      console.log("submit!");
+      const param = state.activeName === "pwd" ? state.pwdForm : state.msgForm;
+      const loginMethod =
+        state.activeName === "pwd" ? loginWithPwd : loginWithPhone;
+      const { data } = await loginMethod(param);
+      setUserInfo(data.loginUser);
+      router.push({ path: "/" });
     }
   });
 };
@@ -241,7 +254,7 @@ const submitForm = async () => {
           margin-top: 55px;
         }
       }
-      .captcha-input {
+      .code-input {
         :deep() {
           .el-input-group__append {
             .el-button--large {

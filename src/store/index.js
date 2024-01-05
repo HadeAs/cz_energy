@@ -1,11 +1,12 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 17:23:01
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-03 10:23:48
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-05 23:05:48
  * @Description:
  */
 import { useGlobal } from "./global";
+import { useUserStore } from "./user";
 
 const appStore = {};
 
@@ -14,6 +15,7 @@ const appStore = {};
  */
 export function registerStore() {
   appStore.global = useGlobal();
+  appStore.useUserStore = useUserStore();
 }
 
 export default appStore;
