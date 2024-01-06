@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 21:12:01
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-05 22:32:06
+ * @LastEditTime: 2024-01-06 20:03:33
  * @Description: 
  */
 
@@ -27,6 +27,9 @@ export function wrapperEnv(envConf) {
  * @param list
  */
 export function createProxy(list) {
+  if (!list) {
+    return {}
+  }
   const ret = {};
   for (const [prefix, target] of list) {
     const httpsRE = /^https:\/\//;
