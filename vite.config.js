@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 16:52:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-05 22:32:59
+ * @LastEditTime: 2024-01-06 20:03:48
  * @Description:
  */
 import { defineConfig, loadEnv } from "vite";
