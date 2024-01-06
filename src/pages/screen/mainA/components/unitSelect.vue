@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
- * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 16:03:23
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-06 18:55:26
  * @Description: 
 -->
 <template>
@@ -56,6 +56,10 @@ const state = reactive({
   margin: 0;
   position: relative;
   vertical-align: middle;
+
+  .cs-title-unit {
+    color: #7a7886;
+  }
 
   :deep() {
     .el-input {
