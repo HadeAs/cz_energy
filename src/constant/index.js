@@ -1,15 +1,10 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
- * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 15:04:27
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-06 19:46:56
  * @Description:
  */
-import Device from "@/assets/svg/device.svg";
-import Backend from "@/assets/svg/backend.svg";
-import Operation from "@/assets/svg/operation.svg";
-import Statistics from "@/assets/svg/statistics.svg";
-
 export const SHOW_PROJ_CHANGE_PATH = [
   "/carbonData",
   "/costData",
@@ -21,7 +16,7 @@ export const MENU_DATA = [
   {
     name: "后台管理",
     path: "/backendMgr",
-    icon: Backend,
+    icon: "aidicon aidicon-widgets",
     children: [
       {
         name: "项目管理",
@@ -52,7 +47,7 @@ export const MENU_DATA = [
   {
     name: "数据统计",
     path: "/statistics",
-    icon: Statistics,
+    icon: "aidicon aidicon-file-chart",
     children: [
       {
         name: "能碳数据",
@@ -67,7 +62,7 @@ export const MENU_DATA = [
   {
     name: "设备管理",
     path: "/deviceMgr",
-    icon: Device,
+    icon: "aidicon aidicon-settings-box",
     children: [
       {
         name: "设备台账",
@@ -94,7 +89,7 @@ export const MENU_DATA = [
   {
     name: "运维管理",
     path: "/operationMgr",
-    icon: Operation,
+    icon: "aidicon aidicon-dropbox",
     children: [
       {
         name: "运行监测",
@@ -789,4 +784,4 @@ export const ALARM_LEVELS = [
   { id: 1, name: "一级" },
   { id: 2, name: "二级" },
   { id: 3, name: "三级" },
-]
+];

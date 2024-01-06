@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
- * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-05 14:32:25
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-06 17:29:28
  * @Description: 
 -->
 <template>
@@ -247,7 +247,7 @@ ul {
 
     .cs-title-unit {
       font-size: 14px;
-      color: #acabb4;
+      color: #7a7886;
       font-weight: normal;
       margin-right: 8px;
     }

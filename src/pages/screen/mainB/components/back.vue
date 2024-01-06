@@ -1,11 +1,21 @@
+<!--
+ * @Author: Zhicheng Huang
+ * @Date: 2024-01-04 17:18:46
+ * @LastEditors: Zhicheng Huang
+ * @LastEditTime: 2024-01-06 19:00:50
+ * @Description: 
+-->
 <template>
   <div class="cs-box-content content">
     <div class="cs-left-wrap1">
-      <el-button class="btn btn-lg" type="primary" id="backMain" @click="back">返回
+      <el-button class="btn btn-lg" type="primary" id="backMain" @click="back"
+        >返回
       </el-button>
-      <div class="pull-right">
+      <div class="pull-right back-container">
         <UnitSelect :options="state.opts" width="160px" />
-        <el-button type="primary" class="btn btn-lg" id="search">搜索</el-button>
+        <el-button type="primary" class="btn btn-lg" id="search"
+          >搜索</el-button
+        >
       </div>
     </div>
   </div>
@@ -20,26 +30,26 @@ const state = reactive({
   opts: [
     {
       id: 1,
-      text: '武家嘴大酒店',
+      text: "武家嘴大酒店",
     },
     {
       id: 2,
-      text: '徐州沛县中金商贸',
+      text: "徐州沛县中金商贸",
     },
     {
       id: 3,
-      text: '连云港白虎山小商品',
+      text: "连云港白虎山小商品",
     },
     {
       id: 4,
-      text: '葛洲坝融创南京紫郡',
+      text: "葛洲坝融创南京紫郡",
     },
   ],
 });
 
 const back = () => {
   router.go(-1);
-}
+};
 </script>
 <style lang="scss" scoped>
 .content {
@@ -68,6 +78,14 @@ const back = () => {
 
   .cs-left-wrap1 .select2 .select2-selection__arrow b {
     top: 9px !important;
+  }
+
+  .back-container {
+    :deep() {
+      .el-input {
+        height: 38px;
+      }
+    }
   }
 }
 </style>
