@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:36:50
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-06 12:49:43
  * @Description: 
 -->
 <template>
@@ -10,9 +10,11 @@
     <ProTable
       :column="column"
       :pageInfo="pageInfo"
-      :datasource="state.dataSource"
-      v-loading="state.loading"
+      :default-sort="state.sortInfo"
+      :datasource="dataSource"
+      v-loading="loading"
       @page-change="pageChange"
+      @sort-change="sortChange"
     >
       <template #toolbar>
         <el-row align="middle" :gutter="5">
@@ -31,30 +33,40 @@
               :model="state.searchFormData"
             >
               <el-form-item>
-                <el-select v-model="state.searchFormData.type">
+                <el-select
+                  v-model="state.searchFormData.projectId"
+                  placeholder="选择项目"
+                  @change="handleProjectChange"
+                >
                   <el-option
-                    v-for="item in state.names"
+                    v-for="item in globalState.projects"
                     :key="item.id"
-                    :label="item.text"
+                    :label="item.name"
                     :value="item.id"
                   />
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-select v-model="state.searchFormData.deviceType">
+                <el-select
+                  v-model="state.searchFormData.equipmentTypeId"
+                  placeholder="选择设备型号"
+                  clearable
+                  @change="handleTypeChange"
+                >
                   <el-option
-                    v-for="item in state.types"
+                    v-for="item in state.equipmentTypes"
                     :key="item.id"
-                    :label="item.text"
+                    :label="item.name"
                     :value="item.id"
                   />
                 </el-select>
               </el-form-item>
               <el-form-item>
                 <el-input
-                  v-model="state.searchFormData.number"
+                  v-model="state.searchFormData.textQuery"
                   placeholder="设备名称/资产编号"
                   :suffix-icon="Search"
+                  @change="handleTypeChange"
                 />
               </el-form-item>
             </el-form>
@@ -99,47 +111,15 @@ import ProDrawer from "@/components/ProDrawer.vue";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { ElTag } from "element-plus";
+import { storeToRefs } from "pinia";
 import Detail from "./components/detail.vue";
 import Import from "./components/import.vue";
+import { getList } from "@/api/deviceMgr/deviceLedger";
+import { getEquipmentModelList } from "@/api/deviceMgr";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
 
-const COMMON_DATA_MAPS = [
-  {
-    checkBox: "",
-    project: "项目",
-    model: "XH456111361114587542",
-    no: "ZC156464547589652321",
-    type: "空调",
-    desc: "技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参",
-    time: "2023-05-12  15:21",
-  },
-  {
-    checkBox: "",
-    project: "项目",
-    model: "XH456111361114587542",
-    no: "ZC156464547589652321",
-    type: "供配电",
-    desc: "技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参",
-    time: "2023-05-12  15:21",
-  },
-  {
-    checkBox: "",
-    project: "项目",
-    model: "XH456111361114587542",
-    no: "ZC156464547589652321",
-    type: "照明",
-    desc: "技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参",
-    time: "2023-05-12  15:21",
-  },
-  {
-    checkBox: "",
-    project: "项目",
-    model: "XH456111361114587542",
-    no: "ZC156464547589652321",
-    type: "动力",
-    desc: "技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参数技术参",
-    time: "2023-05-12  15:21",
-  },
-];
+const { globalState } = storeToRefs(appStore.global);
 
 const detailDrawerRef = ref();
 const commDetailRef = ref();
@@ -147,61 +127,59 @@ const importDrawerRef = ref();
 const importRef = ref();
 const state = reactive({
   searchFormData: {
-    type: "all",
-    deviceType: "all",
-    number: "",
+    projectId: globalState.value.projectId,
+    equipmentTypeId: "",
+    textQuery: "",
   },
+  sortInfo: { prop: "openTime", order: "descending" },
   initDetailData: {},
-  dataSource: [],
-  loading: true,
-  names: [{ id: "all", text: "全部项目名称" }],
-  types: [{ id: "all", text: "全部设备类型" }],
+  equipmentTypes: [],
   detailDrawerTitle: "",
   operateType: "",
 });
 
 const column = [
   {
-    prop: "project",
+    prop: "name",
     label: "设备型号名称",
-    width: 120,
+    width: 160,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.project}>
-          <span className="table-first-col">{scope.row.project}</span>
+        <div className="text-overflow" title={scope.row.name}>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
   },
   {
-    prop: "model",
+    prop: "modelNum",
     label: "型号规格",
     width: 150,
   },
+  // {
+  //   prop: "no",
+  //   label: "资产编号", // 无
+  //   width: 150,
+  // },
   {
-    prop: "no",
-    label: "资产编号",
-    width: 150,
-  },
-  {
-    prop: "type",
+    prop: "typeName",
     label: "设备类型",
     width: 100,
     render: (scope) => {
-      const type = scope.row.type;
-      let tagType = "";
-      if (type === "空调") {
-        tagType = "";
-      } else if (type === "供配电") {
-        tagType = "success";
-      } else if (type === "照明") {
-        tagType = "warning";
-      } else if (type === "动力") {
-        tagType = "danger";
-      } else {
-        tagType = "info";
-      }
-      return <ElTag type={tagType}>{type}</ElTag>;
+      const type = scope.row.typeName;
+      // let tagType = "";
+      // if (type === "空调") {
+      //   tagType = "";
+      // } else if (type === "供配电") {
+      //   tagType = "success";
+      // } else if (type === "照明") {
+      //   tagType = "warning";
+      // } else if (type === "动力") {
+      //   tagType = "danger";
+      // } else {
+      //   tagType = "info";
+      // }
+      return <ElTag type="success">{type}</ElTag>;
     },
   },
   {
@@ -210,41 +188,41 @@ const column = [
     width: 210,
   },
   {
-    prop: "time",
+    prop: "openTime",
     label: "安装时间",
+    sortable: true,
     // width: 100,
   },
 ];
 
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
 
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
-});
+getTableList();
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
+const getEqpList = async () => {
+  const { data } = await getEquipmentModelList({
+    projectId: state.searchFormData.projectId,
   });
-  state.dataSource = res;
+  state.equipmentTypes = data.data;
 };
-getList();
+getEqpList();
+
+const handleProjectChange = () => {
+  getEqpList();
+  searchChange(state.searchFormData);
+};
+
+const handleTypeChange = () => {
+  searchChange(state.searchFormData);
+};
 
 const addRow = () => {
   state.operateType = "add";
@@ -270,13 +248,13 @@ const confirmDetail = async () => {
   const res = await commDetailRef.value.validate();
   if (res) {
     // 配置新增/编辑逻辑
-    if (state.operateType === "add") {
-      state.dataSource.push(res);
-    } else {
-      const idx = state.dataSource.findIπndex((v) => v.id === res.id);
-      state.dataSource.splice(idx, 1, res);
-    }
-    state.dataSource = [...state.dataSource];
+    // if (state.operateType === "add") {
+    //   state.dataSource.push(res);
+    // } else {
+    //   const idx = state.dataSource.findIπdex((v) => v.id === res.id);
+    //   state.dataSource.splice(idx, 1, res);
+    // }
+    // state.dataSource = [...state.dataSource];
     detailDrawerRef.value.close();
   }
 };

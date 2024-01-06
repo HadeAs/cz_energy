@@ -42,10 +42,10 @@
                 placeholder="选择项目"
               >
                 <el-option
-                  v-for="item in projects"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in state.projects"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 />
               </el-select>
             </div>
@@ -74,7 +74,7 @@
         </el-row>
       </el-header>
 
-      <el-main class="main-container">
+      <el-main class="main-container" v-if="state.loadSuccess">
         <el-scrollbar>
           <router-view />
         </el-scrollbar>
@@ -84,22 +84,22 @@
 </template>
 
 <script setup>
+import { reactive } from "vue";
 import appStore from "@/store";
 import { MENU_DATA, SHOW_PROJ_CHANGE_PATH } from "@/constant";
 import imgUrl from "@/assets/img/user.png";
 import logoUrl from "@/assets/img/logo.png";
 import logoTextUrl from "@/assets/img/logo-text.png";
 import { useRoute, useRouter } from "vue-router";
+import { getProjectList } from "@/api/common";
 
 const route = useRoute();
 const router = useRouter();
 const defaultMenuKey = route.path;
-const projects = [
-  { label: "项目001", value: "项目001" },
-  { label: "项目002", value: "项目002" },
-  { label: "项目003", value: "项目003" },
-  { label: "项目004", value: "项目004" },
-];
+const state = reactive({
+  projects: [],
+  loadSuccess: false,
+});
 
 const projectChange = (val) => {
   appStore.global.changeName(val);
@@ -117,6 +117,18 @@ const logout = () => {
   appStore.useUserStore.userLogout();
   router.push({ path: "/login" });
 };
+
+const init = async () => {
+  const { data } = await getProjectList();
+  if (data) {
+    state.projects = data.data;
+    // 默认选中第一条
+    appStore.global.setProjects(data.data);
+    projectChange(data.data[0].id);
+  }
+  state.loadSuccess = true;
+};
+init();
 </script>
 
 <style scoped lang="scss">
