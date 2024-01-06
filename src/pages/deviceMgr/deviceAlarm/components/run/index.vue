@@ -10,10 +10,12 @@
     <MainContentContainer>
       <ProTable
         :column="column"
+        :default-sort="state.sortInfo"
         :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        v-loading="state.loading"
+        :datasource="dataSource"
+        v-loading="loading"
         @page-change="pageChange"
+        @sort-change="sortChange"
       >
         <template #toolbar>
           <el-row align="middle" :gutter="5">
@@ -32,11 +34,11 @@
                 :model="state.searchFormData"
               >
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.type">
+                  <el-select v-model="state.searchFormData.projectId">
                     <el-option
-                      v-for="item in state.names"
+                      v-for="item in globalState.projects"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
@@ -52,46 +54,13 @@
 </template>
 <script lang="jsx" setup name="Run">
 import { reactive, ref } from "vue";
+import { storeToRefs } from "pinia";
 import AddDetail from "./addDetail.vue";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
+import { getRunList } from "@/api/deviceMgr/deviceAlarm";
 
-const COMMON_DATA_MAPS = [
-  {
-    name: "监测点位名称监测点位名称00145130",
-    project: "项目001",
-    time: "2020-04-23 10:10:10",
-    currentData: "0",
-    num: "00",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 1,
-  },
-  {
-    name: "监测点位名称监测点位名称00145130",
-    project: "项目001",
-    time: "2020-04-23 10:10:10",
-    currentData: "0",
-    num: "00",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 0,
-  },
-  {
-    name: "监测点位名称监测点位名称00145130",
-    project: "项目001",
-    time: "2020-04-23 10:10:10",
-    currentData: "0",
-    num: "00",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 1,
-  },
-  {
-    name: "监测点位名称监测点位名称00145130",
-    project: "项目001",
-    time: "2020-04-23 10:10:10",
-    currentData: "0",
-    num: "00",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 0,
-  },
-];
+const { globalState } = storeToRefs(appStore.global);
 const searchFormCfg = [
   {
     label: "报警时间范围",
@@ -99,24 +68,19 @@ const searchFormCfg = [
     type: "datetimerange",
     value: "",
   },
-  { label: "关键词搜索", prop: "keyWord", type: "input", value: "" },
+  { label: "关键词搜索", prop: "textQuery", type: "input", value: "" },
 ];
 
 const addRef = ref();
 const state = reactive({
   searchFormData: {
-    type: "all",
+    projectId: globalState.value.projectId,
+    startDate: "",
+    endDate: "",
+    textQuery: "",
   },
-  names: [{ id: "all", text: "全部项目名称" }],
-  dataSource: [],
-  loading: true,
+  sortInfo: { prop: "status", order: "descending" },
   currentData: {},
-});
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
 });
 
 const column = [
@@ -134,73 +98,65 @@ const column = [
     },
   },
   {
-    prop: "project",
+    prop: "projectName",
     label: "所属项目",
-    width: 100,
+    width: 180,
   },
   {
-    prop: "time",
+    prop: "monitorTime",
     label: "监控时间",
     width: 180,
   },
   {
-    prop: "num",
+    prop: "maxThreshold",
     label: "最大阈值",
     width: 100,
   },
   {
-    prop: "num",
+    prop: "minThreshold",
     label: "最小阈值",
     width: 100,
   },
   {
     prop: "status",
     label: "报警状态",
+    width: 120,
     render: (scope) => {
       const status = scope.row.status;
       let type = "";
-      let name = "";
-      if (status === 1) {
+      if (status === "正常") {
         type = "success";
-        name = "正常";
-      } else {
+      } else if (status === "异常") {
         type = "danger";
-        name = "异常";
+      } else if (status === "无数据") {
+        type = "info";
+      } else {
+        type = "warning";
       }
-      return <ElTag type={type}>{name}</ElTag>;
+      return <ElTag type={type}>{status}</ElTag>;
     },
   },
   {
-    prop: "desc",
+    prop: "description",
     label: "操作记录",
-    width: 220,
+    // width: 220,
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
-  });
-  state.dataSource = res;
-};
-getList();
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getRunList, state.searchFormData, state.sortInfo);
+
+getTableList();
 
 const onSearch = (data) => {
   console.log(data);
-};
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
 };
 
 const addRow = () => {

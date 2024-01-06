@@ -2,12 +2,12 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-28 13:08:01
+ * @LastEditTime: 2024-01-06 18:37:04
  * @Description: 
 -->
 <template>
   <div class="main-tab-container">
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-change="handleChange">
       <el-tab-pane
         v-for="item in tabData"
         :label="item.label"
@@ -29,8 +29,12 @@
 <script setup>
 import { ref } from "vue";
 
+const emits = defineEmits(["change"]);
 const props = defineProps(["tabData", "defaultTab"]);
 const activeName = ref(props.defaultTab);
+const handleChange = (name) => {
+  emits("change", name);
+};
 </script>
 <style lang="scss" scoped>
 .main-tab-container {

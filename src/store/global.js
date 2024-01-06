@@ -2,16 +2,18 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 17:28:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 11:30:35
+ * @LastEditTime: 2024-01-06 16:34:25
  * @Description:
  */
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
+import { getRoles } from "@/api/common";
 
 export const useGlobal = defineStore("global", () => {
   const globalState = reactive({
     projects: [],
-    projectId: ""
+    projectId: "",
+    roleList: []
   })
   const projectName = ref("");
   // 超级管理员角色
@@ -31,5 +33,10 @@ export const useGlobal = defineStore("global", () => {
     return globalState.projectId;
   }
 
-  return { globalState, projectName, userRole, roleAuth, setProjects, changeName, getProjectId };
+  const getRoleList = async () => {
+    const { data } = await getRoles();
+    globalState.roleList = data.data;
+  }
+
+  return { globalState, projectName, userRole, roleAuth, setProjects, changeName, getProjectId, getRoleList };
 });

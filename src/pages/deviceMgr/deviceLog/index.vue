@@ -11,16 +11,18 @@
         multiple
         :column="column"
         :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        v-loading="state.loading"
+        :default-sort="state.sortInfo"
+        :datasource="dataSource"
+        v-loading="loading"
         @page-change="pageChange"
         @selection-change="selectionChange"
+        @sort-change="sortChange"
       >
         <template #toolbar>
           <el-row align="middle" :gutter="5">
             <el-col :span="4">
               <el-button
-                :disabled="!state.selectRows.length"
+                :disabled="!selectRows.length"
                 @click="batchExport"
                 v-auth="'devicelog_batch_export'"
                 >批量导出</el-button
@@ -33,11 +35,15 @@
                 :model="state.searchFormData"
               >
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.type">
+                  <el-select
+                    v-model="state.searchFormData.projectId"
+                    placeholder="选择项目"
+                    @change="handleSearchChange"
+                  >
                     <el-option
-                      v-for="item in state.names"
+                      v-for="item in globalState.projects"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
@@ -51,42 +57,14 @@
   </div>
 </template>
 <script lang="jsx" setup name="DeviceLog">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
+import { exportWithExcel } from "@/utils";
+import { getList, exportLog } from "@/api/deviceMgr/deviceLog";
 
-const COMMON_DATA_MAPS = [
-  {
-    checkBox: "",
-    name: "张婷婷",
-    project: "项目名称项目名称",
-    type: 1,
-    time: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-  },
-  {
-    checkBox: "",
-    name: "林雪",
-    project: "项目名称项目名称",
-    type: 2,
-    time: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-  },
-  {
-    checkBox: "",
-    name: "唐峰",
-    project: "项目名称项目名称",
-    type: 3,
-    time: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-  },
-  {
-    checkBox: "",
-    name: "张婷婷",
-    project: "项目名称项目名称",
-    type: 1,
-    time: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-  },
-];
+const { globalState } = storeToRefs(appStore.global);
 const searchFormCfg = [
   {
     label: "操作时间范围",
@@ -94,83 +72,71 @@ const searchFormCfg = [
     type: "datetimerange",
     value: "",
   },
-  { label: "关键词搜索", prop: "keyWord", type: "input", value: "" },
+  { label: "关键词搜索", prop: "textQuery", type: "input", value: "" },
 ];
 
 const state = reactive({
   searchFormData: {
-    type: "all",
+    projectId: globalState.value.projectId,
   },
-  names: [{ id: "all", text: "全部项目名称" }],
-  dataSource: [],
-  loading: true,
-  selectRows: [],
-});
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
+  sortInfo: { prop: "operationTime", order: "descending" },
 });
 
 const column = [
   {
-    prop: "name",
+    prop: "userName",
     label: "操作用户",
     width: 110,
   },
   {
-    prop: "project",
+    prop: "projectName",
     label: "所属项目",
     width: 180,
   },
   {
-    prop: "type",
+    prop: "roleName",
     label: "用户类型",
     width: 140,
     render: (scope) => {
-      const level = scope.row.type;
+      const level = scope.row.roleName;
       let type = "";
-      let name = "一般用户";
-      if (level === 1) {
-        type = "warning";
-        name = "超级管理员";
-      } else if (level === 2) {
+      if (level === globalState.value.roleList[0]?.name) {
+        type = "danger";
+      } else if (level === globalState.value.roleList[1]?.name) {
         type = "success";
-        name = "管理员";
       }
-      return <ElTag type={type}>{name}</ElTag>;
+      return <ElTag type={type}>{level}</ElTag>;
     },
   },
   {
-    prop: "time",
+    prop: "operationTime",
     label: "操作时间",
     width: 180,
+    sortable: true,
   },
   {
-    prop: "desc",
+    prop: "operation",
     label: "操作内容",
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
-  });
-  state.dataSource = res;
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  selectRows,
+  pageChange,
+  sortChange,
+  searchChange,
+  selectionChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
+
+getTableList();
+
+const handleSearchChange = () => {
+  searchChange(state.searchFormData);
 };
-getList();
 
 const batchExport = () => {
   ElMessageBox.confirm("确认导出选中的内容？", "警告", {
@@ -178,22 +144,31 @@ const batchExport = () => {
     cancelButtonText: "取消",
     type: "warning",
   })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "导出成功",
-      });
+    .then(async () => {
+      const ids = selectRows.value.map((item) => item.id);
+      const data = await exportLog(state.searchFormData.projectId, ids);
+      if (data && !data.code) {
+        exportWithExcel(data, "设备日志");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
     })
     .catch(() => {});
 };
 const onSearch = (data) => {
-  console.log(data);
-};
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
-const selectionChange = (data) => {
-  state.selectRows = data;
+  const param = {};
+  data.forEach((item) => {
+    if (item.prop === "timeRange") {
+      param.startDate = item.value?.[0];
+      param.endDate = item.value?.[1];
+    } else {
+      param[item.prop] = item.value;
+    }
+  });
+  state.searchFormData = { ...state.searchFormData, ...param };
+  searchChange(state.searchFormData);
 };
 </script>
 <style lang="scss" scoped>

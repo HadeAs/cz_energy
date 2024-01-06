@@ -2,13 +2,18 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 14:06:21
+ * @LastEditTime: 2024-01-06 18:38:10
  * @Description: 
 -->
 <template>
-  <MainTabContainer :tabData="tabData" :defaultTab="defaultTab">
+  <MainTabContainer
+    :tabData="tabData"
+    :defaultTab="defaultTab"
+    @change="handleChange"
+  >
     <template #extra>
       <el-button
+        v-show="defaultTab === 'run'"
         class="recycle-btn"
         @click="gotoRecycleBin"
         v-auth="'group_recycle'"
@@ -18,12 +23,13 @@
   </MainTabContainer>
 </template>
 <script setup name="DeviceGroupMgr">
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import MainTabContainer from "@/components/MainTabContainer.vue";
 import Group from "./components/group/index.vue";
 import Run from "./components/run/index.vue";
 
-const defaultTab = "group";
+const defaultTab = ref("group");
 const router = useRouter();
 const tabData = [
   {
@@ -42,6 +48,10 @@ const gotoRecycleBin = () => {
     name: "recycleBin",
   }).href;
   window.open(path, "_blank");
+};
+
+const handleChange = (name) => {
+  defaultTab.value = name;
 };
 </script>
 <style lang="scss" scoped>

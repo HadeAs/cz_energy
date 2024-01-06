@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 15:37:07
+ * @LastEditTime: 2024-01-06 19:07:07
  * @Description: 
 -->
 <template>
@@ -18,6 +18,7 @@
       <ProTable
         multiple
         :column="column"
+        :default-sort="state.sortInfo"
         :pageInfo="pageInfo"
         :datasource="dataSource"
         v-loading="loading"
@@ -198,7 +199,7 @@ const column = [
     },
   },
   {
-    prop: "desc",
+    prop: "description",
     label: "操作记录",
   },
 ];
@@ -264,21 +265,23 @@ const handleRow = (row) => {
   }
 };
 const addSubmit = async (param) => {
-  const { data } = await addLive(state.searchFormData.projectId, param);
-  if (data.code === 200) {
-    ElMessage.success("新增成功!");
+  const { code } = await addLive(state.searchFormData.projectId, param);
+  if (code === 200) {
     handleRef.value.close();
+    ElMessage.success("新增成功!");
+    getTableList();
   }
 };
 const handleSubmit = async (param) => {
-  const { data } = await handleLive(state.searchFormData.projectId, {
+  const { code } = await handleLive(state.searchFormData.projectId, {
     alarmId: param.id,
     userName: param.userName,
     result: param.result,
   });
-  if (data.code === 200) {
-    ElMessage.success("处理成功!");
+  if (code === 200) {
     handleRef.value.close();
+    ElMessage.success("处理成功!");
+    getTableList();
   }
 };
 </script>

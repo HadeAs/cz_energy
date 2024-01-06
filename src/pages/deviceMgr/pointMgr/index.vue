@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 18:50:11
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-06 18:25:41
  * @Description: 
 -->
 <template>
@@ -11,10 +11,12 @@
       multiple
       :column="column"
       :pageInfo="pageInfo"
-      :datasource="state.dataSource"
-      v-loading="state.loading"
+      :default-sort="state.sortInfo"
+      :datasource="dataSource"
+      v-loading="loading"
       @page-change="pageChange"
       @selection-change="selectionChange"
+      @sort-change="sortChange"
     >
       <template #toolbar>
         <el-row align="middle" :gutter="5">
@@ -23,7 +25,7 @@
               >新增</el-button
             >
             <el-button
-              :disabled="!state.selectRows.length"
+              :disabled="!selectRows.length"
               @click="batchDelete"
               v-auth="'point_batch_delete'"
               >批量删除</el-button
@@ -36,20 +38,25 @@
               :model="state.searchFormData"
             >
               <el-form-item>
-                <el-select v-model="state.searchFormData.nameType">
+                <el-select
+                  v-model="state.searchFormData.projectId"
+                  placeholder="选择项目"
+                  @change="handleSearchChange"
+                >
                   <el-option
-                    v-for="item in state.nameOpts"
+                    v-for="item in globalState.projects"
                     :key="item.id"
-                    :label="item.text"
+                    :label="item.name"
                     :value="item.id"
                   />
                 </el-select>
               </el-form-item>
               <el-form-item>
                 <el-input
-                  v-model="state.searchFormData.name"
+                  v-model="state.searchFormData.textQuery"
                   placeholder="项目名称"
                   :suffix-icon="Search"
+                  @change="handleSearchChange"
                 />
               </el-form-item>
             </el-form>
@@ -85,93 +92,28 @@
 import { reactive, ref } from "vue";
 import Detail from "./components/detail.vue";
 import { Search, CircleCloseFilled } from "@element-plus/icons-vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
+import {
+  getList,
+  updatePoint,
+  deletePoint,
+  batchDeletePoint,
+} from "@/api/deviceMgr/pointMgr";
+import { ElMessage } from "element-plus";
 
-const COMMON_DATA_MAPS = [
-  {
-    checkBox: "",
-    project: "项目001",
-    name: "压力传感器",
-    label: "开关量",
-    type: "--",
-    gateway: "网关1",
-    temp: "--",
-    temp2: "--",
-    state: "1",
-    time: "6分钟",
-    status: 0,
-  },
-  {
-    checkBox: "",
-    project: "项目001",
-    name: "压力传感器",
-    label: "开关量",
-    type: "--",
-    gateway: "网关1",
-    temp: "--",
-    temp2: "--",
-    state: "1",
-    time: "6分钟",
-    status: 1,
-  },
-  {
-    checkBox: "",
-    project: "项目001",
-    name: "压力传感器",
-    label: "开关量",
-    type: "--",
-    gateway: "网关1",
-    temp: "20",
-    temp2: "5",
-    state: "1",
-    time: "6分钟",
-    status: 0,
-  },
-  {
-    checkBox: "",
-    project: "项目001",
-    name: "压力传感器",
-    label: "开关量",
-    type: "--",
-    gateway: "网关1",
-    temp: "20",
-    temp2: "10",
-    state: "1",
-    time: "6分钟",
-    status: 1,
-  },
-];
-
+const { globalState } = storeToRefs(appStore.global);
 const detailRef = ref();
 const state = reactive({
   searchFormData: {
-    nameType: "all",
     name: "",
+    projectId: globalState.value.projectId,
+    textQuery: "",
   },
-  nameOpts: [
-    {
-      id: "all",
-      text: "全部项目名称",
-    },
-    {
-      id: "1",
-      text: "项目名称1",
-    },
-    {
-      id: "2",
-      text: "项目名称2",
-    },
-  ],
-  dataSource: [],
-  loading: true,
-  selectRows: [],
+  sortInfo: { prop: "id", order: "descending" },
   currentData: {},
   title: "",
-});
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
 });
 
 const column = [
@@ -189,12 +131,12 @@ const column = [
     },
   },
   {
-    prop: "project",
+    prop: "projectName",
     label: "所属项目",
     width: 180,
   },
   {
-    prop: "gateway",
+    prop: "gatewayName",
     label: "智能网关",
     width: 100,
   },
@@ -204,42 +146,41 @@ const column = [
     width: 100,
   },
   {
-    prop: "state",
+    prop: "commNum",
     label: "通讯号",
     width: 80,
   },
   {
-    prop: "time",
+    prop: "period",
     label: "采集频率",
   },
   {
-    prop: "temp",
+    prop: "maxThreshold",
     label: "最大阈值",
   },
   {
-    prop: "temp2",
+    prop: "minThreshold",
     label: "最小阈值",
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
-  });
-  state.dataSource = res;
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  selectRows,
+  pageChange,
+  sortChange,
+  searchChange,
+  selectionChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
+
+getTableList();
+
+const handleSearchChange = () => {
+  searchChange(state.searchFormData);
 };
-getList();
 
 const batchDelete = () => {
   ElMessageBox.confirm("确认删除选中的内容？", "警告", {
@@ -247,19 +188,22 @@ const batchDelete = () => {
     cancelButtonText: "取消",
     type: "warning",
   })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "删除成功",
-      });
+    .then(async () => {
+      const ids = selectRows.value.map((item) => item.id);
+      const result = await batchDeletePoint(
+        state.searchFormData.projectId,
+        ids
+      );
+
+      if (result.code === 200) {
+        ElMessage({
+          type: "success",
+          message: "删除成功",
+        });
+        getTableList();
+      }
     })
     .catch(() => {});
-};
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
-const selectionChange = (data) => {
-  state.selectRows = data;
 };
 
 const addRow = () => {
@@ -268,12 +212,27 @@ const addRow = () => {
   detailRef.value.open();
 };
 const editRow = (row) => {
-  state.currentData = row;
+  state.currentData = { ...row, projectId: state.searchFormData.projectId };
   state.title = "编辑";
   detailRef.value.open();
 };
-const deleteRow = (row) => {};
-const detailSubmit = (data) => {};
+const deleteRow = async (row) => {
+  const { code } = await deletePoint(state.searchFormData.projectId, {
+    id: row.id,
+  });
+  if (code === 200) {
+    ElMessage.success(`删除点位成功`);
+    getTableList();
+  }
+};
+const detailSubmit = async (param) => {
+  const { projectId, ...rest } = param;
+  const { code } = await updatePoint(projectId, rest);
+  if (code === 200) {
+    ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
+    getTableList();
+  }
+};
 </script>
 <style lang="scss" scoped>
 .search-form {

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-05 23:44:19
+ * @LastEditTime: 2024-01-06 18:28:16
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -204,6 +204,9 @@ router.beforeEach(async (to, from) => {
   // const { userState } = storeToRefs(appStore.useUserStore);
   const whitelist = ["401", "404", "Login", "MainA", "MainB"];
   if (whitelist.includes(to.name)) {
+    if (to.name === "Login") {
+      logout()
+    }
     return true;
   }
   //没有页面权限且不是超级管理员

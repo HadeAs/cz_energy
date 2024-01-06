@@ -119,6 +119,9 @@ const logout = () => {
 };
 
 const init = async () => {
+  // 获取角色列表
+  appStore.global.getRoleList();
+  // 获取项目列表
   const { data } = await getProjectList();
   if (data) {
     state.projects = data.data;

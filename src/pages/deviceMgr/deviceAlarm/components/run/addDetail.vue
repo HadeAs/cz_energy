@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:52:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 16:11:00
+ * @LastEditTime: 2024-01-06 16:11:38
  * @Description: 
 -->
 <template>
@@ -14,6 +14,13 @@
       <el-form-item label="阈值" required prop="num">
         <el-input placeholder="请输入阈值" v-model="state.form.num" />
       </el-form-item>
+      <el-form-item label="阈值" required prop="num">
+        <el-input
+          v-model="state.form.description"
+          type="textarea"
+          placeholder="请输入至少5个字符"
+        />
+      </el-form-item>
     </el-form>
   </ProDrawer>
 </template>
@@ -23,8 +30,9 @@ import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const initData = {
-  name: "",
+  deviceDataId: "",
   num: "",
+  description: "",
 };
 const emits = defineEmits(["submit"]);
 const handleDrawerRef = ref();
