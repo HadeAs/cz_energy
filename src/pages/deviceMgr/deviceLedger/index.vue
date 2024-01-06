@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 12:49:43
+ * @LastEditTime: 2024-01-06 13:38:22
  * @Description: 
 -->
 <template>
@@ -49,7 +49,7 @@
               <el-form-item>
                 <el-select
                   v-model="state.searchFormData.equipmentTypeId"
-                  placeholder="选择设备型号"
+                  placeholder="选择设备类型"
                   clearable
                   @change="handleTypeChange"
                 >
@@ -95,7 +95,11 @@
       ref="detailDrawerRef"
       @confirm="confirmDetail"
     >
-      <Detail ref="commDetailRef" :initData="state.initDetailData" />
+      <Detail
+        ref="commDetailRef"
+        :opts="state.equipmentTypes"
+        :initData="state.initDetailData"
+      />
     </ProDrawer>
     <ProDrawer title="批量导入" ref="importDrawerRef" @confirm="confirmImport">
       <Import ref="importRef" />
@@ -114,7 +118,11 @@ import { ElTag } from "element-plus";
 import { storeToRefs } from "pinia";
 import Detail from "./components/detail.vue";
 import Import from "./components/import.vue";
-import { getList } from "@/api/deviceMgr/deviceLedger";
+import {
+  getList,
+  deleteModel,
+  updateModel,
+} from "@/api/deviceMgr/deviceLedger";
 import { getEquipmentModelList } from "@/api/deviceMgr";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
@@ -242,20 +250,22 @@ const editRow = (data) => {
   detailDrawerRef.value.open();
 };
 
-const deleteRow = (row) => {};
+const deleteRow = (row) => {
+  deleteModel(state.searchFormData.projectId, { id: row.id });
+};
 
 const confirmDetail = async () => {
   const res = await commDetailRef.value.validate();
   if (res) {
     // 配置新增/编辑逻辑
     // if (state.operateType === "add") {
-    //   state.dataSource.push(res);
+    //   // state.dataSource.push(res);
     // } else {
-    //   const idx = state.dataSource.findIπdex((v) => v.id === res.id);
-    //   state.dataSource.splice(idx, 1, res);
+    //   const { data } = await updateModel(state.searchFormData.projectId, res);
     // }
-    // state.dataSource = [...state.dataSource];
+    const { data } = await updateModel(state.searchFormData.projectId, res);
     detailDrawerRef.value.close();
+    getTableList();
   }
 };
 const confirmImport = async () => {

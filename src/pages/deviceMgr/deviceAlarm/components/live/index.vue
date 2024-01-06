@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 18:49:24
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-06 15:37:07
  * @Description: 
 -->
 <template>
@@ -19,10 +19,11 @@
         multiple
         :column="column"
         :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        v-loading="state.loading"
+        :datasource="dataSource"
+        v-loading="loading"
         @page-change="pageChange"
         @selection-change="selectionChange"
+        @sort-change="sortChange"
       >
         <template #toolbar>
           <el-row align="middle" :gutter="5">
@@ -34,7 +35,7 @@
                 >新增</el-button
               >
               <el-button
-                :disabled="!state.selectRows.length"
+                :disabled="!selectRows.length"
                 @click="batchExport"
                 v-auth="'alarm_actual_batch_export'"
                 >批量导出</el-button
@@ -47,21 +48,29 @@
                 :model="state.searchFormData"
               >
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.level">
+                  <el-select
+                    v-model="state.searchFormData.riskLevel"
+                    placeholder="选择报警等级"
+                    @change="handleSearchChange"
+                  >
                     <el-option
-                      v-for="item in state.levels"
+                      v-for="item in ALARM_LEVELS"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
                 </el-form-item>
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.type">
+                  <el-select
+                    v-model="state.searchFormData.projectId"
+                    placeholder="选择项目"
+                    @change="handleSearchChange"
+                  >
                     <el-option
-                      v-for="item in state.names"
+                      v-for="item in globalState.projects"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
@@ -73,73 +82,39 @@
         <template #operation="scope">
           <a
             class="table-operator-btn"
-            :class="scope.row.status === 1 ? '' : 'disabled'"
+            :class="scope.row.status === '未处理' ? '' : 'disabled'"
             @click="handleRow(scope.row)"
             v-auth="'alarm_actual_deal'"
-            >{{ scope.row.status === 1 ? "立即处理" : "已处理成功" }}</a
+            >{{ scope.row.status === "未处理" ? "立即处理" : "已处理成功" }}</a
           >
         </template>
       </ProTable>
     </MainContentContainer>
-    <AddDetail ref="addRef" @submit="addSubmit" />
+    <AddDetail
+      ref="addRef"
+      :project-id="state.searchFormData.projectId"
+      @submit="addSubmit"
+    />
     <Handle ref="handleRef" :data="state.currentData" @submit="handleSubmit" />
   </div>
 </template>
 <script lang="jsx" setup name="Live">
 import { reactive, ref } from "vue";
+import { storeToRefs } from "pinia";
 import AddDetail from "./addDetail.vue";
 import Handle from "./handle.vue";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
+import {
+  getLiveList,
+  addLive,
+  handleLive,
+  exportLive,
+} from "@/api/deviceMgr/deviceAlarm";
+import { ElMessage } from "element-plus";
+import { ALARM_LEVELS } from "@/constant";
+import { exportWithExcel } from "@/utils";
 
-const COMMON_DATA_MAPS = [
-  {
-    checkBox: "",
-    name: "报警设备名称",
-    project: "项目001",
-    type: "冷水机组",
-    admin: "admin",
-    time1: "2020-04-23 10:10:10",
-    time2: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 1,
-    level: 1,
-  },
-  {
-    checkBox: "",
-    name: "报警设备名称",
-    project: "项目001",
-    type: "冷水机组",
-    admin: "admin",
-    time1: "2020-04-23 10:10:10",
-    time2: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 0,
-    level: 1,
-  },
-  {
-    checkBox: "",
-    name: "报警设备名称",
-    project: "项目001",
-    type: "冷水机组",
-    admin: "admin",
-    time1: "2020-04-23 10:10:10",
-    time2: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 1,
-    level: 1,
-  },
-  {
-    checkBox: "",
-    name: "报警设备名称",
-    project: "项目001",
-    type: "冷水机组",
-    admin: "admin",
-    time1: "2020-04-23 10:10:10",
-    time2: "2020-04-23 10:10:10",
-    desc: "操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录操作记录",
-    status: 0,
-    level: 2,
-  },
-];
 const searchFormCfg = [
   {
     label: "报警时间范围",
@@ -147,66 +122,55 @@ const searchFormCfg = [
     type: "datetimerange",
     value: "",
   },
-  { label: "关键词搜索", prop: "keyWord", type: "input", value: "" },
+  { label: "关键词搜索", prop: "textQuery", type: "input", value: "" },
 ];
 
+const { globalState } = storeToRefs(appStore.global);
 const addRef = ref();
 const handleRef = ref();
 const state = reactive({
   searchFormData: {
-    level: "all",
-    type: "all",
+    projectId: globalState.value.projectId,
+    riskLevel: "",
+    startDate: "",
+    endDate: "",
+    textQuery: "",
   },
-  levels: [{ id: "all", text: "报警等级" }],
-  names: [{ id: "all", text: "全部项目名称" }],
-  dataSource: [],
-  loading: true,
-  selectRows: [],
+  sortInfo: { prop: "addressTime", order: "descending" },
   currentData: {},
-});
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
 });
 
 const column = [
   {
-    prop: "name",
+    prop: "equipmentName",
     label: "报警设备名称",
-    width: 110,
+    width: 160,
     fixed: true,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.name}>
-          <span className="table-first-col">{scope.row.name}</span>
+        <div className="text-overflow" title={scope.row.equipmentName}>
+          <span className="table-first-col">{scope.row.equipmentName}</span>
         </div>
       );
     },
   },
   {
-    prop: "project",
-    label: "所属项目",
-    width: 100,
-  },
-  {
-    prop: "time1",
+    prop: "createTime",
     label: "报警时间",
     width: 180,
   },
   {
-    prop: "level",
-    label: "处理等级",
+    prop: "riskLevel",
+    label: "报警等级",
     width: 100,
     render: (scope) => {
-      const level = scope.row.level;
+      const riskLevel = scope.row.riskLevel;
       let type = "success";
       let name = "三级";
-      if (level === 1) {
+      if (riskLevel === 1) {
         type = "danger";
         name = "一级";
-      } else if (level === 2) {
+      } else if (riskLevel === 2) {
         type = "warning";
         name = "二级";
       }
@@ -214,48 +178,44 @@ const column = [
     },
   },
   {
-    prop: "admin",
+    prop: "userName",
     label: "处理人",
     width: 80,
   },
   {
-    prop: "time2",
+    prop: "addressTime",
     label: "处理时间",
+    width: 180,
   },
   {
     prop: "status",
     label: "处理过程",
+    width: 100,
     render: (scope) => {
       const status = scope.row.status;
-      const type = status === 1 ? "danger" : "success";
-      return <ElTag type={type}>{status === 1 ? "未处理" : "已处理"}</ElTag>;
+      const type = status === "未处理" ? "danger" : "success";
+      return <ElTag type={type}>{status}</ElTag>;
     },
   },
   {
     prop: "desc",
     label: "操作记录",
-    width: 220,
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
-  });
-  state.dataSource = res;
-};
-getList();
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  selectRows,
+  pageChange,
+  sortChange,
+  searchChange,
+  selectionChange,
+  getTableList,
+} = useTable(getLiveList, state.searchFormData, state.sortInfo);
+
+getTableList();
 
 const batchExport = () => {
   ElMessageBox.confirm("确认导出选中的内容？", "警告", {
@@ -263,35 +223,64 @@ const batchExport = () => {
     cancelButtonText: "取消",
     type: "warning",
   })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "导出成功",
-      });
+    .then(async () => {
+      const ids = selectRows.value.map((item) => item.id);
+      const data = await exportLive(state.searchFormData.projectId, ids);
+      if (data && !data.code) {
+        exportWithExcel(data, "设备实时报警");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
     })
     .catch(() => {});
 };
 const onSearch = (data) => {
-  console.log(data);
+  const param = {};
+  data.forEach((item) => {
+    if (item.prop === "timeRange") {
+      param.startDate = item.value?.[0];
+      param.endDate = item.value?.[1];
+    } else {
+      param[item.prop] = item.value;
+    }
+  });
+  state.searchFormData = { ...state.searchFormData, ...param };
+  searchChange(state.searchFormData);
 };
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
-const selectionChange = (data) => {
-  state.selectRows = data;
+
+const handleSearchChange = () => {
+  searchChange(state.searchFormData);
 };
 
 const addRow = () => {
   addRef.value.open();
 };
 const handleRow = (row) => {
-  if (row.status === 1) {
+  if (row.status !== "已处理") {
     state.currentData = row;
     handleRef.value.open();
   }
 };
-const addSubmit = (data) => {};
-const handleSubmit = (data) => {};
+const addSubmit = async (param) => {
+  const { data } = await addLive(state.searchFormData.projectId, param);
+  if (data.code === 200) {
+    ElMessage.success("新增成功!");
+    handleRef.value.close();
+  }
+};
+const handleSubmit = async (param) => {
+  const { data } = await handleLive(state.searchFormData.projectId, {
+    alarmId: param.id,
+    userName: param.userName,
+    result: param.result,
+  });
+  if (data.code === 200) {
+    ElMessage.success("处理成功!");
+    handleRef.value.close();
+  }
+};
 </script>
 <style lang="scss" scoped>
 .search {

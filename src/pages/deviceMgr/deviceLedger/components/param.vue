@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 13:27:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 14:32:42
+ * @LastEditTime: 2024-01-06 13:27:32
  * @Description: 
 -->
 <template>
@@ -26,9 +26,9 @@
             placeholder="请输入参数名称"
           />
         </el-form-item>
-        <el-form-item label="参数内容" :prop="item + '.content'">
+        <el-form-item label="参数内容" :prop="item + '.value'">
           <el-input
-            v-model="state.formValue[item].content"
+            v-model="state.formValue[item].value"
             placeholder="请输入参数内容"
           />
         </el-form-item>
@@ -57,8 +57,10 @@ const initForm = (params) => {
   const param = {};
   params.forEach((item, index) => {
     param[index] = {
+      ...item,
       name: item.name,
-      content: item.content,
+      value: item.value,
+      id: item.id || index,
     };
   });
   return param;
@@ -73,7 +75,8 @@ const addRule = () => {
   const randomKey = Math.random();
   state.formValue[randomKey] = {
     name: "",
-    content: "",
+    value: "",
+    id: randomKey,
   };
 };
 watch(
@@ -87,8 +90,10 @@ const getValue = () => {
   const params = [];
   Object.keys(state.formValue).forEach((key) => {
     params.push({
+      ...state.formValue[key],
       name: state.formValue[key].name,
-      content: state.formValue[key].content,
+      value: state.formValue[key].value,
+      id: state.formValue[key].id,
     });
   });
   return params;
@@ -107,7 +112,7 @@ defineExpose({ getValue });
     margin-bottom: 10px;
     .block-title {
       display: flex;
-      justify-content: space-between;
+      justify-value: space-between;
       align-items: center;
       margin-bottom: 10px;
       span {

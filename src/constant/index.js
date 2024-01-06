@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 16:22:56
+ * @LastEditTime: 2024-01-06 15:04:27
  * @Description:
  */
 import Device from "@/assets/svg/device.svg";
@@ -784,3 +784,9 @@ export const AUTH_POINT_CONFIG = [
     ],
   },
 ];
+
+export const ALARM_LEVELS = [
+  { id: 1, name: "一级" },
+  { id: 2, name: "二级" },
+  { id: 3, name: "三级" },
+]

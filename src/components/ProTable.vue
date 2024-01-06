@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-21 11:50:22
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 19:16:10
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-06 13:52:53
  * @Description: 
 -->
 <template>
@@ -86,7 +86,7 @@ const emits = defineEmits([
 ]);
 
 const state = reactive({
-  pageConfig: props.pageInfo,
+  pageConfig: { ...props.pageInfo },
 });
 
 const handleSelectionChange = (selection) => {
@@ -100,7 +100,7 @@ const handlePageChange = (currentPage, pageSize) => {
 watch(
   () => props.pageInfo,
   (val) => {
-    state.pageConfig = val;
+    state.pageConfig = { ...val };
   }
 );
 </script>

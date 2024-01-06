@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 12:09:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 12:49:02
+ * @LastEditTime: 2024-01-06 14:24:27
  * @Description: 
  */
 import { reactive, toRefs } from "vue";
@@ -28,11 +28,14 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}) => {
     },
     searchParam: { ...initSearchParam },
     sortParam: { ...initSortParam },
-    selectKeys: []
+    selectRows: []
   });
 
   const updatePageInfo = (pageable) => {
-    Object.assign(state.pageInfo, pageable);
+    state.pageInfo = {
+      ...state.pageInfo,
+      ...pageable
+    }
   }
 
   const getTableList = async () => {
@@ -57,33 +60,47 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}) => {
     state.loading = false;
   }
 
+  const resetPageInfo = () => {
+    state.pageInfo.currentPage = 1;
+  }
+
   const sortChange = ({ prop, order }) => {
     state.sortParam = { prop, order };
+    resetPageInfo();
     getTableList();
   }
   const pageChange = (currentPage, pageSize) => {
-    state.pageInfo.currentPage = currentPage;
+    if (state.pageInfo.currentPage === currentPage && state.pageInfo.pageSize === pageSize) return;
+    if (pageSize !== state.pageInfo.pageSize && state.pageInfo.currentPage !== 1) {
+      resetPageInfo();
+    } else {
+      state.pageInfo.currentPage = currentPage;
+    }
     state.pageInfo.pageSize = pageSize;
     getTableList();
   }
   const updateSearchParam = (param) => {
-    Object.assign(state.searchParam, param);
-  }
-  const resetPageInfo = () => {
-    state.pageInfo.currentPage = 1;
+    state.searchParam = {
+      ...state.searchParam,
+      ...param
+    }
   }
   const searchChange = (newSearch) => {
     resetPageInfo();
     updateSearchParam(newSearch);
     getTableList();
   }
+  const selectionChange = (data) => {
+    state.selectRows = data;
+  };
   return {
     ...toRefs(state),
     pageChange,
     sortChange,
     searchChange,
     getTableList,
-    updateSearchParam
+    updateSearchParam,
+    selectionChange
   }
 }
 export default useTable;
