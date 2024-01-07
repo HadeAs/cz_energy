@@ -78,12 +78,12 @@ const column = [
   {
     prop: "loginTime",
     label: "登录时间",
-    sortable: true,
+    sortable: "custom",
   },
   {
     prop: "logoutTime",
     label: "退出时间",
-    sortable: true,
+    sortable: "custom",
   },
 ];
 

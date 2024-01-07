@@ -229,7 +229,7 @@ const column = [
   {
     prop: "startTime",
     label: "项目起始时间",
-    sortable: true,
+    sortable: "custom",
   },
 ];
 

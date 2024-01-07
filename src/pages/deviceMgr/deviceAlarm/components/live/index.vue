@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 19:07:07
+ * @LastEditTime: 2024-01-06 21:15:15
  * @Description: 
 -->
 <template>
@@ -187,6 +187,7 @@ const column = [
     prop: "addressTime",
     label: "处理时间",
     width: 180,
+    sortable: "custom",
   },
   {
     prop: "status",
@@ -260,14 +261,14 @@ const addRow = () => {
 };
 const handleRow = (row) => {
   if (row.status !== "已处理") {
-    state.currentData = row;
+    state.currentData = { ...row };
     handleRef.value.open();
   }
 };
 const addSubmit = async (param) => {
   const { code } = await addLive(state.searchFormData.projectId, param);
   if (code === 200) {
-    handleRef.value.close();
+    addRef.value.close();
     ElMessage.success("新增成功!");
     getTableList();
   }

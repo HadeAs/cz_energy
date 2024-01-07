@@ -1,17 +1,20 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:09:06
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-07 16:58:57
  * @Description: 
 -->
 <template>
   <BoxContainer title="该型号设备列表（15）">
     <ProTable
       :column="column"
-      :pageInfo="state.pageInfo"
-      :datasource="state.dataSource"
+      :pageInfo="pageInfo"
+      :default-sort="state.sortInfo"
+      :datasource="dataSource"
+      v-loading="loading"
       @page-change="pageChange"
+      @sort-change="sortChange"
     >
       <template #operation="scope">
         <a
@@ -22,7 +25,7 @@
         >
         <span
           class="table-operator-btn"
-          :class="scope.row.status === 1 ? '' : 'disabled'"
+          :class="scope.row.maintainState === '未保养' ? '' : 'disabled'"
           v-auth="'maintain_device_maintenance'"
           @click="editRow(scope.row)"
           >设备保养</span
@@ -42,24 +45,37 @@
         :model="state.formData"
         :rules="rules"
       >
-        <el-form-item label="保养时间" prop="time">
-          <el-date-picker
-            v-model="state.formData.time"
-            type="date"
-            placeholder="请选择日期"
+        <el-form-item label="保养人" prop="maintainUser">
+          <el-input
+            v-model="state.formData.maintainUser"
+            placeholder="请输入保养人"
           />
         </el-form-item>
-        <el-form-item label="设备保养（最多上传5张）" prop="detailImgs">
+        <el-form-item label="保养时间" prop="maintainDate">
+          <el-date-picker
+            v-model="state.formData.maintainDate"
+            type="datetime"
+            placeholder="请选择日期"
+            value-format="YYYY-MM-DD hh:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="设备保养（最多上传5张）" prop="images">
           <ProUpload
             list-type="picture-card"
             :limit="5"
-            :file-list="state.formData.detailImgs"
+            :file-list="state.formData.images"
             @change="handleChange"
           />
         </el-form-item>
-        <el-form-item label="作业内容" prop="desc">
+        <el-form-item label="作业单号" prop="jobNumber">
           <el-input
-            v-model="state.formData.desc"
+            v-model="state.formData.jobNumber"
+            placeholder="请输入保养人"
+          />
+        </el-form-item>
+        <el-form-item label="作业内容" prop="jobContent">
+          <el-input
+            v-model="state.formData.jobContent"
             type="textarea"
             placeholder="请输入至少5个字符"
           />
@@ -76,82 +92,80 @@ import ProDrawer from "@/components/ProDrawer.vue";
 import BoxContainer from "../boxContainer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import ProUpload from "@/components/ProUpload.vue";
+import useTable from "@/hooks/useTable";
+import {
+  getDevicePlanList,
+  addDeviceMaintainPlan,
+} from "@/api/operationMgr/deviceMaintain";
 
-const COMMON_DATA_MAPS = [
-  {
-    project: "冷水机组",
-    no: "AL264694",
-    position: "空调主机一一楼主机机房",
-    status: 1,
-    time: "2023-02-15",
-  },
-  {
-    project: "冷水机组",
-    no: "AL264694",
-    position: "空调主机一一楼主机机房",
-    status: 0,
-    time: "2023-02-15",
-  },
-  {
-    project: "冷水机组",
-    no: "AL264694",
-    position: "空调主机一一楼主机机房",
-    status: 1,
-    time: "2023-02-15",
-  },
-  {
-    project: "冷水机组",
-    no: "AL264694",
-    position: "空调主机一一楼主机机房",
-    status: 0,
-    time: "2023-02-15",
-  },
-];
+const props = defineProps({
+  deviceId: { type: String },
+  projectId: { type: Number },
+});
 
 const router = useRouter();
 const rules = {
-  time: { required: true, message: "请选择设备保养时间", trigger: "blur" },
-  detailImgs: { required: true, message: "请上传设备保养图", trigger: "blur" },
+  maintainDate: {
+    required: true,
+    message: "请选择设备保养时间",
+    trigger: "blur",
+  },
+  images: [
+    {
+      type: "array",
+      required: true,
+      message: "请上传设备保养图",
+      trigger: "change",
+    },
+  ],
+  jobContent: [
+    { required: true, message: "请输入作业内容", trigger: "blur" },
+    { min: 5, message: "请输入至少5个字符", trigger: "blur" },
+  ],
 };
 
 const drawerRef = ref();
 const formRef = ref();
 
 const state = reactive({
-  pageInfo: {
-    total: 30,
-    currentPage: 1,
-    pageSize: 5,
-    pageSizes: [5, 10, 15, 30, 50],
+  searchFormData: {
+    projectId: props.projectId,
+    equipmentModelId: props.deviceId,
   },
-  dataSource: [],
+  sortInfo: { prop: "id", order: "descending" },
+  pageInfo: {
+    pageSize: 5,
+    pageSizes: [5, 10, 15, 20],
+  },
   formData: {
-    time: "",
-    detailImgs: [],
-    desc: "",
+    maintainUser: "",
+    maintainDate: "",
+    jobNumber: "",
+    jobContent: "",
+    images: [],
   },
 });
 
 const column = [
   {
-    prop: "project",
+    prop: "name",
     label: "设备名称",
-    // width: 110,
+    // width: 180,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.project}>
-          <span className="table-first-col">{scope.row.project}</span>
+        <div className="text-overflow" title={scope.row.name}>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
   },
   {
-    prop: "no",
+    prop: "propertyNum",
     label: "资产编号",
     width: 140,
   },
   {
-    prop: "position",
+    prop: "location",
     label: "设备位置",
     width: 200,
   },
@@ -160,69 +174,55 @@ const column = [
     label: "启用状态",
     width: 100,
     render: (scope) => {
-      const ifOpen = scope.row.status === 1;
+      const ifOpen = scope.row.status === "启用";
       return (
         <>
           <span
             style={{
               color: ifOpen ? "#00B050" : "#FA5555",
               marginRight: "5px",
-              fontSize: "5px",
+              fontSize: "12px",
             }}
           >
             ●{" "}
           </span>
-          {ifOpen ? "启用" : "停用"}
+          {scope.row.status}
         </>
       );
     },
   },
   {
-    prop: "time",
+    prop: "maintainState",
     label: "保养状态",
-    // width: 150,
     render: (scope) => {
-      const ifMaintain = scope.row.status === 1;
+      const ifMaintain = scope.row.maintainState !== "未保养";
       return (
         <>
           <ElTag type={ifMaintain ? "success" : "warning"}>
-            {ifMaintain ? "已保养" : "未保养"}
+            {scope.row.maintainState}
           </ElTag>
-          {ifMaintain ? scope.row.time : "--"}
+          {ifMaintain ? scope.row.maintainDate : " --"}
         </>
       );
     },
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(5).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          id: index,
-          project: `${COMMON_DATA_MAPS[i].project}00${index}`,
-        };
-      });
-      resolve(data);
-    }, 600);
-  });
-  state.dataSource = res;
-};
-getList();
+const { dataSource, loading, pageInfo, pageChange, sortChange, getTableList } =
+  useTable(
+    getDevicePlanList,
+    state.searchFormData,
+    state.sortInfo,
+    state.pageInfo
+  );
 
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
+getTableList();
 
 const editRow = (row) => {
-  state.formData.time = row.time;
-  state.formData.detailImgs = [];
-  state.formData.desc = row.desc;
-  drawerRef.value.open();
+  if (row.maintainState === "未保养") {
+    state.formData.equipmentId = row.id;
+    drawerRef.value.open();
+  }
 };
 
 const viewDetail = (row) => {
@@ -231,21 +231,28 @@ const viewDetail = (row) => {
     name: "equipmentDetail",
     params: {
       id,
+      equipmentModelId: props.deviceId,
     },
   }).href;
   window.open(path, "_blank");
 };
 
 const handleChange = (fileList) => {
-  console.log(fileList);
-  state.formData.detailImgs = fileList;
+  state.formData.images = fileList;
 };
 const confirmAddVar = () => {
   formRef.value
     .validate()
-    .then(() => {
-      console.log("success");
-      drawerRef.value.close();
+    .then(async () => {
+      const { code } = await addDeviceMaintainPlan(props.projectId, {
+        ...state.formData,
+        images: state.formData.images.map((item) => item.row),
+      });
+      if (code === 200) {
+        ElMessage.success("设备保养添加成功");
+        drawerRef.value.close();
+        getTableList();
+      }
     })
     .catch(() => {
       console.log("fail");

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:56:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:55:09
+ * @LastEditTime: 2024-01-07 16:09:56
  * @Description: 
 -->
 <template>
@@ -15,7 +15,7 @@
         >编辑</el-button
       >
     </template>
-    <div class="cs-text-wrap">{{ state.desc }}</div>
+    <div class="cs-text-wrap">{{ state.content }}</div>
     <ProDrawer title="编辑保养计划" ref="drawerRef" @confirm="confirmAddVar">
       <el-form
         ref="formRef"
@@ -23,10 +23,10 @@
         :model="state.formData"
         :rules="rules"
       >
-        <el-form-item label="计划内容" prop="desc">
+        <el-form-item label="计划内容" prop="content">
           <el-input
-            class="desc-inner"
-            v-model="state.formData.desc"
+            class="content-inner"
+            v-model="state.formData.content"
             type="textarea"
             placeholder="请输入至少5个字符"
           />
@@ -38,9 +38,17 @@
 <script setup name="MainTainPlan">
 import { reactive, ref } from "vue";
 import BoxContainer from "../boxContainer.vue";
+import {
+  getFiveYearPlan,
+  setFiveYearPlan,
+} from "@/api/operationMgr/deviceMaintain";
 
+const props = defineProps({
+  deviceId: { type: String },
+  projectId: { type: Number },
+});
 const rules = {
-  desc: [
+  content: [
     { required: true, message: "请输入至少5个字符", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
   ],
@@ -48,22 +56,36 @@ const rules = {
 const drawerRef = ref();
 const formRef = ref();
 const state = reactive({
-  desc: "这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容，这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容。这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容，这是保养计划内容这是保养计划内容这是保养计划内容这是保养计划内容。",
+  content: "开发中",
   formData: {
-    desc: "",
+    content: "",
   },
 });
 
+const getPlan = async () => {
+  const { data } = await getFiveYearPlan({
+    projectId: props.projectId,
+    equipmentModelId: props.deviceId,
+  });
+};
+// getPlan();
+
 const handleEdit = () => {
-  state.formData.desc = state.desc;
+  state.formData.content = state.content;
   drawerRef.value.open();
 };
 const confirmAddVar = () => {
   formRef.value
     .validate()
-    .then(() => {
-      console.log("success");
-      drawerRef.value.close();
+    .then(async () => {
+      const { code } = await setFiveYearPlan(props.projectId, {
+        equipmentModelId: props.deviceId,
+        fiveYearMaintainPlan: state.formData.content,
+      });
+      if (code === 200) {
+        ElMessage.success("5年保养计划修改成功");
+        drawerRef.value.close();
+      }
     })
     .catch(() => {
       console.log("fail");
@@ -78,7 +100,7 @@ const confirmAddVar = () => {
   border: 1px solid #cfd4ed;
   min-height: 100px;
 }
-.desc-inner {
+.content-inner {
   :deep() {
     .el-textarea__inner {
       min-height: calc(100vh - 180px) !important;

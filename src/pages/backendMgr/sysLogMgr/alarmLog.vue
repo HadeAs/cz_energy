@@ -74,7 +74,7 @@ const column = [
   {
     prop: "operTime",
     label: "操作时间",
-    sortable: true,
+    sortable: "custom",
   },
   {
     prop: "system",

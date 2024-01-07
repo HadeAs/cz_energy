@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:07:37
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-07 12:56:30
  * @Description: 
 -->
 <template>
@@ -11,13 +11,13 @@
     <div class="cs-main-wrap">
       <MainContentContainer class="main-container">
         <ProTable
-          multiple
           :column="column"
           :pageInfo="pageInfo"
-          :datasource="state.dataSource"
-          v-loading="state.loading"
+          :default-sort="state.sortInfo"
+          :datasource="dataSource"
+          v-loading="loading"
           @page-change="pageChange"
-          @selection-change="selectionChange"
+          @sort-change="sortChange"
         >
           <template #toolbar>
             <el-row align="middle" :gutter="5">
@@ -28,20 +28,25 @@
                   :model="state.searchFormData"
                 >
                   <el-form-item>
-                    <el-select v-model="state.searchFormData.nameType">
+                    <el-select
+                      v-model="state.searchFormData.projectId"
+                      placeholder="选择项目"
+                      @change="handleSearchChange"
+                    >
                       <el-option
-                        v-for="item in state.nameOpts"
+                        v-for="item in globalState.projects"
                         :key="item.id"
-                        :label="item.text"
+                        :label="item.name"
                         :value="item.id"
                       />
                     </el-select>
                   </el-form-item>
                   <el-form-item>
                     <el-input
-                      v-model="state.searchFormData.name"
-                      placeholder="项目名称"
+                      v-model="state.searchFormData.textQuery"
+                      placeholder="设备名称/资产编号"
                       :suffix-icon="Search"
+                      @change="handleSearchChange"
                     />
                   </el-form-item>
                 </el-form>
@@ -50,14 +55,12 @@
           </template>
           <template #operation="scope">
             <ProPopConfirm
-              title="你确定要恢复该设备吗?"
+              title="你确定要恢复该内容吗?"
               :icon="CircleCloseFilled"
               iconColor="red"
               @confirm="recoverRow(scope.row)"
             >
-              <a
-                class="table-operator-btn"
-                v-auth="'group_work_recycle_restore'"
+              <a class="table-operator-btn" v-auth="'group_work_delete'"
                 >恢复</a
               >
             </ProPopConfirm>
@@ -67,85 +70,26 @@
     </div>
   </div>
 </template>
-<script lang="jsx" setup name="RecycleBin">
-import { reactive, ref } from "vue";
+<script lang="jsx" setup name="Group">
+import { reactive, watch } from "vue";
 import { Search, CircleCloseFilled } from "@element-plus/icons-vue";
 import { ElPopover } from "element-plus";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
+import { getList, recoverDevice, getInfo } from "@/api/deviceMgr/deviceGroup";
+import { getCollectList } from "@/api/deviceMgr";
 
-const COMMON_DATA_MAPS = [
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    project: "项目001",
-    type: "空调（主机机房、末端侧）",
-    status: 1,
-    time: "2023-05-12  15:21",
-    num: 5,
-  },
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    project: "项目001",
-    type: "供配电（高低压系统、配电系统）",
-    status: 0,
-    time: "2023-05-12  15:21",
-    num: 5,
-  },
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    project: "项目001",
-    type: "照明",
-    status: 1,
-    time: "2023-05-12  15:21",
-    num: 5,
-  },
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    project: "项目001",
-    type: "动力电梯设备、生活水泵）",
-    status: 0,
-    time: "2023-05-12  15:21",
-    num: 5,
-  },
-];
-
-const detailRef = ref();
+const { globalState } = storeToRefs(appStore.global);
 const state = reactive({
   searchFormData: {
-    nameType: "all",
-    name: "",
+    projectId: globalState.value.projectId,
+    textQuery: "",
+    isDeleted: 1,
   },
-  nameOpts: [
-    {
-      id: "all",
-      text: "全部项目名称",
-    },
-    {
-      id: "1",
-      text: "项目名称1",
-    },
-    {
-      id: "2",
-      text: "项目名称2",
-    },
-  ],
-  dataSource: [],
-  loading: true,
-  selectRows: [],
-  currentData: {},
-  title: "",
-});
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
+  sortInfo: { prop: "propertyNum", order: "descending" },
+  collectList: [],
+  relateList: [],
 });
 
 const column = [
@@ -163,16 +107,22 @@ const column = [
     },
   },
   {
-    prop: "project",
+    prop: "projectName",
     label: "所属项目",
-    width: 130,
+    width: 180,
+    render: () => {
+      const target = globalState.value.projects.find(
+        (item) => item.id === state.searchFormData.projectId
+      );
+      return target?.name;
+    },
   },
   {
-    prop: "type",
+    prop: "sysClassName",
     label: "所属系统",
-    width: 180,
+    // width: 180,
     render: (scope) => {
-      const data = scope.row.type;
+      const data = scope.row.sysClassName;
       let type;
       if (data) {
         if (data.indexOf("空调") > -1) {
@@ -191,25 +141,24 @@ const column = [
     },
   },
   {
-    prop: "time",
+    prop: "openTime",
     label: "启用时间",
     width: 180,
   },
   {
     prop: "status",
-    label: "设备状态",
-    width: 100,
+    label: "运行状态",
     render: (scope) => {
       const status = scope.row.status;
       return (
         <div className="badge">
           <span
             style={{ fontSize: "5px" }}
-            className={status === 1 ? "success" : "danger"}
+            className={status === "启用" ? "success" : "danger"}
           >
             ●
           </span>
-          {status === 1 ? "启用" : "停用"}
+          {status}
         </div>
       );
     },
@@ -217,7 +166,16 @@ const column = [
   {
     prop: "num",
     label: "关联设备参数",
+    width: 120,
+    align: "center",
     render: (scope) => {
+      const relate = state.relateList.find((item) => item.id === scope.row.id);
+      if (!relate) return null;
+      const { deviceIds = [] } = relate;
+      if (!deviceIds.length) return "--";
+      const relateCollects = state.collectList.filter((item) =>
+        deviceIds.includes(item.id)
+      );
       return (
         <ElPopover
           placement="right"
@@ -225,19 +183,17 @@ const column = [
           width={200}
           trigger="click"
           v-slots={{
-            default: () => (
-              <>
-                <div>冷热源侧回水温度</div>
-                <div>用户侧供水温度</div>
-                <div>用户侧回水温度</div>
-                <div>汇丰大厦二次供水温度</div>
-              </>
-            ),
-            reference: () => (
-              <ElButton text type="primary">
-                {scope.row.num}
-              </ElButton>
-            ),
+            default: () =>
+              relateCollects.map((item) => (
+                <div key={item.id}>{item.name}</div>
+              )),
+            reference: () => {
+              return (
+                <ElButton text type="primary">
+                  {deviceIds.length}
+                </ElButton>
+              );
+            },
           }}
         ></ElPopover>
       );
@@ -250,34 +206,67 @@ const column = [
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
-  });
-  state.dataSource = res;
-};
-getList();
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
 
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
+getTableList();
+
+const getCollectionList = async () => {
+  const { data } = await getCollectList({
+    projectId: state.searchFormData.projectId,
+  });
+  if (data?.data) {
+    state.collectList = data.data;
+  }
 };
-const selectionChange = (data) => {
-  state.selectRows = data;
+
+getCollectionList();
+
+const getRelateList = async (source) => {
+  const relates = [];
+  for (let i = 0; i < source.length; i += 1) {
+    const item = source[i];
+    const { data } = await getInfo({
+      projectId: state.searchFormData.projectId,
+      id: item.id,
+    });
+    if (data?.data) {
+      relates.push(data.data);
+    }
+  }
+  state.relateList = relates;
 };
-const recoverRow = (row) => {};
+
+const handleSearchChange = () => {
+  searchChange(state.searchFormData);
+};
+const recoverRow = async (row) => {
+  const { code } = await recoverDevice(state.searchFormData.projectId, {
+    id: row.id,
+  });
+  if (code === 200) {
+    ElMessage.success("恢复成功");
+    getTableList();
+  }
+};
+watch(
+  () => dataSource.value,
+  (val) => {
+    getRelateList(val);
+  }
+);
 </script>
 <style lang="scss" scoped>
+.main-container {
+  padding: 12px 14px !important;
+}
 .search-form {
   text-align: right;
   :deep() {
@@ -304,10 +293,5 @@ const recoverRow = (row) => {};
   .danger {
     color: #ff3333;
   }
-}
-</style>
-<style lang="scss" scoped>
-.main-container {
-  padding: 12px 14px !important;
 }
 </style>

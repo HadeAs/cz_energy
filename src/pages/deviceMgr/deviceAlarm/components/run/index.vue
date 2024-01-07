@@ -108,6 +108,10 @@ const column = [
     width: 180,
   },
   {
+    prop: "data",
+    label: "实时数据",
+  },
+  {
     prop: "maxThreshold",
     label: "最大阈值",
     width: 100,
@@ -129,9 +133,9 @@ const column = [
       } else if (status === "异常") {
         type = "danger";
       } else if (status === "无数据") {
-        type = "info";
-      } else {
         type = "warning";
+      } else {
+        type = "info";
       }
       return <ElTag type={type}>{status}</ElTag>;
     },
@@ -156,7 +160,17 @@ const {
 getTableList();
 
 const onSearch = (data) => {
-  console.log(data);
+  const param = {};
+  data.forEach((item) => {
+    if (item.prop === "timeRange") {
+      param.startDate = item.value?.[0];
+      param.endDate = item.value?.[1];
+    } else {
+      param[item.prop] = item.value;
+    }
+  });
+  state.searchFormData = { ...state.searchFormData, ...param };
+  searchChange(state.searchFormData);
 };
 
 const addRow = () => {

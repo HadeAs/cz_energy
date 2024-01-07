@@ -8,13 +8,13 @@
 <template>
   <ProDrawer title="新增" ref="handleDrawerRef" @confirm="confirmDetail">
     <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="state.form">
-      <el-form-item label="监测点位名称" required prop="name">
+      <!-- <el-form-item label="监测点位名称" required prop="name">
         <el-input placeholder="请输入监测点位名称" v-model="state.form.name" />
+      </el-form-item> -->
+      <el-form-item label="实时数据" required prop="data">
+        <el-input-number v-model="state.form.data" />
       </el-form-item>
-      <el-form-item label="阈值" required prop="num">
-        <el-input placeholder="请输入阈值" v-model="state.form.num" />
-      </el-form-item>
-      <el-form-item label="阈值" required prop="num">
+      <el-form-item label="操作记录" required prop="description">
         <el-input
           v-model="state.form.description"
           type="textarea"
@@ -31,7 +31,7 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const initData = {
   deviceDataId: "",
-  num: "",
+  data: null,
   description: "",
 };
 const emits = defineEmits(["submit"]);

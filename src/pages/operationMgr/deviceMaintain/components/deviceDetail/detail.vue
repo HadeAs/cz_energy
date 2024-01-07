@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:04:50
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 16:33:15
+ * @LastEditTime: 2024-01-07 15:28:13
  * @Description: 
 -->
 <template>
@@ -22,26 +22,42 @@
 </template>
 <script setup name="Detail">
 import { reactive } from "vue";
-import { useRoute } from "vue-router";
 import BoxContainer from "../boxContainer.vue";
+import { getInfo } from "@/api/operationMgr/deviceMaintain";
 
-const route = useRoute();
-const state = reactive({
-  exclData: [
-    { label: "设备名称", value: "某某设备" },
-    { label: "型号", value: "AL264694" },
-    { label: "设备数量", value: 6 },
-    { label: "制冷量（kw）", value: 12 },
-    { label: "制热量（kw）", value: 10 },
-    { label: "电源", value: "这是电源" },
-    { label: "压缩机形式", value: "某某形式" },
-    { label: "额定功率（kw）", value: "100" },
-    { label: "冷媒", value: "43235" },
-    { label: "蒸发器水流量（L/s）", value: "54" },
-    { label: "冷凝器水流量（L/s）", value: "1452" },
-    { label: "外形尺寸（mm）", value: "60*60*60" },
-  ],
+const props = defineProps({
+  deviceId: { type: String },
+  num: { type: String },
+  projectId: { type: Number },
 });
+const state = reactive({
+  exclData: [],
+});
+
+const getDetail = async () => {
+  const { data } = await getInfo({
+    projectId: props.projectId,
+    equipmentId: props.deviceId,
+  });
+  if (data?.data) {
+    const item = data.data;
+    state.exclData = [
+      { label: "设备名称", value: item.name },
+      { label: "型号", value: item.modelNum },
+      { label: "设备数量", value: props.num },
+      { label: "制冷量（kw）", value: "开发中" },
+      { label: "制热量（kw）", value: "开发中" },
+      { label: "电源", value: "开发中" },
+      { label: "压缩机形式", value: "开发中" },
+      { label: "额定功率（kw）", value: "开发中" },
+      { label: "冷媒", value: "开发中" },
+      { label: "蒸发器水流量（L/s）", value: "开发中" },
+      { label: "冷凝器水流量（L/s）", value: "开发中" },
+      { label: "外形尺寸（mm）", value: "开发中" },
+    ];
+  }
+};
+getDetail();
 </script>
 <style lang="scss">
 .detail-label {

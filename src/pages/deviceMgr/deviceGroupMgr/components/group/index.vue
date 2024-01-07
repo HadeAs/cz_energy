@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:07:30
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-07 13:14:36
  * @Description: 
 -->
 <template>
@@ -12,10 +12,12 @@
         multiple
         :column="column"
         :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        v-loading="state.loading"
+        :default-sort="state.sortInfo"
+        :datasource="dataSource"
+        v-loading="loading"
         @page-change="pageChange"
         @selection-change="selectionChange"
+        @sort-change="sortChange"
       >
         <template #toolbar>
           <el-row align="middle" :gutter="5">
@@ -27,7 +29,7 @@
                 >新增</el-button
               >
               <el-button
-                :disabled="!state.selectRows.length"
+                :disabled="!selectRows.length"
                 @click="batchDelete"
                 v-auth="'group_index_batch_delete'"
                 >批量删除</el-button
@@ -40,40 +42,55 @@
                 :model="state.searchFormData"
               >
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.status">
+                  <el-select
+                    v-model="state.searchFormData.status"
+                    placeholder="选择状态"
+                    clearable
+                    @change="handleSearchChange"
+                  >
                     <el-option
-                      v-for="item in state.statusOpts"
+                      v-for="item in DEVICE_STATUS"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
                 </el-form-item>
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.type">
+                  <el-select
+                    v-model="state.searchFormData.sysClassId"
+                    placeholder="选择系统分类"
+                    clearable
+                    @change="handleSearchChange"
+                  >
                     <el-option
-                      v-for="item in state.typeOpts"
+                      v-for="item in state.classifyList"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
                 </el-form-item>
                 <el-form-item>
-                  <el-select v-model="state.searchFormData.nameType">
+                  <el-select
+                    v-model="state.searchFormData.projectId"
+                    placeholder="选择项目"
+                    @change="handleSearchChange"
+                  >
                     <el-option
-                      v-for="item in state.nameOpts"
+                      v-for="item in globalState.projects"
                       :key="item.id"
-                      :label="item.text"
+                      :label="item.name"
                       :value="item.id"
                     />
                   </el-select>
                 </el-form-item>
                 <el-form-item>
                   <el-input
-                    v-model="state.searchFormData.name"
+                    v-model="state.searchFormData.textQuery"
                     placeholder="项目名称"
                     :suffix-icon="Search"
+                    @change="handleSearchChange"
                   />
                 </el-form-item>
               </el-form>
@@ -108,6 +125,9 @@
       ref="detailRef"
       :title="state.title"
       :data="state.currentData"
+      :project-list="globalState.projects"
+      :classify-list="state.classifyList"
+      :role-list="globalState.roleList"
       @submit="detailSubmit"
     />
     <Relate ref="relateRef" :data="state.paramData" @submit="relateSubmit" />
@@ -118,129 +138,34 @@ import { reactive, ref } from "vue";
 import Detail from "./detail.vue";
 import Relate from "./relate.vue";
 import { Search, CircleCloseFilled } from "@element-plus/icons-vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import useTable from "@/hooks/useTable";
+import {
+  getList,
+  batchDeleteDevice,
+  deleteDevice,
+  updateInfo,
+  bindDevice,
+} from "@/api/deviceMgr/deviceGroup";
+import { getClassifyList } from "@/api/deviceMgr";
+import { DEVICE_STATUS } from "@/constant";
 
-const COMMON_DATA_MAPS = [
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    no: "ZC785646325",
-    project: "项目001",
-    type: "冷水机组",
-    classify: "空调系统",
-    dept: "设备科",
-    admin: "admin",
-    status: 1,
-    time: "2023-05-12",
-    position: "空调主机—一楼主机机房",
-  },
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    no: "ZC785646325",
-    project: "项目001",
-    type: "冷水机组",
-    classify: "空调系统",
-    dept: "设备科",
-    admin: "admin",
-    status: 0,
-    time: "2023-05-12",
-    position: "空调主机—一楼主机机房",
-  },
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    no: "ZC785646325",
-    project: "项目001",
-    type: "冷水机组",
-    classify: "空调系统",
-    dept: "设备科",
-    admin: "admin",
-    status: 1,
-    time: "2023-05-12",
-    position: "空调主机—一楼主机机房",
-  },
-  {
-    checkBox: "",
-    id: "",
-    name: "设备001",
-    no: "ZC785646325",
-    project: "项目001",
-    type: "冷水机组",
-    classify: "空调系统",
-    dept: "设备科",
-    admin: "admin",
-    status: 0,
-    time: "2023-05-12",
-    position: "空调主机—一楼主机机房",
-  },
-];
-
+const { globalState } = storeToRefs(appStore.global);
 const detailRef = ref();
 const relateRef = ref();
 const state = reactive({
   searchFormData: {
-    status: "all",
-    type: "all",
-    nameType: "all",
-    name: "",
+    status: "",
+    sysClassId: "",
+    textQuery: "",
+    projectId: globalState.value.projectId,
   },
-  statusOpts: [
-    {
-      id: "all",
-      text: "启用状态",
-    },
-    {
-      id: "1",
-      text: "启用",
-    },
-    {
-      id: "2",
-      text: "停用",
-    },
-  ],
-  typeOpts: [
-    {
-      id: "all",
-      text: "系统分类",
-    },
-    {
-      id: "1",
-      text: "空调系统",
-    },
-    {
-      id: "2",
-      text: "动力系统",
-    },
-  ],
-  nameOpts: [
-    {
-      id: "all",
-      text: "全部项目名称",
-    },
-    {
-      id: "1",
-      text: "项目名称1",
-    },
-    {
-      id: "2",
-      text: "项目名称2",
-    },
-  ],
-  dataSource: [],
-  loading: true,
-  selectRows: [],
+  classifyList: [],
+  sortInfo: { prop: "propertyNum", order: "descending" },
   currentData: {},
   paramData: {},
   title: "",
-});
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
 });
 
 const column = [
@@ -258,42 +183,48 @@ const column = [
     },
   },
   {
-    prop: "no",
+    prop: "propertyNum",
     label: "资产编号",
     width: 120,
   },
   {
-    prop: "project",
+    prop: "projectName",
     label: "项目名称",
     width: 180,
+    render: () => {
+      const target = globalState.value.projects.find(
+        (item) => item.id === state.searchFormData.projectId
+      );
+      return target?.name;
+    },
   },
   {
-    prop: "type",
+    prop: "typeName",
     label: "设备类型",
     width: 100,
   },
   {
-    prop: "classify",
+    prop: "sysClassName",
     label: "所属系统分类",
     width: 120,
   },
   {
-    prop: "dept",
+    prop: "managerDept",
     label: "管理科室",
   },
   {
-    prop: "admin",
+    prop: "managerName",
     label: "管理人",
   },
   {
-    prop: "position",
+    prop: "location",
     label: "设备位置",
-    width: 180,
+    // width: 180,
   },
   {
-    prop: "time",
+    prop: "openTime",
     label: "启用时间",
-    width: 150,
+    width: 180,
   },
   {
     prop: "status",
@@ -304,35 +235,43 @@ const column = [
         <div className="badge">
           <span
             style={{ fontSize: "5px" }}
-            className={status === 1 ? "success" : "danger"}
+            className={status === "启用" ? "success" : "danger"}
           >
             ●
           </span>
-          {status === 1 ? "启用" : "停用"}
+          {status}
         </div>
       );
     },
   },
 ];
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      const data = new Array(10).fill("").map((num, index) => {
-        const i = index % 4;
-        return {
-          ...COMMON_DATA_MAPS[i],
-          project: COMMON_DATA_MAPS[i].project + "00" + index,
-          id: index,
-        };
-      });
-      resolve(data);
-    }, 600);
+const getDeviceClassifyList = async () => {
+  const { data } = await getClassifyList({
+    projectId: state.searchFormData.projectId,
   });
-  state.dataSource = res;
+  if (data?.data) {
+    state.classifyList = data.data;
+  }
 };
-getList();
+getDeviceClassifyList();
+
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  selectRows,
+  pageChange,
+  sortChange,
+  searchChange,
+  selectionChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
+
+getTableList();
+const handleSearchChange = () => {
+  searchChange(state.searchFormData);
+};
 
 const batchDelete = () => {
   ElMessageBox.confirm("确认删除选中的内容？", "警告", {
@@ -340,19 +279,21 @@ const batchDelete = () => {
     cancelButtonText: "取消",
     type: "warning",
   })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "删除成功",
-      });
+    .then(async () => {
+      const ids = selectRows.value.map((item) => item.id);
+      const { code } = await batchDeleteDevice(
+        state.searchFormData.projectId,
+        ids
+      );
+      if (code === 200) {
+        ElMessage({
+          type: "success",
+          message: "批量删除成功",
+        });
+        getTableList();
+      }
     })
     .catch(() => {});
-};
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
-const selectionChange = (data) => {
-  state.selectRows = data;
 };
 
 const addRow = () => {
@@ -361,17 +302,42 @@ const addRow = () => {
   detailRef.value.open();
 };
 const editRow = (row) => {
-  state.currentData = row;
+  state.currentData = { ...row, projectId: state.searchFormData.projectId };
   state.title = "编辑";
   detailRef.value.open();
 };
 const relateRow = (row) => {
-  state.paramData = row;
+  state.paramData = { ...row, projectId: state.searchFormData.projectId };
   relateRef.value.open();
 };
-const deleteRow = (row) => {};
-const detailSubmit = (data) => {};
-const relateSubmit = (data) => {};
+const deleteRow = async (row) => {
+  const { code } = await deleteDevice(state.searchFormData.projectId, {
+    id: row.id,
+  });
+  if (code === 200) {
+    ElMessage.success("删除成功");
+    getTableList();
+  }
+};
+const detailSubmit = async (param) => {
+  const { code } = await updateInfo(state.searchFormData.projectId, param);
+  if (code === 200) {
+    detailRef.value.close();
+    ElMessage.success(`${state.title}成功`);
+    getTableList();
+  }
+};
+const relateSubmit = async (data, id) => {
+  const { code } = await bindDevice(state.searchFormData.projectId, {
+    id,
+    deviceIds: data,
+  });
+  if (code === 200) {
+    relateRef.value.close();
+    ElMessage.success("绑定采集点成功");
+    getTableList();
+  }
+};
 </script>
 <style lang="scss" scoped>
 .search-form {

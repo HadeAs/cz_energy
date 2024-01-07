@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 13:38:22
+ * @LastEditTime: 2024-01-06 23:12:30
  * @Description: 
 -->
 <template>
@@ -123,7 +123,7 @@ import {
   deleteModel,
   updateModel,
 } from "@/api/deviceMgr/deviceLedger";
-import { getEquipmentModelList } from "@/api/deviceMgr";
+import { getEquipmentTypeList } from "@/api/deviceMgr";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
 
@@ -164,11 +164,6 @@ const column = [
     label: "型号规格",
     width: 150,
   },
-  // {
-  //   prop: "no",
-  //   label: "资产编号", // 无
-  //   width: 150,
-  // },
   {
     prop: "typeName",
     label: "设备类型",
@@ -187,18 +182,30 @@ const column = [
       // } else {
       //   tagType = "info";
       // }
-      return <ElTag type="success">{type}</ElTag>;
+      return <ElTag>{type}</ElTag>;
     },
   },
   {
-    prop: "desc",
+    prop: "equipmentModelParamList",
     label: "技术参数",
     width: 210,
+    showOverflowTooltip: false,
+    render: (scope) => {
+      const { equipmentModelParamList = [] } = scope.row;
+      if (equipmentModelParamList.length) {
+        return equipmentModelParamList.map((item) => (
+          <ElTag class="param-tag" effect="dark">
+            {item.name}
+          </ElTag>
+        ));
+      }
+      return null;
+    },
   },
   {
     prop: "openTime",
     label: "安装时间",
-    sortable: true,
+    sortable: "custom",
     // width: 100,
   },
 ];
@@ -216,7 +223,7 @@ const {
 getTableList();
 
 const getEqpList = async () => {
-  const { data } = await getEquipmentModelList({
+  const { data } = await getEquipmentTypeList({
     projectId: state.searchFormData.projectId,
   });
   state.equipmentTypes = data.data;
@@ -235,8 +242,8 @@ const handleTypeChange = () => {
 const addRow = () => {
   state.operateType = "add";
   state.detailDrawerTitle = "新增设备台帐";
-  state.initDetailData = null;
   detailDrawerRef.value.open();
+  state.initDetailData = null;
 };
 
 const imports = () => {
@@ -246,26 +253,31 @@ const imports = () => {
 const editRow = (data) => {
   state.operateType = "edit";
   state.detailDrawerTitle = "编辑设备台帐";
-  state.initDetailData = data;
   detailDrawerRef.value.open();
+  state.initDetailData = { ...data, projectId: state.searchFormData.projectId };
 };
 
-const deleteRow = (row) => {
-  deleteModel(state.searchFormData.projectId, { id: row.id });
+const deleteRow = async (row) => {
+  const { code } = await deleteModel(state.searchFormData.projectId, {
+    id: row.id,
+  });
+  if (code === 200) {
+    ElMessage.success("删除成功");
+    getTableList();
+  }
 };
 
 const confirmDetail = async () => {
   const res = await commDetailRef.value.validate();
   if (res) {
-    // 配置新增/编辑逻辑
-    // if (state.operateType === "add") {
-    //   // state.dataSource.push(res);
-    // } else {
-    //   const { data } = await updateModel(state.searchFormData.projectId, res);
-    // }
-    const { data } = await updateModel(state.searchFormData.projectId, res);
-    detailDrawerRef.value.close();
-    getTableList();
+    const { code } = await updateModel(state.searchFormData.projectId, res);
+    if (code === 200) {
+      ElMessage.success(
+        `${state.operateType === "add" ? "新增" : "修改"}设备台账成功`
+      );
+      detailDrawerRef.value.close();
+      getTableList();
+    }
   }
 };
 const confirmImport = async () => {
@@ -273,6 +285,9 @@ const confirmImport = async () => {
 };
 </script>
 <style lang="scss">
+.param-tag {
+  margin-right: 4px;
+}
 span.warn {
   color: rgba(255, 48, 0, 0.898039215686275);
 }

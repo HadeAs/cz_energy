@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 13:27:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 13:27:32
+ * @LastEditTime: 2024-01-06 22:26:51
  * @Description: 
 -->
 <template>
@@ -60,7 +60,6 @@ const initForm = (params) => {
       ...item,
       name: item.name,
       value: item.value,
-      id: item.id || index,
     };
   });
   return param;
@@ -76,7 +75,6 @@ const addRule = () => {
   state.formValue[randomKey] = {
     name: "",
     value: "",
-    id: randomKey,
   };
 };
 watch(
@@ -93,7 +91,6 @@ const getValue = () => {
       ...state.formValue[key],
       name: state.formValue[key].name,
       value: state.formValue[key].value,
-      id: state.formValue[key].id,
     });
   });
   return params;

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 12:09:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 23:58:16
+ * @LastEditTime: 2024-01-07 13:37:07
  * @Description: 
  */
 import { reactive, toRefs } from "vue";
@@ -16,7 +16,7 @@ const PAGE_MAP = {
   total: "totalNum"
 }
 
-const useTable = (api, initSearchParam = {}, initSortParam = {}) => {
+const useTable = (api, initSearchParam = {}, initSortParam = {}, initPageParam = {}) => {
   const state = reactive({
     loading: false,
     dataSource: [],
@@ -25,6 +25,7 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}) => {
       currentPage: 1,
       pageSize: 10,
       pageSizes: [10, 15, 20, 50],
+      ...initPageParam
     },
     searchParam: { ...initSearchParam },
     sortParam: { ...initSortParam },
@@ -96,6 +97,7 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}) => {
   const selectionChange = (data) => {
     state.selectRows = data;
   };
+
   return {
     ...toRefs(state),
     pageChange,

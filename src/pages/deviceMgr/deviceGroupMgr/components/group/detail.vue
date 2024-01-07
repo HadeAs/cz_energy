@@ -2,18 +2,23 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 12:51:01
+ * @LastEditTime: 2024-01-07 16:33:07
  * @Description: 
 -->
 <template>
   <ProDrawer :title="title" ref="handleDrawerRef" @confirm="confirmDetail">
-    <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="state.form">
-      <el-form-item label="所属项目" required prop="project">
-        <el-select v-model="state.form.project">
+    <el-form
+      ref="formRef"
+      v-bind="COMMON_FORM_CONFIG"
+      :model="state.form"
+      :rules="rules"
+    >
+      <el-form-item label="所属项目" required prop="projectId">
+        <el-select v-model="state.form.projectId" @change="handleProjectChange">
           <el-option
-            v-for="item in state.projectOpts"
+            v-for="item in projectList"
             :key="item.id"
-            :label="item.text"
+            :label="item.name"
             :value="item.id"
           />
         </el-select>
@@ -21,40 +26,46 @@
       <el-form-item label="设备名称" required prop="name">
         <el-input placeholder="请输入设备名称" v-model="state.form.name" />
       </el-form-item>
-      <el-form-item label="设备种类" required prop="type">
-        <el-select v-model="state.form.type">
+      <el-form-item label="资产编号" required prop="propertyNum">
+        <el-input
+          placeholder="请输入资产编号"
+          v-model="state.form.propertyNum"
+        />
+      </el-form-item>
+      <el-form-item label="设备种类" required prop="equipmentModelId">
+        <el-select v-model="state.form.equipmentModelId">
           <el-option
-            v-for="item in state.projectOpts"
+            v-for="item in state.equipmentTypes"
             :key="item.id"
-            :label="item.text"
+            :label="item.name"
             :value="item.id"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="设备位置" required prop="position">
-        <el-input v-model="state.form.position" placeholder="请输入" />
+      <el-form-item label="设备位置" required prop="location">
+        <el-input v-model="state.form.location" placeholder="请输入" />
       </el-form-item>
-      <el-form-item label="系统分类" required prop="system">
-        <el-select v-model="state.form.system">
+      <el-form-item label="系统分类" required prop="sysClassId">
+        <el-select v-model="state.form.sysClassId">
           <el-option
-            v-for="item in state.projectOpts"
+            v-for="item in classifyList"
             :key="item.id"
-            :label="item.text"
+            :label="item.name"
             :value="item.id"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="管理人" required prop="admin">
-        <el-select v-model="state.form.admin">
+      <el-form-item label="管理人" required prop="managerId">
+        <el-select v-model="state.form.managerId">
           <el-option
-            v-for="item in state.projectOpts"
+            v-for="item in roleList"
             :key="item.id"
-            :label="item.text"
+            :label="item.name"
             :value="item.id"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="保养信息类别" required prop="classify">
+      <!-- <el-form-item label="保养信息类别" required prop="classify">
         <el-select v-model="state.form.classify">
           <el-option
             v-for="item in state.projectOpts"
@@ -63,26 +74,28 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="启用时间" required prop="time">
+      </el-form-item> -->
+      <el-form-item label="启用时间" required prop="openTime">
         <el-date-picker
           value-format="YYYY-MM-DD hh:mm:ss"
-          v-model="state.form.time"
+          v-model="state.form.openTime"
           type="datetime"
           placeholder="请选择时间"
         />
       </el-form-item>
       <el-form-item label="启用状态" required prop="status">
         <el-radio-group v-model="state.form.status">
-          <el-radio-button label="1">启用</el-radio-button>
-          <el-radio-button label="2">停用</el-radio-button>
+          <el-radio-button :label="true">启用</el-radio-button>
+          <el-radio-button :label="false">停用</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="上传设备图片" required prop="img">
+      <el-form-item label="上传设备图片" prop="image">
         <ProUpload
+          ref="imageRef"
           list-type="picture-card"
-          :limit="5"
-          :file-list="state.form.img"
+          :limit="1"
+          :file-list="state.form.image"
+          @change="handleChange"
         />
       </el-form-item>
     </el-form>
@@ -93,23 +106,40 @@ import { ref, reactive, watch } from "vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import ProUpload from "@/components/ProUpload.vue";
+import { getInfo } from "@/api/deviceMgr/deviceGroup";
+import { getEquipmentModelList } from "@/api/deviceMgr";
+import { ElMessage } from "element-plus";
 
 const initData = {
-  project: "",
+  projectId: "",
   name: "",
-  type: "",
-  position: "",
-  system: "",
-  admin: "",
-  classify: "",
-  time: "",
+  propertyNum: "",
+  equipmentModelId: "",
+  location: "",
+  sysClassId: "",
+  managerId: "",
+  // classify: "",
+  openTime: "",
   status: "1",
-  img: [],
+  image: [],
+};
+const rules = {
+  image: [
+    {
+      type: "array",
+      required: true,
+      message: "请上传设备图",
+      trigger: "change",
+    },
+  ],
 };
 const emits = defineEmits(["submit"]);
 const props = defineProps({
   title: { type: String },
   data: { type: Object, default: {} },
+  projectList: { type: Array },
+  classifyList: { type: Array },
+  roleList: { type: Array },
 });
 const handleDrawerRef = ref();
 const formRef = ref();
@@ -129,12 +159,47 @@ const state = reactive({
       text: "demo3",
     },
   ],
+  detailInfo: {},
+  equipmentTypes: [],
 });
+
+const getEqpList = async (projectId) => {
+  const { data } = await getEquipmentModelList({
+    projectId,
+  });
+  state.equipmentTypes = data.data;
+};
+
+const getDetail = async (param) => {
+  const { data } = await getInfo({ projectId: param.projectId, id: param.id });
+  if (data?.data) {
+    state.detailInfo = data.data;
+    state.form.status = data.data.status || false;
+    state.form.managerId = data.data.managerId;
+    state.form.equipmentModelId = data.data.equipmentModelId;
+    if (data.data.image) {
+      const [fileName, fileSuffix] = data.data.image.split(".");
+      state.form.image = [
+        {
+          name: fileName,
+          url: data.data.image,
+        },
+      ];
+    }
+  }
+};
+
+const handleChange = (fileList) => {
+  state.form.image = fileList;
+};
+
+const handleProjectChange = () => {
+  getEqpList(state.form.projectId);
+};
 const confirmDetail = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
-      handleDrawerRef.value.close();
-      emits("submit", state.form);
+      emits("submit", { ...state.form, file: state.form.image[0].raw });
     }
   });
 };
@@ -143,10 +208,17 @@ watch(
   () => props.data,
   (val) => {
     state.form = { ...initData, ...val };
+    if (val.id) {
+      getEqpList(val.projectId);
+      getDetail(val);
+    }
   }
 );
 const open = () => {
   handleDrawerRef.value.open();
 };
-defineExpose({ open });
+const close = () => {
+  handleDrawerRef.value.close();
+};
+defineExpose({ open, close });
 </script>

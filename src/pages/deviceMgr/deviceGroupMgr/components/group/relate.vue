@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 21:41:37
+ * @LastEditTime: 2024-01-07 11:22:31
  * @Description: 
 -->
 <template>
@@ -11,30 +11,31 @@
     ref="handleDrawerRef"
     @confirm="confirmDetail"
   >
-    <el-form
-      ref="formRef"
-      class="device-container"
-      v-bind="COMMON_FORM_CONFIG"
-      :model="state.form"
-    >
-      <el-form-item prop="param">
-        <el-input
-          v-model="state.form.param"
-          placeholder="请输入设备参数名称"
-          :prefix-icon="Search"
-        />
-      </el-form-item>
-      <el-form-item prop="devices">
-        <el-checkbox-group v-model="state.form.devices">
-          <el-checkbox
-            v-for="item in state.deviceOpts"
-            :key="item.id"
-            :label="item.id"
-            >{{ item.text }}</el-checkbox
-          >
-        </el-checkbox-group>
-      </el-form-item>
-    </el-form>
+    <el-input
+      v-model="state.search"
+      placeholder="请输入设备参数名称"
+      :prefix-icon="Search"
+    />
+    <el-scrollbar class="down-content" height="calc(100vh - 200px)">
+      <el-form
+        ref="formRef"
+        class="device-container"
+        v-bind="COMMON_FORM_CONFIG"
+        :model="state.form"
+        :rules="rules"
+      >
+        <el-form-item prop="devices">
+          <el-checkbox-group v-model="state.form.devices">
+            <el-checkbox
+              v-for="item in state.collectList"
+              :key="item.id"
+              :label="item.id"
+              >{{ item.name }}</el-checkbox
+            >
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+    </el-scrollbar>
   </ProDrawer>
 </template>
 <script setup name="Detail">
@@ -42,9 +43,11 @@ import { ref, reactive, watch } from "vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { Search } from "@element-plus/icons-vue";
+import { getCollectList } from "@/api/deviceMgr";
+import { getInfo } from "@/api/deviceMgr/deviceGroup";
+import { ElMessage } from "element-plus";
 
 const initData = {
-  param: "",
   devices: [],
 };
 const emits = defineEmits(["submit"]);
@@ -53,33 +56,62 @@ const props = defineProps({
 });
 const handleDrawerRef = ref();
 const formRef = ref();
+
+const rules = {
+  devices: [
+    {
+      type: "array",
+      required: true,
+      message: "请勾选至少一项",
+      trigger: "change",
+    },
+  ],
+};
 const state = reactive({
-  form: { ...initData, ...props.data },
-  deviceOpts: new Array(10).fill("").map((item, index) => ({
-    text: "冷热源侧供水温度",
-    id: index,
-  })),
+  form: { ...initData },
+  search: "",
+  originCollectList: [],
+  collectList: [],
 });
-const confirmDetail = () => {
-  // await formRef.value.validate((valid) => {
-  //   if (valid) {
-  //     handleDrawerRef.value.close();
-  //     emits("submit", state.form);
-  //   }
-  // });
-  emits("submit", state.form);
+
+const getDetail = async (param) => {
+  const { data } = await getInfo({ projectId: param.projectId, id: param.id });
+  if (data?.data) {
+    state.form.devices = data.data.deviceIds || [];
+  }
+};
+
+const getCollectionList = async () => {
+  const { data } = await getCollectList({ projectId: props.data.projectId });
+  if (data?.data) {
+    state.originCollectList = [...data.data];
+    state.collectList = data.data;
+  }
+};
+const confirmDetail = async () => {
+  await formRef.value.validate((valid) => {
+    if (valid) {
+      emits("submit", state.form.devices, props.data.id);
+    } else {
+      ElMessage.warning("请勾选至少一项")
+    }
+  });
 };
 
 watch(
   () => props.data,
   (val) => {
-    state.form = val;
+    getCollectionList();
+    getDetail(val);
   }
 );
 const open = () => {
   handleDrawerRef.value.open();
 };
-defineExpose({ open });
+const close = () => {
+  handleDrawerRef.value.close();
+};
+defineExpose({ open, close });
 </script>
 <style lang="scss" scoped>
 .device-container {
@@ -88,5 +120,8 @@ defineExpose({ open });
       display: flex;
     }
   }
+}
+.down-content {
+  margin-top: 10px;
 }
 </style>

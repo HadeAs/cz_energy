@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:52:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 15:05:45
+ * @LastEditTime: 2024-01-06 21:01:33
  * @Description: 
 -->
 <template>
@@ -55,7 +55,7 @@ import { ALARM_LEVELS } from "@/constant";
 
 const props = defineProps({
   projectId: {
-    type: String,
+    type: Number,
   },
 });
 

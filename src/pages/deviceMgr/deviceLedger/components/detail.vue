@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 12:56:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 14:40:04
+ * @LastEditTime: 2024-01-06 23:25:09
  * @Description: 
 -->
 <template>
@@ -29,7 +29,7 @@
     <el-form-item label="安装时间" prop="openTime">
       <el-date-picker
         v-model="state.detailForm.openTime"
-        equipmentTypeId="datetime"
+        type="datetime"
         placeholder="请选择日期时间"
         value-format="YYYY-MM-DD hh:mm:ss"
       />
@@ -40,6 +40,11 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
+import {
+  getInfo,
+  addDeviceParam,
+  delDeviceParam,
+} from "@/api/deviceMgr/deviceLedger";
 import Param from "./param.vue";
 
 const init = {
@@ -60,54 +65,94 @@ const props = defineProps({
 
 const formRef = ref();
 const paramRef = ref();
-const state = reactive({
-  detailForm: init,
-  params: [],
-  types: [
-    {
-      id: "空调",
-      text: "空调",
-    },
-    {
-      id: "配供电",
-      text: "配供电",
-    },
-    {
-      id: "照明",
-      text: "照明",
-    },
-    {
-      id: "动力",
-      text: "动力",
-    },
-  ],
-});
 
-onMounted(() => {
+const initData = () => {
   if (props.initData) {
     const formData = { ...init, ...props.initData };
     const params = props.initData.equipmentModelParamList || [];
-    state.detailForm = formData;
-    state.params = params;
+    return [formData, params];
+  }
+  return [{}, []];
+};
+
+const [formData, params] = initData();
+const state = reactive({
+  detailForm: formData,
+  params,
+});
+
+const getDeviceInfo = async (param) => {
+  const { projectId, id } = param;
+  const { data } = await getInfo({ projectId, id });
+  if (data?.data) {
+    state.params = data.data.equipmentModelParamList || [];
+    state.detailForm.equipmentTypeId = data.data.equipmentTypeId;
+  }
+};
+
+onMounted(() => {
+  const [formData, params] = initData();
+  state.detailForm = formData;
+  state.params = params;
+  if (props.initData?.id) {
+    getDeviceInfo(props.initData);
   }
 });
+
+const updateParam = async () => {
+  let changeFlag = false;
+  const params = paramRef.value.getValue();
+  const ids = params.map((item) => item.id);
+  const delParams = props.initData.equipmentModelParamList.filter(
+    (item) => !ids.includes(item.id)
+  );
+  const addParams = params.filter((item) => !item.id);
+  if (delParams.length) {
+    changeFlag = true;
+    for (let i = 0; i < delParams.length; i += 1) {
+      await delDeviceParam(props.initData.projectId, {
+        id: delParams[i].id,
+        equipmentModelId: props.initData.id,
+      });
+    }
+  }
+  if (addParams.length) {
+    changeFlag = true;
+    for (let i = 0; i < addParams.length; i += 1) {
+      await addDeviceParam(props.initData.projectId, {
+        equipmentModelId: props.initData.id,
+        ...addParams[i],
+      });
+    }
+  }
+  if (changeFlag) {
+    const { data } = await getInfo({
+      projectId: props.initData.projectId,
+      id: props.initData.id,
+    });
+  }
+  // const newParams = params.map((item, index) => ({
+  //   id: index,
+  //   name: item.name,
+  //   value: item.value,
+  //   equipmentModelId: props.initData.id,
+  // }));
+  // state.detailForm.equipmentModelParamList = newParams;
+  // state.detailForm.equipmentCount = newParams.length;
+};
 
 defineExpose({
   validate: () => {
     return formRef.value
       .validate()
-      .then(() => {
-        const params = paramRef.value.getValue();
-        // if (params.length) {
-        //   // params.forEach((item) => {
-        //   //   // item.equipmentModelId = state.detailForm.equipmentTypeId
-        //   // })
-        // }
-        return {
-          ...state.detailForm,
-          equipmentModelParamList: params,
-          equipmentCount: params.length,
-        };
+      .then(async () => {
+        if (props.initData?.id) {
+          // edit
+          await updateParam();
+        }
+        const { equipmentModelParamList, equipmentCount, ...rest } =
+          state.detailForm;
+        return rest;
       })
       .catch(() => {
         return false;

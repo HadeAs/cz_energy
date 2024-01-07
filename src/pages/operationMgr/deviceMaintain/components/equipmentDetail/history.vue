@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 16:50:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 20:54:47
+ * @LastEditTime: 2024-01-07 19:40:25
  * @Description: 
 -->
 <template>
@@ -29,7 +29,8 @@
         />
       </el-form-item>
     </el-form>
-    <el-timeline>
+    <el-empty v-if="!state.historyList.length" description="暂无保养记录" />
+    <el-timeline v-else>
       <el-timeline-item
         v-for="(activity, i) in state.historyList"
         :key="activity.id"
@@ -40,29 +41,29 @@
         <div class="cs-info-wrap">
           <div class="cs-info">
             <span class="cs-label">保养人员：</span>
-            <span class="cs-text">{{ activity.name }}</span>
+            <span class="cs-text">{{ activity.maintainUser }}</span>
           </div>
         </div>
         <div class="cs-info-wrap flex">
           <div class="cs-info margin-right-large-5">
             <span class="cs-label">作业单号：</span>
-            <span class="cs-text">{{ activity.number }}</span>
+            <span class="cs-text">{{ activity.jobNumber }}</span>
           </div>
           <div class="cs-info">
             <span class="cs-label">设备照片：</span>
             <span
               class="cs-text"
-              v-for="(item, index) in activity.images"
-              :key="index"
+              v-for="item in activity.images"
+              :key="item.url"
             >
-              <a href="">{{ parseUrl(item) }}</a>
+              <a href="">{{ item.name }}</a>
             </span>
           </div>
         </div>
         <div class="cs-info-wrap">
           <div class="cs-info">
             <span class="cs-label">作业内容：</span>
-            <span class="cs-text">{{ activity.content }}</span>
+            <span class="cs-text">{{ activity.jobContent }}</span>
           </div>
         </div>
       </el-timeline-item>
@@ -72,38 +73,18 @@
 <script setup name="History">
 import { reactive } from "vue";
 import BoxContainer from "../boxContainer.vue";
+import { getDeviceMaintainRecords } from "@/api/operationMgr/deviceMaintain";
 
-const HISTORY_ITEM = {
-  time: "2018-05-16",
-  name: "张凯",
-  number: "ZY1564564135",
-  content:
-    "这是作业内容这是作业内容这是作业内容这是作业内容这是作业内容这是作业内容。",
-  images: [
-    "xxx/照片001.jpg",
-    "xxx/照片002.jpg",
-    "xxx/照片003.jpg",
-    "xxx/照片004.jpg",
-  ],
-};
+const props = defineProps({
+  equipmentModelId: { type: String },
+  equipmentId: { type: String },
+  projectId: { type: Number },
+});
 
-const listMap = [
-  { label: "保养人员", value: "name" },
-  {
-    label: "",
-    value: "classify",
-    children: [
-      { label: "作业单号", value: "number" },
-      { label: "设备照片", value: "images" },
-    ],
-  },
-
-  { label: "作业内容", value: "content" },
-];
 const state = reactive({
   formData: {
     timeType: "all",
-    timeRange: "",
+    timeRange: [],
   },
   opts: [
     { label: "全部", value: "all" },
@@ -112,12 +93,31 @@ const state = reactive({
     { label: "近一年", value: "3" },
     { label: "自定义", value: "4" },
   ],
-  historyList: new Array(4).fill("").map((item, index) => ({
-    ...HISTORY_ITEM,
-    name: `${HISTORY_ITEM.name}${index}`,
-    id: index,
-  })),
+  historyList: [],
 });
+
+const getRecords = async () => {
+  const { data } = await getDeviceMaintainRecords({
+    projectId: props.projectId,
+    equipmentId: props.equipmentId,
+  });
+  if (data?.list) {
+    state.historyList = data.list.map((item) => {
+      const { image1, image2, image3, image4, image5, ...rest } = item;
+      const effectiveImages = [image1, image2, image3, image4, image5]
+        .filter((item) => item)
+        .map((item, index) => ({
+          url: item,
+          name: `照片0${index + 1}`,
+        }));
+      return {
+        ...rest,
+        images: effectiveImages,
+      };
+    });
+  }
+};
+getRecords();
 
 const parseUrl = (url) => {
   const arr = url.split("/");
@@ -135,6 +135,7 @@ const parseUrl = (url) => {
     }
     .margin-right-large-5 {
       margin-right: 56px;
+      min-width: 280px;
     }
     a {
       background-color: transparent;

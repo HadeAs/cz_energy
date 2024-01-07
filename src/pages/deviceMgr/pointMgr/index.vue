@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 18:25:41
+ * @LastEditTime: 2024-01-06 21:25:16
  * @Description: 
 -->
 <template>
@@ -230,6 +230,7 @@ const detailSubmit = async (param) => {
   const { code } = await updatePoint(projectId, rest);
   if (code === 200) {
     ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
+    detailRef.value.close();
     getTableList();
   }
 };

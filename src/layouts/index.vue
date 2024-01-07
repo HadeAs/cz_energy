@@ -39,12 +39,12 @@
               <div class="current-menu">{{ route.meta.title }}</div>
               <el-select
                 v-if="SHOW_PROJ_CHANGE_PATH.includes(route.path)"
-                v-model="appStore.global.projectName"
+                v-model="globalState.projectId"
                 @change="projectChange"
                 placeholder="选择项目"
               >
                 <el-option
-                  v-for="item in state.projects"
+                  v-for="item in globalState.projects"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -88,18 +88,20 @@
 <script setup>
 import { reactive } from "vue";
 import appStore from "@/store";
+import { storeToRefs } from "pinia";
 import { MENU_DATA, SHOW_PROJ_CHANGE_PATH } from "@/constant";
 import imgUrl from "@/assets/img/user.png";
 import logoUrl from "@/assets/img/logo.png";
 import logoTextUrl from "@/assets/img/logo-text.png";
 import { useRoute, useRouter } from "vue-router";
 
+const { globalState } = storeToRefs(appStore.global);
 const route = useRoute();
 const router = useRouter();
 const defaultMenuKey = route.path;
-const state = reactive({
-  projects: [],
-});
+// const state = reactive({
+//   projects: [],
+// });
 
 const projectChange = (val) => {
   appStore.global.changeName(val);
