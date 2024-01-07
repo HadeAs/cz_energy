@@ -76,7 +76,7 @@
         </el-row>
       </el-header>
 
-      <el-main class="main-container" v-if="state.loadSuccess">
+      <el-main class="main-container">
         <el-scrollbar>
           <router-view />
         </el-scrollbar>
@@ -93,14 +93,12 @@ import imgUrl from "@/assets/img/user.png";
 import logoUrl from "@/assets/img/logo.png";
 import logoTextUrl from "@/assets/img/logo-text.png";
 import { useRoute, useRouter } from "vue-router";
-import { getProjectList } from "@/api/common";
 
 const route = useRoute();
 const router = useRouter();
 const defaultMenuKey = route.path;
 const state = reactive({
   projects: [],
-  loadSuccess: false,
 });
 
 const projectChange = (val) => {
@@ -119,21 +117,6 @@ const logout = () => {
   appStore.useUserStore.userLogout();
   router.push({ path: "/login" });
 };
-
-const init = async () => {
-  // 获取角色列表
-  appStore.global.getRoleList();
-  // 获取项目列表
-  const { data } = await getProjectList();
-  if (data) {
-    state.projects = data.data;
-    // 默认选中第一条
-    appStore.global.setProjects(data.data);
-    projectChange(data.data[0].id);
-  }
-  state.loadSuccess = true;
-};
-init();
 </script>
 
 <style scoped lang="scss">

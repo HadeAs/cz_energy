@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 14:05:26
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 18:56:06
+ * @LastEditTime: 2024-01-06 21:04:37
  * @Description: 
  */
 import http from "../http";
@@ -19,7 +19,7 @@ export const addLive = (projectId, params) => {
 }
 
 export const handleLive = (projectId, params) => {
-  return http.post(`${PORT}/alarm/real-time/handle?projectId=${projectId}`, params);
+  return http.post(`${PORT}/alarm/real-time/handle?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
 }
 
 export const exportLive = (projectId, params) => {

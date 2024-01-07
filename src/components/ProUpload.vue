@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 14:07:09
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:56:19
+ * @LastEditTime: 2024-01-07 10:12:42
  * @Description: 
 -->
 <template>
@@ -11,6 +11,7 @@
       class="upload-file"
       v-if="listType === 'text'"
       v-model:file-list="state.fileList"
+      :accept="state.accept"
       list-type="text"
       :limit="limit"
       :on-exceed="handleExceed"
@@ -36,6 +37,7 @@
         action="#"
         list-type="picture-card"
         multiple
+        :accept="state.accept"
         :limit="limit"
         :auto-upload="false"
         :on-exceed="handleExceed"
@@ -86,22 +88,34 @@
 import { reactive, watch } from "vue";
 import { Delete, Plus, ZoomIn, Upload } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import { COMMON_IMAGE_TYPES, COMMON_FILE_TYPES } from "@/constant";
 
 const props = defineProps({
   authKey: { type: String, default: "" },
   listType: { type: String, default: "text" },
   fileList: { type: Array, default: [] },
-  accepts: { type: Array, default: [] },
+  accepts: { type: Array },
   maxSize: { type: Number, default: null }, // kb字节单位
   limit: { type: Number, default: null },
 });
 
 const emits = defineEmits(["change", "success", "error", "progress"]);
 
+const handleAccept = () => {
+  let accepts = props.accepts;
+  if (!props.accepts) {
+    accepts =
+      props.listType === "picture-card"
+        ? COMMON_IMAGE_TYPES
+        : COMMON_FILE_TYPES;
+  }
+  return accepts.join(",");
+};
 const state = reactive({
   fileList: props.fileList,
   dialogImageUrl: "",
   dialogVisible: false,
+  accept: handleAccept(),
 });
 
 const handleRemove = (file, fileList) => {
@@ -129,10 +143,16 @@ const handleExceed = (files, fileList) => {
 
 // 格式大小的限制
 const beforeUpload = (rawFile) => {
-  if (!props.accepts.length && !props.maxSize) return true;
-  if (props.accepts && !props.accepts.includes(rawFile.type)) {
-    ElMessage.error("文件格式错误！请检查！");
-    return false;
+  const accepts = state.accept.split(",");
+  if (!accepts.length && !props.maxSize) return true;
+  if (accepts.length) {
+    const fileSuffix = rawFile.name.substring(
+      rawFile.name.lastIndexOf(".") + 1
+    );
+    if (accepts.indexOf(fileSuffix) === -1) {
+      ElMessage.error("文件格式错误！请检查！");
+      return false;
+    }
   }
   if (props.maxSize && rawFile.size / props.maxSize > 2) {
     ElMessage.error("上传文件大小已超过阀值，请重新上传！");

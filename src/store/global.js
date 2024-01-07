@@ -2,12 +2,12 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 17:28:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 16:34:25
+ * @LastEditTime: 2024-01-07 12:13:03
  * @Description:
  */
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
-import { getRoles } from "@/api/common";
+import { getRoles, getProjectList } from "@/api/common";
 
 export const useGlobal = defineStore("global", () => {
   const globalState = reactive({
@@ -33,10 +33,18 @@ export const useGlobal = defineStore("global", () => {
     return globalState.projectId;
   }
 
+  const getProList = async () => {
+    const { data } = await getProjectList();
+    if (data?.data) {
+      setProjects(data.data);
+      changeName(data.data[0].id);
+    }
+  }
+
   const getRoleList = async () => {
     const { data } = await getRoles();
     globalState.roleList = data.data;
   }
 
-  return { globalState, projectName, userRole, roleAuth, setProjects, changeName, getProjectId, getRoleList };
+  return { globalState, projectName, userRole, roleAuth, setProjects, changeName, getProjectId, getRoleList, getProList };
 });

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 12:09:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 14:24:27
+ * @LastEditTime: 2024-01-06 23:58:16
  * @Description: 
  */
 import { reactive, toRefs } from "vue";
@@ -40,6 +40,9 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}) => {
 
   const getTableList = async () => {
     state.loading = true;
+    if (state.selectRows.length) {
+      state.selectRows = [];
+    }
     const param = {
       pageNum: state.pageInfo.currentPage,
       pageSize: state.pageInfo.pageSize,

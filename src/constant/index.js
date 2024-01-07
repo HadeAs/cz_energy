@@ -1,8 +1,8 @@
 /*
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-06 19:46:56
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-07 10:04:40
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -785,3 +785,12 @@ export const ALARM_LEVELS = [
   { id: 2, name: "二级" },
   { id: 3, name: "三级" },
 ];
+
+export const DEVICE_STATUS = [
+  { id: true, name: "启用" },
+  { id: false, name: "停用" },
+];
+
+export const COMMON_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.JPG', '.JPEG', '.PNG', '.BMP', '.gif', '.GIF'];
+
+export const COMMON_FILE_TYPES = ['.rar', '.zip', '.doc', '.docx'];

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 21:12:01
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 20:03:33
+ * @LastEditTime: 2024-01-06 20:12:57
  * @Description: 
  */
 
@@ -26,10 +26,7 @@ export function wrapperEnv(envConf) {
  * 创建代理，用于解析 .env.development 代理配置
  * @param list
  */
-export function createProxy(list) {
-  if (!list) {
-    return {}
-  }
+export function createProxy(list = []) {
   const ret = {};
   for (const [prefix, target] of list) {
     const httpsRE = /^https:\/\//;
