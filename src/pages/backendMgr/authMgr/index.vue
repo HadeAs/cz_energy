@@ -11,28 +11,22 @@
       :multiple="true"
       :column="column"
       :pageInfo="pageInfo"
-      :datasource="datasource"
+      :datasource="dataSource"
       v-loading="loading"
       @page-change="pageChange"
+      @sort-change="sortChange"
       @selection-change="selectionChange"
     >
       <template #toolbar>
         <el-row align="middle">
           <el-col :span="4">
-            <el-button type="primary" v-auth="'auth_add'" @click="addRow"
-              >新增</el-button
-            >
-            <el-button
-              :disabled="!selectRows.length"
-              v-auth="'auth_batch_delete'"
-              @click="batchDelete"
-              >批量删除</el-button
-            >
+            <el-button type="primary" v-auth="'auth_add'" @click="addRow">新增</el-button>
+            <el-button :disabled="!selectRows.length" v-auth="'auth_batch_delete'" @click="batchDelete">批量删除</el-button>
           </el-col>
           <el-col :offset="16" :span="4">
             <el-input
               clearable
-              v-model="roleName"
+              v-model="state.searchFormData.textQuery"
               placeholder="角色名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
@@ -41,12 +35,7 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a
-          class="table-operator-btn"
-          v-auth="'auth_edit'"
-          @click="editRow(scope.row)"
-          >编辑</a
-        >
+        <a class="table-operator-btn" v-auth="'auth_edit'" @click="editRow(scope.row)">编辑</a>
         <ProPopConfirm
           title="你确定要删除该角色嘛?"
           :icon="CircleCloseFilled"
@@ -55,12 +44,7 @@
         >
           <a class="table-operator-btn" v-auth="'auth_delete'">删除</a>
         </ProPopConfirm>
-        <a
-          class="table-operator-btn"
-          v-auth="'auth_distribute'"
-          @click="distribute"
-          >分配</a
-        >
+        <a class="table-operator-btn" v-auth="'auth_distribute'" @click="distribute(scope.row)">分配</a>
       </template>
     </ProTable>
     <ProDrawer
@@ -81,7 +65,7 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, onMounted } from "vue";
+import { reactive, ref } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import ProDrawer from "@/components/ProDrawer.vue";
@@ -91,10 +75,10 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import useTable from '@/hooks/useTable.js';
+import { deleteRoleInfo, updateRoleInfo, getList, distributeRoleAuth } from '@/api/backstageMng/authMng.js';
+import { crudService } from '@/api/backstageMng/utils.js';
 
-const roleName = ref("");
-const loading = ref(false);
-const datasource = ref([]);
 const selectRows = ref([]);
 const operateType = ref("");
 const detailDrawerRef = ref();
@@ -104,12 +88,23 @@ const roleDistributeRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
 const initDistributeData = ref([]);
-const pageInfo = ref({
-  total: 4,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
+
+const state = reactive({
+  searchFormData: { textQuery: "" },
+  currentData: {},
 });
+
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
+
+getTableList();
 
 const addRow = () => {
   operateType.value = "add";
@@ -125,7 +120,7 @@ const editRow = (data) => {
   detailDrawerRef.value.open();
 };
 
-const distribute = () => {
+const distribute = (rowData) => {
   //模拟当前角色的权限点
   const mock_auth = [
     "project",
@@ -135,43 +130,46 @@ const distribute = () => {
     "systemlog_login_search",
   ];
   initDistributeData.value = mock_auth;
+  state.currentData = rowData;
   distributeDrawerRef.value.open();
 };
 
-const confirmDistribute = () => {
+const confirmDistribute = async () => {
   const res = roleDistributeRef.value.getCheckResult();
-  console.log(res);
-  distributeDrawerRef.value.close();
+  console.log(state.currentData);
+  if (res) {
+    await crudService(distributeRoleAuth, { id: state.currentData?.id, resourceIds: res }, () => {
+      getTableList();
+      distributeDrawerRef.value.close();
+    });
+  }
 };
 
+/**
+ * 更新权限信息
+ * @return {Promise<void>}
+ */
 const confirmDetail = async () => {
   const res = await roleDetailRef.value.validate();
   if (res) {
-    // 新增/编辑逻辑
-    if (operateType.value === "add") {
-      datasource.value.push(res);
-    } else {
-      const idx = datasource.value.findIndex((v) => v.id === res.id);
-      datasource.value.splice(idx, 1, res);
-    }
-    datasource.value = [...datasource.value];
-    detailDrawerRef.value.close();
+    await crudService(updateRoleInfo, res, () => {
+      getTableList();
+      detailDrawerRef.value.close();
+    })
   }
 };
 
 const handleSearch = () => {
-  console.log(roleName.value);
+  searchChange(state.searchFormData);
 };
 
-const confirmDelete = (data) => {
-  // 删除逻辑
-  const idx = datasource.value.findIndex((v) => v.id === data.id);
-  datasource.value.splice(idx, 1);
-  datasource.value = [...datasource.value];
-};
-
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
+/**
+ * 删除权限信息
+ * @param id
+ * @return {Promise<void>}
+ */
+const confirmDelete = async ({ id }) => {
+  await crudService(deleteRoleInfo, { id }, getTableList)
 };
 
 const selectionChange = (data) => {
@@ -199,13 +197,12 @@ const batchDelete = () => {
 
 const column = [
   {
-    prop: "roleName",
+    prop: "name",
     label: "角色名称",
-    width: 120,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.roleName}>
-          <span className="table-first-col">{scope.row.roleName}</span>
+        <div className="text-overflow" title={scope.row.name}>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
@@ -217,70 +214,24 @@ const column = [
   {
     prop: "createTime",
     label: "创建时间",
-    width: 200,
     sortable: "custom",
   },
   {
     prop: "updateTime",
     label: "更新时间",
-    width: 200,
     sortable: "custom",
   },
   {
-    prop: "remark",
+    prop: "description",
     label: "备注",
-    width: 200,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.remark}>
-          <span>{scope.row.remark}</span>
+        <div className="text-overflow" title={scope.row.description}>
+          <span>{scope.row.description}</span>
         </div>
       );
     },
   },
 ];
 
-onMounted(async () => {
-  loading.value = true;
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false;
-      resolve([
-        {
-          id: "1",
-          roleName: "超级管理员",
-          remark: "--",
-          createTime: "2018-03-03  15:20:40",
-          updateTime: "2018-03-05  15:20:40",
-          roleKey: "1",
-        },
-        {
-          id: "2",
-          roleName: "企业管理员",
-          remark: "--",
-          createTime: "2018-03-03  15:20:40",
-          updateTime: "2018-03-05  15:20:40",
-          roleKey: "2",
-        },
-        {
-          id: "3",
-          roleName: "一般用户",
-          remark: "--",
-          createTime: "2018-03-03  15:20:40",
-          updateTime: "2018-03-05  15:20:40",
-          roleKey: "3",
-        },
-        {
-          id: "4",
-          roleName: "远程监管用户",
-          remark: "--",
-          createTime: "2018-03-03  15:20:40",
-          updateTime: "2018-03-05  15:20:40",
-          roleKey: "4",
-        },
-      ]);
-    }, 1000);
-  });
-  datasource.value = res;
-});
 </script>

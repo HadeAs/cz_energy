@@ -14,24 +14,24 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="网关ID" required prop="gatewayId">
-      <el-input placeholder="请输入" v-model="state.detailForm.gatewayId" />
+    <el-form-item label="网关ID" required prop="address">
+      <el-input placeholder="请输入" v-model="state.detailForm.address" />
     </el-form-item>
-    <el-form-item label="网关名称" required prop="gatewayName">
-      <el-input placeholder="请输入" v-model="state.detailForm.gatewayName" />
+    <el-form-item label="网关名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
-    <el-form-item label="网关版本" required prop="gatewayVersion">
+    <el-form-item label="网关版本" required prop="version">
       <el-input
         placeholder="请输入"
-        v-model="state.detailForm.gatewayVersion"
+        v-model="state.detailForm.version"
       />
     </el-form-item>
-    <el-form-item label="通讯接口" required prop="interface">
-      <el-input placeholder="请输入" v-model="state.detailForm.interface" />
+    <el-form-item label="通讯接口" required prop="communicationInterface">
+      <el-input placeholder="请输入" v-model="state.detailForm.communicationInterface" />
     </el-form-item>
-    <el-form-item label="备注" required prop="remark">
+    <el-form-item label="备注" required prop="description">
       <el-input
-        v-model="state.detailForm.remark"
+        v-model="state.detailForm.description"
         type="textarea"
         placeholder="请输入至少5个字符"
       />
@@ -42,11 +42,11 @@
 import { ref, reactive, onMounted } from "vue";
 
 const init = {
-  gatewayName: "",
-  gatewayId: "",
-  gatewayVersion: "",
-  interface: "",
-  remark: "",
+  address: "",
+  name: "",
+  version: "",
+  communicationInterface: "",
+  description: "",
 };
 const props = defineProps({
   initData: {
@@ -54,15 +54,15 @@ const props = defineProps({
   },
 });
 const rules = {
-  gatewayId: { required: true, message: "请输入网关ID", trigger: "blur" },
-  gatewayName: { required: true, message: "请输入网关名称", trigger: "blur" },
-  gatewayVersion: {
+  address: { required: true, message: "请输入网关ID", trigger: "blur" },
+  name: { required: true, message: "请输入网关名称", trigger: "blur" },
+  version: {
     required: true,
     message: "请输入网关版本",
     trigger: "blur",
   },
-  interface: { required: true, message: "请输入通讯接口", trigger: "blur" },
-  remark: [
+  communicationInterface: { required: true, message: "请输入通讯接口", trigger: "blur" },
+  description: [
     { required: true, message: "请输入备注信息", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
   ],

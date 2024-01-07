@@ -14,15 +14,15 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="单位名称" required prop="unitName">
-      <el-input placeholder="请输入" v-model="state.detailForm.unitName" />
+    <el-form-item label="单位名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
-    <el-form-item label="符号" required prop="symbol">
-      <el-input placeholder="请输入" v-model="state.detailForm.symbol" />
+    <el-form-item label="符号" required prop="tag">
+      <el-input placeholder="请输入" v-model="state.detailForm.tag" />
     </el-form-item>
-    <el-form-item label="备注" required prop="remark">
+    <el-form-item label="备注" required prop="description">
       <el-input
-        v-model="state.detailForm.remark"
+        v-model="state.detailForm.description"
         type="textarea"
         placeholder="请输入至少5个字符"
       />
@@ -33,9 +33,9 @@
 import { ref, reactive, onMounted } from "vue";
 
 const init = {
-  symbol: "",
-  unitName: "",
-  remark: "",
+  tag: "",
+  name: "",
+  description: "",
 };
 const props = defineProps({
   initData: {
@@ -43,9 +43,9 @@ const props = defineProps({
   },
 });
 const rules = {
-  unitName: { required: true, message: "请输入单位名称", trigger: "blur" },
-  symbol: { required: true, message: "请输入符号", trigger: "blur" },
-  remark: [
+  name: { required: true, message: "请输入单位名称", trigger: "blur" },
+  tag: { required: true, message: "请输入符号", trigger: "blur" },
+  description: [
     { required: true, message: "请输入备注信息", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
   ],

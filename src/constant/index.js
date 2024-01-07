@@ -389,8 +389,8 @@ export const WORK_SYSTEM = [
 ];
 
 export const LOCK_STATUS = [
-  { label: "正常", value: "1" },
-  { label: "锁定", value: "0" },
+  { label: "正常", value: "正常" },
+  { label: "锁定", value: "锁定" },
 ];
 
 export const COMMON_ROLE = [

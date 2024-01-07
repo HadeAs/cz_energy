@@ -14,8 +14,8 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="系统分类名称" required prop="sysClassName">
-      <el-input placeholder="请输入" v-model="state.detailForm.sysClassName" />
+    <el-form-item label="系统分类名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
   </el-form>
 </template>
@@ -23,7 +23,7 @@
 import { ref, reactive, onMounted } from "vue";
 
 const init = {
-  sysClassName: "",
+  name: "",
 };
 const props = defineProps({
   initData: {
@@ -31,7 +31,7 @@ const props = defineProps({
   },
 });
 const rules = {
-  sysClassName: {
+  name: {
     required: true,
     message: "请输入系统分类名称",
     trigger: "blur",

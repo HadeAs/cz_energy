@@ -14,33 +14,33 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="项目名称" required prop="projectName">
-      <el-input placeholder="请输入" v-model="state.detailForm.projectName" />
+    <el-form-item label="项目名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
-    <el-form-item label="所在地区" required prop="district">
-      <el-input placeholder="请输入" v-model="state.detailForm.district" />
+    <el-form-item label="所在地区" required prop="region">
+      <el-input placeholder="请输入" v-model="state.detailForm.region" />
     </el-form-item>
     <el-form-item label="建筑面积(㎡)" required prop="area">
       <el-input placeholder="请输入" v-model="state.detailForm.area" />
     </el-form-item>
-    <el-form-item label="建筑分类" required prop="buildType">
-      <el-select v-model="state.detailForm.buildType" placeholder="请选择">
+    <el-form-item label="建筑分类" required prop="buildingTypeId">
+      <el-select v-model="state.detailForm.buildingTypeId" placeholder="请选择">
         <el-option v-for="item in BUILD_TYPE" v-bind="item" />
       </el-select>
     </el-form-item>
-    <el-form-item label="运行系统" required prop="system">
+    <el-form-item label="运行系统" required prop="sysClassIds">
       <el-select
         multiple
-        v-model="state.detailForm.system"
+        v-model="state.detailForm.sysClassIds"
         placeholder="请选择"
       >
         <el-option v-for="item in WORK_SYSTEM" v-bind="item" />
       </el-select>
     </el-form-item>
-    <el-form-item label="起始时间" required prop="startTime">
+    <el-form-item label="起始时间" required prop="openTime">
       <el-date-picker
         value-format="YYYY-MM-DD"
-        v-model="state.detailForm.startTime"
+        v-model="state.detailForm.openTime"
         type="date"
         placeholder="请选择时间"
       />
@@ -57,27 +57,29 @@
         <el-radio-button label="供暖" />
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="项目介绍" required prop="desc">
+    <el-form-item label="项目介绍" required prop="description">
       <el-input
-        v-model="state.detailForm.desc"
+        v-model="state.detailForm.description"
         type="textarea"
         placeholder="请输入至少5个字符"
       />
     </el-form-item>
     <el-form-item label="开启远程控制">
       <el-switch
-        v-model="state.detailForm.ifRemote"
+        v-model="state.detailForm.isRemoted"
         inline-prompt
         active-text="开"
         inactive-text="关"
+        active-value="1"
+        inactive-value="0"
       />
     </el-form-item>
-    <div v-if="state.detailForm.ifRemote" class="sub-form-container">
-      <el-form-item label="Mqtt  Topic" required prop="mqtt">
-        <el-input placeholder="请输入" v-model="state.detailForm.mqtt" />
+    <div v-if="state.detailForm.isRemoted === '1'" class="sub-form-container">
+      <el-form-item label="Mqtt  Topic" required prop="topic">
+        <el-input placeholder="请输入" v-model="state.detailForm.topic" />
       </el-form-item>
-      <el-form-item label="出水温度设定标识符" required prop="tempSetTag">
-        <el-input placeholder="请输入" v-model="state.detailForm.tempSetTag" />
+      <el-form-item label="出水温度设定标识符" required prop="temperatureSettingTag">
+        <el-input placeholder="请输入" v-model="state.detailForm.temperatureSettingTag" />
       </el-form-item>
       <el-form-item label="一键启停标识符" required prop="startStopTag">
         <el-input
@@ -85,8 +87,8 @@
           v-model="state.detailForm.startStopTag"
         />
       </el-form-item>
-      <el-form-item label="冬夏切换标识符" required prop="switchTag">
-        <el-input placeholder="请输入" v-model="state.detailForm.switchTag" />
+      <el-form-item label="冬夏切换标识符" required prop="summerWinnerTag">
+        <el-input placeholder="请输入" v-model="state.detailForm.summerWinnerTag" />
       </el-form-item>
     </div>
   </el-form>
@@ -96,29 +98,29 @@ import { ref, reactive, onMounted } from "vue";
 import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
 
 const init = {
-  projectName: "",
-  district: "",
+  name: "",
+  region: "",
   area: "",
-  buildType: "",
-  system: [],
-  startTime: "",
+  buildingTypeId: "",
+  sysClassIds: [],
+  openTime: "",
   maxColdLoad: "",
   maxHotLoad: "",
   mode: "",
-  desc: "",
-  ifRemote: false,
-  mqtt: "",
-  tempSetTag: "",
+  description: "",
+  isRemoted: false,
+  topic: "",
+  temperatureSettingTag: "",
   startStopTag: "",
-  switchTag: "",
+  summerWinnerTag: "",
 };
 const rules = {
-  projectName: { required: true, message: "请输入项目名称", trigger: "blur" },
-  district: { required: true, message: "请输入所在地区", trigger: "blur" },
+  name: { required: true, message: "请输入项目名称", trigger: "blur" },
+  region: { required: true, message: "请输入所在地区", trigger: "blur" },
   area: { required: true, message: "请输入建筑面积", trigger: "blur" },
-  buildType: { required: true, message: "请选择建筑分类", trigger: "change" },
-  system: { required: true, message: "请选择运行系统", trigger: "change" },
-  startTime: {
+  buildingTypeId: { required: true, message: "请选择建筑分类", trigger: "change" },
+  sysClassIds: { required: true, message: "请选择运行系统", trigger: "change" },
+  openTime: {
     type: "date",
     required: true,
     message: "请选择起始时间",
@@ -135,8 +137,8 @@ const rules = {
     trigger: "blur",
   },
   mode: { required: true, message: "请选择项目模式", trigger: "change" },
-  mqtt: { required: true, message: "请输入Mqtt  Topic", trigger: "blur" },
-  tempSetTag: {
+  topic: { required: true, message: "请输入Mqtt  Topic", trigger: "blur" },
+  temperatureSettingTag: {
     required: true,
     message: "请输入出水温度设定标识符",
     trigger: "blur",
@@ -146,12 +148,12 @@ const rules = {
     message: "请输入一键启停标识符",
     trigger: "blur",
   },
-  switchTag: {
+  summerWinnerTag: {
     required: true,
     message: "请输入冬夏切换标识符",
     trigger: "blur",
   },
-  desc: [
+  description: [
     { required: true, message: "请输入项目介绍", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
   ],
@@ -167,11 +169,11 @@ defineExpose({
     return formRef.value
       .validate()
       .then(() => {
-        if (!state.detailForm.ifRemote) {
-          state.detailForm.mqtt = "";
-          state.detailForm.tempSetTag = "";
+        if (!state.detailForm.isRemoted) {
+          state.detailForm.topic = "";
+          state.detailForm.temperatureSettingTag = "";
           state.detailForm.startStopTag = "";
-          state.detailForm.switchTag = "";
+          state.detailForm.summerWinnerTag = "";
         }
         return state.detailForm;
       })

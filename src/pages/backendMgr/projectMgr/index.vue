@@ -11,9 +11,10 @@
       :multiple="true"
       :column="column"
       :pageInfo="pageInfo"
-      :datasource="datasource"
+      :datasource="dataSource"
       v-loading="loading"
       @page-change="pageChange"
+      @sort-change="sortChange"
       @selection-change="selectionChange"
     >
       <template #toolbar>
@@ -32,7 +33,7 @@
           <el-col :offset="16" :span="4">
             <el-input
               clearable
-              v-model="projName"
+              v-model="state.searchFormData.textQuery"
               placeholder="项目名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
@@ -64,7 +65,7 @@
         <a
           v-auth="'project_price_config'"
           class="table-operator-btn"
-          @click="priceDrawerRef.open()"
+          @click="handleToPrice(scope.row)"
           >费用配置</a
         >
       </template>
@@ -86,7 +87,7 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, onMounted } from "vue";
+import { ref, reactive } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import ProDrawer from "@/components/ProDrawer.vue";
@@ -97,10 +98,10 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import useTable from '@/hooks/useTable.js';
+import { deleteProject, getList, saveConfigPrice, saveProject } from '@/api/backstageMng/pmMng.js';
+import { crudService } from '@/api/backstageMng/utils.js';
 
-const projName = ref("");
-const loading = ref(false);
-const datasource = ref([]);
 const selectRows = ref([]);
 const operateType = ref("");
 const imageDrawerRef = ref();
@@ -111,12 +112,27 @@ const projectImageRef = ref();
 const projectDetailRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
-const pageInfo = ref({
-  total: 4,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
+
+const state = reactive({
+  searchFormData: {
+    textQuery: "",
+  },
+  sortInfo: { prop: "openTime", order: "descending" },
+  initDetailData: {},
+  currentData: {},
 });
+
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
+
+getTableList();
 
 const addRow = () => {
   operateType.value = "add";
@@ -132,20 +148,28 @@ const editRow = (data) => {
   detailDrawerRef.value.open();
 };
 
+/**
+ * 编辑/保存项目数据
+ * @return {Promise<void>}
+ */
 const confirmDetail = async () => {
   const res = await projectDetailRef.value.validate();
   if (res) {
-    // 项目新增/编辑逻辑
-    if (operateType.value === "add") {
-      datasource.value.push(res);
-    } else {
-      const idx = datasource.value.findIndex((v) => v.id === res.id);
-      datasource.value.splice(idx, 1, res);
-    }
-    datasource.value = [...datasource.value];
-    detailDrawerRef.value.close();
+    await crudService(saveProject, res, () => {
+      getTableList();
+      detailDrawerRef.value.close();
+    })
   }
 };
+
+/**
+ * 打开费用配置
+ * @param rowData
+ */
+const handleToPrice = (rowData) => {
+  state.currentData = rowData;
+  priceDrawerRef.value.open();
+}
 
 const confirmImage = async () => {
   const res = await projectImageRef.value.getPictures();
@@ -156,33 +180,39 @@ const confirmImage = async () => {
   }
 };
 
+/**
+ * 保存费用配置
+ * @return {Promise<void>}
+ */
 const confirmPrice = async () => {
   const res = await priceConfigRef.value.validate();
   if (res) {
-    // 费用配置确认逻辑
-    priceDrawerRef.value.close();
+    await crudService(saveConfigPrice, { ...res, projectId: state.currentData?.id }, () => {
+      getTableList();
+      priceDrawerRef.value.close();
+    })
   }
 };
 
 const handleSearch = () => {
-  console.log(projName.value);
+  searchChange(state.searchFormData);
 };
 
-const confirmDelete = (data) => {
-  // 项目删除逻辑
-  const idx = datasource.value.findIndex((v) => v.id === data.id);
-  datasource.value.splice(idx, 1);
-  datasource.value = [...datasource.value];
-};
-
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
+/**
+ * 项目删除逻辑
+ * @param data
+ */
+const confirmDelete = async ({ id }) => {
+  await crudService(deleteProject, { id }, getTableList)
 };
 
 const selectionChange = (data) => {
   selectRows.value = data;
 };
 
+/**
+ * 批量删除 暂无接口
+ */
 const batchDelete = () => {
   ElMessageBox.confirm("确认删除选中的内容？", "警告", {
     confirmButtonText: "确认",
@@ -191,7 +221,7 @@ const batchDelete = () => {
   })
     .then(() => {
       // 项目批量删除逻辑
-      datasource.value = datasource.value.filter((v) => {
+      dataSource.value = dataSource.value.filter((v) => {
         return !selectRows.value.find((item) => item.id === v.id);
       });
       ElMessage({
@@ -204,18 +234,18 @@ const batchDelete = () => {
 
 const column = [
   {
-    prop: "projectName",
+    prop: "name",
     label: "项目名称",
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.projectName}>
-          <span className="table-first-col">{scope.row.projectName}</span>
+        <div className="text-overflow" title={scope.row.name}>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
   },
   {
-    prop: "district",
+    prop: "region",
     label: "所在地区",
   },
   {
@@ -227,53 +257,9 @@ const column = [
     label: "当前模式",
   },
   {
-    prop: "startTime",
+    prop: "openTime",
     label: "项目起始时间",
     sortable: "custom",
   },
 ];
-
-onMounted(async () => {
-  loading.value = true;
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false;
-      resolve([
-        {
-          id: "1",
-          projectName: "项目001",
-          mode: "供暖",
-          startTime: "2016-05-03",
-          district: "南京",
-          area: "4",
-        },
-        {
-          id: "2",
-          projectName: "项目002",
-          mode: "供冷",
-          startTime: "2016-05-02",
-          district: "南京",
-          area: "4",
-        },
-        {
-          id: "3",
-          projectName: "项目003",
-          mode: "供暖",
-          startTime: "2016-05-04",
-          district: "南京",
-          area: "4",
-        },
-        {
-          id: "4",
-          projectName: "项目004",
-          mode: "供冷",
-          startTime: "2016-05-01",
-          district: "南京",
-          area: "4",
-        },
-      ]);
-    }, 1000);
-  });
-  datasource.value = res;
-});
 </script>

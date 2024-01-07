@@ -14,8 +14,8 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="建筑类型名称" required prop="buildTypeName">
-      <el-input placeholder="请输入" v-model="state.detailForm.buildTypeName" />
+    <el-form-item label="建筑类型名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
   </el-form>
 </template>
@@ -23,7 +23,7 @@
 import { ref, reactive, onMounted } from "vue";
 
 const init = {
-  buildTypeName: "",
+  name: "",
 };
 const props = defineProps({
   initData: {
@@ -31,7 +31,7 @@ const props = defineProps({
   },
 });
 const rules = {
-  buildTypeName: {
+  name: {
     required: true,
     message: "请输入建筑类型名称",
     trigger: "blur",

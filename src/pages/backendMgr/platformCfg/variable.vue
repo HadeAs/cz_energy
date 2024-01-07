@@ -10,7 +10,7 @@
     <ProTable
       :column="column"
       :pageInfo="pageInfo"
-      :datasource="datasource"
+      :datasource="dataSource"
       v-loading="loading"
       @page-change="pageChange"
     >
@@ -27,7 +27,7 @@
           <el-col :offset="18" :span="4">
             <el-input
               clearable
-              v-model="varName"
+              v-model="state.searchFormData.textQuery"
               placeholder="变量名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { ElTag } from "element-plus";
 import { VARIABLE_TYPE } from "@/constant";
 import { Search } from "@element-plus/icons-vue";
@@ -75,26 +75,43 @@ import VariableDetail from "./components/variableDetail.vue";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import useTable from '@/hooks/useTable.js';
+import {
+  updateStatisticsType,
+  getStatisticsTypeList,
+  deleteDeviceTemplate,
+} from '@/api/backstageMng/platform.js';
+import { crudService } from '@/api/backstageMng/utils.js';
 
-const varName = ref("");
-const loading = ref(false);
-const datasource = ref([]);
 const operateType = ref("");
 const detailDrawerRef = ref();
 const variableDetailRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
-const pageInfo = ref({
-  total: 4,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
-});
+
 const COLOR_MAP = {
   1: "",
   2: "success",
   3: "warning",
 };
+
+const state = reactive({
+  searchFormData: { textQuery: "" },
+  currentData: {},
+  projects: [],
+});
+
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getStatisticsTypeList, state.searchFormData, state.sortInfo);
+
+getTableList();
 
 const addRow = () => {
   operateType.value = "add";
@@ -113,50 +130,39 @@ const editRow = (data) => {
 const confirmDetail = async () => {
   const res = await variableDetailRef.value.validate();
   if (res) {
-    // 配置新增/编辑逻辑
-    if (operateType.value === "add") {
-      datasource.value.push(res);
-    } else {
-      const idx = datasource.value.findIndex((v) => v.id === res.id);
-      datasource.value.splice(idx, 1, res);
-    }
-    datasource.value = [...datasource.value];
-    detailDrawerRef.value.close();
+    await crudService(updateStatisticsType, res, () => {
+      getTableList();
+      detailDrawerRef.value.close();
+    })
   }
 };
 
 const handleSearch = () => {
-  console.log(varName.value);
+  searchChange(state.searchFormData)
 };
 
-const confirmDelete = (data) => {
-  // 配置删除逻辑
-  const idx = datasource.value.findIndex((v) => v.id === data.id);
-  datasource.value.splice(idx, 1);
-  datasource.value = [...datasource.value];
-};
-
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
+const confirmDelete = async ({ id }) => {
+  await crudService(deleteDeviceTemplate, { id }, getTableList)
 };
 
 const column = [
   {
-    prop: "classOneName",
+    prop: "parentName",
     label: "一级变量",
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.classOneName}>
-          <span className="table-first-col">{scope.row.classOneName}</span>
+        <div className="text-overflow" title={scope.row.name}>
+          <span className="table-first-col">{scope.row.name}</span>
         </div>
       );
     },
   },
   {
-    prop: "varType",
+    prop: "level",
     label: "变量类型",
     render: (scope) => {
-      const item = VARIABLE_TYPE.find((v) => v.value === scope.row.varType);
+      // 临时用 level
+      const item = VARIABLE_TYPE.find((v) => v.value === String(scope.row.level));
       return item ? (
         <ElTag type={COLOR_MAP[item.value]}>
           <span>{item.label}</span>
@@ -167,44 +173,9 @@ const column = [
     },
   },
   {
-    prop: "classTwoName",
+    prop: "name",
     label: "二级变量",
   },
 ];
 
-onMounted(async () => {
-  loading.value = true;
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false;
-      resolve([
-        {
-          id: "1",
-          classOneName: "空调系统设备",
-          classTwoName: "主机用电量",
-          varType: "2",
-        },
-        {
-          id: "2",
-          classOneName: "动力设备",
-          classTwoName: "电梯用电量",
-          varType: "2",
-        },
-        {
-          id: "3",
-          classOneName: "用水设备",
-          classTwoName: "食堂用水量",
-          varType: "1",
-        },
-        {
-          id: "4",
-          classOneName: "燃气",
-          classTwoName: "厨具",
-          varType: "3",
-        },
-      ]);
-    }, 1000);
-  });
-  datasource.value = res;
-});
 </script>

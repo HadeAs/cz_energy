@@ -14,16 +14,16 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="变量类型" required prop="varType">
-      <el-select v-model="state.detailForm.varType" placeholder="请选择">
+    <el-form-item label="变量类型" required prop="level">
+      <el-select v-model="state.detailForm.level" placeholder="请选择">
         <el-option v-for="item in VARIABLE_TYPE" v-bind="item" />
       </el-select>
     </el-form-item>
-    <el-form-item label="一级变量名称" required prop="classOneName">
-      <el-input placeholder="请输入" v-model="state.detailForm.classOneName" />
+    <el-form-item label="一级变量名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.parentName" />
     </el-form-item>
     <el-form-item label="二级变量名称" prop="classTwoName">
-      <el-input placeholder="请输入" v-model="state.detailForm.classTwoName" />
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
   </el-form>
 </template>
@@ -32,9 +32,9 @@ import { ref, reactive, onMounted } from "vue";
 import { VARIABLE_TYPE } from "@/constant";
 
 const init = {
-  classTwoName: "",
-  varType: "",
-  classOneName: "",
+  name: "",
+  level: "",
+  parentName: "",
 };
 const props = defineProps({
   initData: {
@@ -42,13 +42,13 @@ const props = defineProps({
   },
 });
 const rules = {
-  varType: { required: true, message: "请选择变量类型", trigger: "change" },
-  classOneName: {
+  level: { required: true, message: "请选择变量类型", trigger: "change" },
+  parentName: {
     required: true,
     message: "请输入一级变量名称",
     trigger: "blur",
   },
-  classTwoName: {
+  name: {
     required: true,
     message: "请输入二级变量名称",
     trigger: "blur",
@@ -72,7 +72,7 @@ const state = reactive({ detailForm: init });
 
 onMounted(() => {
   if (props.initData) {
-    const formData = { ...init, ...props.initData };
+    const formData = { ...init, ...props.initData, level: String(props?.initData?.level) };
     state.detailForm = formData;
   }
 });

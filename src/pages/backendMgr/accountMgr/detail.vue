@@ -20,7 +20,7 @@
       </el-select>
     </el-form-item>
     <el-form-item label="用户名" required prop="userName">
-      <el-input placeholder="请输入" v-model="state.detailForm.userName" />
+      <el-input placeholder="请输入" v-model="state.detailForm.userName" autocomplete="false" />
     </el-form-item>
     <el-form-item label="密码" required prop="password">
       <el-input
@@ -28,6 +28,7 @@
         v-model="state.detailForm.password"
         type="password"
         show-password
+        autocomplete="false"
       />
     </el-form-item>
     <el-form-item label="锁定状态" required prop="status">
@@ -35,18 +36,18 @@
         <el-option v-for="item in LOCK_STATUS" v-bind="item" />
       </el-select>
     </el-form-item>
-    <el-form-item label="关联项目" required prop="bindProject">
+    <el-form-item label="关联项目" required prop="projects">
       <el-select
         multiple
-        v-model="state.detailForm.bindProject"
+        v-model="state.detailForm.projects"
         placeholder="请选择"
       >
-        <el-option v-for="item in projects" v-bind="item" />
+        <el-option v-for="item in globalState.projects" v-bind="item" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
     </el-form-item>
-    <el-form-item label="备注信息" required prop="remark">
+    <el-form-item label="备注信息" required prop="description">
       <el-input
-        v-model="state.detailForm.remark"
+        v-model="state.detailForm.description"
         type="textarea"
         placeholder="请输入至少5个字符"
       />
@@ -56,32 +57,27 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { LOCK_STATUS, COMMON_ROLE } from "@/constant";
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+
+const { globalState } = storeToRefs(appStore.global);
 
 const init = {
-  userRole: "",
+  roleName: "",
   userName: "",
   password: "",
   status: "",
-  bindProject: [],
-  remark: "",
+  projects: [],
+  description: "",
 };
-const projects = [
-  { label: "项目001", value: "项目001" },
-  { label: "项目002", value: "项目002" },
-  { label: "项目003", value: "项目003" },
-  { label: "项目004", value: "项目004" },
-  { label: "项目005", value: "项目005" },
-  { label: "项目006", value: "项目006" },
-  { label: "项目007", value: "项目007" },
-  { label: "项目008", value: "项目008" },
-];
+
 const rules = {
-  userRole: { required: true, message: "请选择用户角色", trigger: "change" },
+  roleName: { required: true, message: "请选择用户角色", trigger: "change" },
   userName: { required: true, message: "请输入用户名", trigger: "blur" },
   password: { required: true, message: "请输入密码", trigger: "blur" },
   status: { required: true, message: "请选择锁定状态", trigger: "change" },
-  bindProject: { required: true, message: "请选择关联项目", trigger: "change" },
-  remark: [
+  projects: { required: true, message: "请选择关联项目", trigger: "change" },
+  description: [
     { required: true, message: "请输入备注信息", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
   ],
@@ -110,7 +106,7 @@ const state = reactive({ detailForm: init });
 
 onMounted(() => {
   if (props.initData) {
-    const formData = { ...init, ...props.initData };
+    const formData = { ...init, ...props.initData, projects: props.initData?.projects?.map(i => i?.id) };
     state.detailForm = formData;
   }
 });

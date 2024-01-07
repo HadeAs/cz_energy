@@ -10,7 +10,7 @@
     <ProTable
       :column="column"
       :pageInfo="pageInfo"
-      :datasource="datasource"
+      :datasource="dataSource"
       v-loading="loading"
       @page-change="pageChange"
     >
@@ -24,7 +24,7 @@
           <el-col :offset="18" :span="4">
             <el-input
               clearable
-              v-model="gateway"
+              v-model="state.searchFormData.textQuery"
               placeholder="网关名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import ProDrawer from "@/components/ProDrawer.vue";
@@ -68,31 +68,40 @@ import Detail from "./detail.vue";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import useTable from '@/hooks/useTable.js';
+import { getList, updateGateway, deleteGateway } from '@/api/backstageMng/gateway.js';
+import { crudService } from '@/api/backstageMng/utils.js';
 
-const gateway = ref("");
-const loading = ref(false);
-const datasource = ref([]);
-const operateType = ref("");
 const detailDrawerRef = ref();
 const commDetailRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
-const pageInfo = ref({
-  total: 4,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
+
+const state = reactive({
+  searchFormData: { textQuery: "" },
+  currentData: {},
+  projects: [],
 });
 
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getList, state.searchFormData, state.sortInfo);
+
+getTableList();
+
 const addRow = () => {
-  operateType.value = "add";
   detailDrawerTitle.value = "新增通信配置";
   initDetailData.value = null;
   detailDrawerRef.value.open();
 };
 
 const editRow = (data) => {
-  operateType.value = "edit";
   detailDrawerTitle.value = "编辑通信配置";
   initDetailData.value = data;
   detailDrawerRef.value.open();
@@ -101,65 +110,53 @@ const editRow = (data) => {
 const confirmDetail = async () => {
   const res = await commDetailRef.value.validate();
   if (res) {
-    // 配置新增/编辑逻辑
-    if (operateType.value === "add") {
-      datasource.value.push(res);
-    } else {
-      const idx = datasource.value.findIndex((v) => v.id === res.id);
-      datasource.value.splice(idx, 1, res);
-    }
-    datasource.value = [...datasource.value];
-    detailDrawerRef.value.close();
+    await crudService(updateGateway, res, () => {
+      getTableList();
+      detailDrawerRef.value.close();
+    })
   }
 };
 
 const handleSearch = () => {
-  console.log(gateway.value);
+  searchChange(state.searchFormData)
 };
 
-const confirmDelete = (data) => {
-  // 配置删除逻辑
-  const idx = datasource.value.findIndex((v) => v.id === data.id);
-  datasource.value.splice(idx, 1);
-  datasource.value = [...datasource.value];
-};
-
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
+const confirmDelete = async ({ id }) => {
+  await crudService(deleteGateway, { id }, getTableList)
 };
 
 const column = [
   {
-    prop: "gatewayId",
+    prop: "address",
     label: "网关ID",
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.gatewayId}>
-          <span className="table-first-col">{scope.row.gatewayId}</span>
+        <div className="text-overflow" title={scope.row.address}>
+          <span className="table-first-col">{scope.row.address}</span>
         </div>
       );
     },
   },
   {
-    prop: "gatewayName",
+    prop: "name",
     label: "网关名称",
   },
   {
-    prop: "gatewayVersion",
+    prop: "version",
     label: "网关版本",
   },
   {
-    prop: "interface",
+    prop: "communicationInterface",
     label: "通讯接口",
   },
   {
-    prop: "remark",
+    prop: "description",
     label: "备注",
     width: 280,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.remark}>
-          <span>{scope.row.remark}</span>
+        <div className="text-overflow" title={scope.row.description}>
+          <span>{scope.row.description}</span>
         </div>
       );
     },

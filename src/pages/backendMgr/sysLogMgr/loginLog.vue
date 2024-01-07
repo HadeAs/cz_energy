@@ -18,8 +18,9 @@
       <ProTable
         :column="column"
         :pageInfo="pageInfo"
-        :datasource="datasource"
+        :datasource="dataSource"
         v-loading="loading"
+        @sort-chaneg="sortChange"
         @page-change="pageChange"
       />
     </MainContentContainer>
@@ -27,19 +28,12 @@
 </template>
 
 <script setup lang="jsx">
-import { ref, onMounted } from "vue";
+import { reactive } from "vue";
 import ProTable from "@/components/ProTable.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-
-const loading = ref(false);
-const datasource = ref([]);
-const pageInfo = ref({
-  total: 4,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
-});
+import useTable from '@/hooks/useTable.js';
+import { getLoginLog } from '@/api/backstageMng/sysLog.js';
 
 const searchFormCfg = [
   {
@@ -48,15 +42,40 @@ const searchFormCfg = [
     type: "datetimerange",
     value: "",
   },
-  { label: "登录用户", prop: "userName", type: "input", value: "" },
+  { label: "登录用户", prop: "textQuery", type: "input", value: "" },
 ];
 
-const onSearch = (data) => {
-  console.log(data);
-};
+const state = reactive({
+  searchFormData: {
+    textQuery: "",
+  },
+  sortInfo: { prop: "loginTime", order: "descending" },
+});
 
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  sortChange,
+  searchChange,
+  getTableList,
+} = useTable(getLoginLog, state.searchFormData, state.sortInfo);
+
+getTableList();
+
+const onSearch = (data) => {
+  const param = {};
+  data.forEach((item) => {
+    if (item.prop === "timeRange") {
+      param.startDate = item.value?.[0];
+      param.endDate = item.value?.[1];
+    } else {
+      param[item.prop] = item.value;
+    }
+  });
+  state.searchFormData = { ...state.searchFormData, ...param };
+  searchChange({ ...state.searchFormData });
 };
 
 const column = [
@@ -72,7 +91,7 @@ const column = [
     },
   },
   {
-    prop: "role",
+    prop: "roleName",
     label: "用户角色",
   },
   {
@@ -87,45 +106,6 @@ const column = [
   },
 ];
 
-onMounted(async () => {
-  loading.value = true;
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false;
-      resolve([
-        {
-          id: "1",
-          userName: "admin1",
-          loginTime: "2018-03-03  15:20:40",
-          logoutTime: "2018-03-03  15:20:40",
-          role: "企业管理员",
-        },
-        {
-          id: "2",
-          userName: "admin2",
-          loginTime: "2018-03-03  15:20:40",
-          logoutTime: "2018-03-03  15:20:40",
-          role: "企业管理员",
-        },
-        {
-          id: "3",
-          userName: "admin3",
-          loginTime: "2018-03-03  15:20:40",
-          logoutTime: "2018-03-03  15:20:40",
-          role: "超级管理员",
-        },
-        {
-          id: "4",
-          userName: "admin4",
-          loginTime: "2018-03-03  15:20:40",
-          logoutTime: "2018-03-03  15:20:40",
-          role: "超级管理员",
-        },
-      ]);
-    }, 1000);
-  });
-  datasource.value = res;
-});
 </script>
 <style lang="scss" scoped>
 .search {

@@ -14,15 +14,15 @@
     label-width="180px"
     class="custom-form"
   >
-    <el-form-item label="角色名称" required prop="roleName">
-      <el-input placeholder="请输入" v-model="state.detailForm.roleName" />
+    <el-form-item label="角色名称" required prop="name">
+      <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
     <el-form-item label="角色key" required prop="roleKey">
       <el-input placeholder="请输入" v-model="state.detailForm.roleKey" />
     </el-form-item>
-    <el-form-item label="备注信息" required prop="remark">
+    <el-form-item label="备注信息" required prop="description">
       <el-input
-        v-model="state.detailForm.remark"
+        v-model="state.detailForm.description"
         type="textarea"
         placeholder="请输入至少5个字符"
       />
@@ -34,8 +34,8 @@ import { ref, reactive, onMounted } from "vue";
 
 const init = {
   roleKey: "",
-  roleName: "",
-  remark: "",
+  name: "",
+  description: "",
 };
 const props = defineProps({
   initData: {
@@ -43,9 +43,9 @@ const props = defineProps({
   },
 });
 const rules = {
-  roleName: { required: true, message: "请输入角色名称", trigger: "blur" },
+  name: { required: true, message: "请输入角色名称", trigger: "blur" },
   roleKey: { required: true, message: "请输入角色key", trigger: "blur" },
-  remark: [
+  description: [
     { required: true, message: "请输入备注信息", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
   ],
@@ -68,7 +68,7 @@ const state = reactive({ detailForm: init });
 
 onMounted(() => {
   if (props.initData) {
-    const formData = { ...init, ...props.initData };
+    const formData = { ...init, ...props.initData, level: props.initData?.projectLevel };
     state.detailForm = formData;
   }
 });
