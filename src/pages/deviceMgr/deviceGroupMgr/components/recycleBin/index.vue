@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 15:29:51
+ * @LastEditTime: 2024-01-08 23:17:26
  * @Description: 
 -->
 <template>
@@ -88,7 +88,7 @@ const state = reactive({
     textQuery: "",
     isDeleted: 1,
   },
-  sortInfo: { prop: "propertyNum", order: "descending" },
+  sortInfo: { prop: "openTime", order: "descending" },
   collectList: [],
   relateList: [],
   projectList: [],
@@ -100,6 +100,7 @@ const column = [
     label: "设备名称",
     width: 110,
     fixed: true,
+    sortable: "custom",
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
@@ -146,10 +147,12 @@ const column = [
     prop: "openTime",
     label: "启用时间",
     width: 180,
+    sortable: "custom",
   },
   {
     prop: "status",
     label: "运行状态",
+    sortable: "custom",
     render: (scope) => {
       const status = scope.row.status;
       return (

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 21:25:16
+ * @LastEditTime: 2024-01-08 23:26:47
  * @Description: 
 -->
 <template>
@@ -56,6 +56,7 @@
                   v-model="state.searchFormData.textQuery"
                   placeholder="项目名称"
                   :suffix-icon="Search"
+                  clearable
                   @change="handleSearchChange"
                 />
               </el-form-item>
@@ -122,6 +123,7 @@ const column = [
     label: "点位名称",
     width: 110,
     fixed: true,
+    sortable: "custom",
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
@@ -143,24 +145,32 @@ const column = [
   {
     prop: "label",
     label: "单位",
-    width: 100,
+    // width: 100,
   },
   {
     prop: "commNum",
     label: "通讯号",
-    width: 80,
+    width: 90,
+    sortable: "custom",
   },
   {
     prop: "period",
     label: "采集频率",
+    sortable: "custom",
+    width: 110,
+    render: (scope) => `${scope.row.period ? scope.row.period + "分钟" : ""}`,
   },
   {
     prop: "maxThreshold",
     label: "最大阈值",
+    width: 110,
+    sortable: "custom",
   },
   {
     prop: "minThreshold",
     label: "最小阈值",
+    width: 110,
+    sortable: "custom",
   },
 ];
 

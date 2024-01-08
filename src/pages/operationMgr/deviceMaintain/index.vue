@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 12:01:55
+ * @LastEditTime: 2024-01-08 23:38:13
  * @Description: 
 -->
 <template>
@@ -44,6 +44,7 @@
                   v-model="state.searchFormData.textQuery"
                   placeholder="设别名称/型号"
                   :suffix-icon="Search"
+                  clearable
                   @change="handleSearchChange"
                 />
               </el-form-item>
@@ -302,7 +303,7 @@ const confirmAddVar = () => {
         endMaintainDate: state.formData.maintainDate[1] + " 00:00:00",
       });
       if (code === 200) {
-        ElMessage("设置保养时间成功");
+        ElMessage.success("设置保养时间成功");
         getTableList();
         drawerRef.value.close();
       }

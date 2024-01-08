@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 16:09:01
+ * @LastEditTime: 2024-01-08 22:39:18
  * @Description: 
 -->
 <template>
@@ -52,6 +52,7 @@
                   <el-select
                     v-model="state.searchFormData.riskLevel"
                     placeholder="选择报警等级"
+                    clearable
                     @change="handleSearchChange"
                   >
                     <el-option
@@ -146,6 +147,7 @@ const column = [
     prop: "equipmentName",
     label: "报警设备名称",
     width: 160,
+    sortable: "custom",
     fixed: true,
     render: (scope) => {
       return (
@@ -159,11 +161,12 @@ const column = [
     prop: "createTime",
     label: "报警时间",
     width: 180,
+    sortable: "custom",
   },
   {
     prop: "riskLevel",
     label: "报警等级",
-    width: 100,
+    // width: 100,
     render: (scope) => {
       const riskLevel = scope.row.riskLevel;
       let type = "success";
@@ -172,7 +175,11 @@ const column = [
       } else if (riskLevel === "二级") {
         type = "warning";
       }
-      return <ElTag type={type}>{riskLevel}</ElTag>;
+      return (
+        <ElTag effect="dark" type={type}>
+          {riskLevel}
+        </ElTag>
+      );
     },
   },
   {
@@ -197,8 +204,9 @@ const column = [
     },
   },
   {
-    prop: "description",
+    prop: "result",
     label: "操作记录",
+    width: 180,
   },
 ];
 

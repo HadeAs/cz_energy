@@ -78,14 +78,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="点位编号" required prop="number">
-        <el-select v-model="state.form.number">
+        <el-input-number v-model="state.form.number" />
+        <!-- <el-select v-model="state.form.number">
           <el-option
             v-for="item in state.timeOpts"
             :key="item.id"
             :label="item.name"
             :value="item.id"
           />
-        </el-select>
+        </el-select> -->
       </el-form-item>
       <el-form-item label="启用状态" required prop="status">
         <el-radio-group v-model="state.form.status">

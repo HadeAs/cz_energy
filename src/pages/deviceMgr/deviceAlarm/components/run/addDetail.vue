@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:52:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 16:11:38
+ * @LastEditTime: 2024-01-08 22:46:12
  * @Description: 
 -->
 <template>
@@ -11,8 +11,8 @@
       <!-- <el-form-item label="监测点位名称" required prop="name">
         <el-input placeholder="请输入监测点位名称" v-model="state.form.name" />
       </el-form-item> -->
-      <el-form-item label="实时数据" required prop="data">
-        <el-input-number v-model="state.form.data" />
+      <el-form-item label="数据" required prop="data">
+        <el-input v-model="state.form.data" />
       </el-form-item>
       <el-form-item label="操作记录" required prop="description">
         <el-input

@@ -89,6 +89,7 @@ const column = [
     label: "监测点位名称",
     width: 200,
     fixed: true,
+    sortable: "custom",
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
@@ -138,7 +139,11 @@ const column = [
       } else {
         type = "info";
       }
-      return <ElTag type={type}>{status}</ElTag>;
+      return (
+        <ElTag effect="dark" type={type}>
+          {status}
+        </ElTag>
+      );
     },
   },
   {
