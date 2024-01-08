@@ -59,7 +59,7 @@
         <a
           v-auth="'project_upload_img'"
           class="table-operator-btn"
-          @click="imageDrawerRef.open()"
+          @click="openImageDetail(scope.row)"
           >项目图片</a
         >
         <a
@@ -81,7 +81,7 @@
       <ProjectImage ref="projectImageRef" />
     </ProDrawer>
     <ProDrawer title="费用配置" ref="priceDrawerRef" @confirm="confirmPrice">
-      <PriceConfig ref="priceConfigRef" />
+      <PriceConfig ref="priceConfigRef" :initData="initDetailData" />
     </ProDrawer>
   </MainContentContainer>
 </template>
@@ -99,8 +99,9 @@ import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import useTable from '@/hooks/useTable.js';
-import { deleteProject, getList, saveConfigPrice, saveProject } from '@/api/backstageMng/pmMng.js';
+import { deleteProject, getList, saveConfigPrice, saveImages, saveProject } from '@/api/backstageMng/pmMng.js';
 import { crudService } from '@/api/backstageMng/utils.js';
+import { wrapObjWithFormData } from '@/utils/index.js';
 
 const selectRows = ref([]);
 const operateType = ref("");
@@ -148,6 +149,11 @@ const editRow = (data) => {
   detailDrawerRef.value.open();
 };
 
+const openImageDetail = (record) => {
+  state.currentData = record;
+  imageDrawerRef.value.open();
+};
+
 /**
  * 编辑/保存项目数据
  * @return {Promise<void>}
@@ -168,15 +174,16 @@ const confirmDetail = async () => {
  */
 const handleToPrice = (rowData) => {
   state.currentData = rowData;
+  initDetailData.value = rowData;
   priceDrawerRef.value.open();
 }
 
 const confirmImage = async () => {
   const res = await projectImageRef.value.getPictures();
   if (res) {
-    // 项目图片上传
-    console.log(res);
-    imageDrawerRef.value.close();
+    await crudService(saveImages, wrapObjWithFormData({ projectId: state.currentData.id, ...res }), () => {
+      imageDrawerRef.value.close();
+    })
   }
 };
 

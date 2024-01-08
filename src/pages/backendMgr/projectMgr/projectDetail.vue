@@ -53,8 +53,8 @@
     </el-form-item>
     <el-form-item label="项目模式" required prop="mode">
       <el-radio-group v-model="state.detailForm.mode">
-        <el-radio-button label="供冷" />
-        <el-radio-button label="供暖" />
+        <el-radio-button :label="0">供冷</el-radio-button>
+        <el-radio-button :label="1">供暖</el-radio-button>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="项目介绍" required prop="description">
@@ -96,6 +96,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
+import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
 
 const init = {
   name: "",
@@ -108,7 +109,7 @@ const init = {
   maxHotLoad: "",
   mode: "",
   description: "",
-  isRemoted: false,
+  isRemoted: '0',
   topic: "",
   temperatureSettingTag: "",
   startStopTag: "",
@@ -186,10 +187,14 @@ defineExpose({
 const formRef = ref();
 const state = reactive({ detailForm: init });
 
-onMounted(() => {
+onMounted(async () => {
   if (props.initData) {
-    const formData = { ...init, ...props.initData };
-    state.detailForm = formData;
+    const { data } = await fetchOneProject(props.initData);
+    if (data?.data) {
+      state.detailForm = { ...init, ...props.initData, ...data?.data,
+        // isRemoted 查询返回 boolean， post 接口接收 字符串
+      ...{ openTime: props.initData?.openTime, isRemoted: data?.data?.isRemoted ? '1' : '0' } };
+    }
   }
 });
 </script>

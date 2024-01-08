@@ -14,7 +14,7 @@
     <ProUpload
       list-type="picture-card"
       :limit="5"
-      :file-list="projectImgs"
+      :file-list="panelImage"
       @change="handleProjectChange"
     />
   </div>
@@ -26,7 +26,7 @@
     <ProUpload
       list-type="picture-card"
       :limit="5"
-      :file-list="airImgs"
+      :file-list="EnergyFlowImage"
       @change="handleAirChange"
     />
   </div>
@@ -38,7 +38,7 @@
     <ProUpload
       list-type="picture-card"
       :limit="5"
-      :file-list="buildImgs"
+      :file-list="AirQualityImage"
       @change="handleBuildChange"
     />
   </div>
@@ -48,25 +48,25 @@ import { ref } from "vue";
 import ProUpload from "@/components/ProUpload.vue";
 import { PictureFilled } from "@element-plus/icons-vue";
 
-const projectImgs = ref([]);
-const airImgs = ref([]);
-const buildImgs = ref([]);
+const panelImage = ref([]);
+const EnergyFlowImage = ref([]);
+const AirQualityImage = ref([]);
 
 const handleAirChange = (fileList) => {
-  airImgs.value = fileList;
+  EnergyFlowImage.value = fileList;
 };
 const handleBuildChange = (fileList) => {
-  buildImgs.value = fileList;
+  AirQualityImage.value = fileList;
 };
 const handleProjectChange = (fileList) => {
-  projectImgs.value = fileList;
+  panelImage.value = fileList;
 };
 
 defineExpose({
   getPictures: () => ({
-    project: projectImgs,
-    air: airImgs,
-    build: buildImgs,
+    panelImage: panelImage?.value?.map(item => item?.raw),
+    EnergyFlowImage: EnergyFlowImage?.value?.map(item => item?.raw),
+    AirQualityImage: AirQualityImage?.value?.map(item => item?.raw),
   }),
 });
 </script>

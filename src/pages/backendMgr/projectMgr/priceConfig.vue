@@ -25,7 +25,8 @@
   </el-form>
 </template>
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
+import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
 
 const init = {
   powerCost: 0,
@@ -45,9 +46,21 @@ defineExpose({
       });
   },
 });
-
+const props = defineProps({
+  initData: {
+    type: Object,
+  },
+});
 const formRef = ref();
 const state = reactive({ priceForm: init });
+
+onMounted(async () => {
+  const { data } = await fetchOneProject(props.initData);
+  if (data?.data) {
+    state.priceForm = { ...init, ...data?.data };
+  }
+});
+
 </script>
 <style lang="scss" scoped>
 .custom-form {
