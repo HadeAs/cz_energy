@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 22:43:43
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 18:06:33
+ * @LastEditTime: 2024-01-08 17:30:36
  * @Description: 
 -->
 
@@ -82,7 +82,7 @@
           <el-option
             v-for="item in state.timeOpts"
             :key="item.id"
-            :label="item.text"
+            :label="item.name"
             :value="item.id"
           />
         </el-select>

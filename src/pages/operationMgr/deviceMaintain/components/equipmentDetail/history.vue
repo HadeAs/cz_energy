@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 16:50:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 15:34:28
+ * @LastEditTime: 2024-01-08 17:57:58
  * @Description: 
 -->
 <template>
@@ -90,7 +90,6 @@ import { getDeviceMaintainRecords } from "@/api/operationMgr/deviceMaintain";
 import dayjs from "dayjs";
 import { COMMON_DATE_TIME_FORMAT, COMMON_DATE_FORMAT } from "@/constant";
 import { transformFileToUrl } from "@/utils";
-import u6595 from "@/assets/img/device/u6595.png";
 
 const props = defineProps({
   equipmentModelId: { type: String },

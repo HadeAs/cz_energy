@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 15:41:30
+ * @LastEditTime: 2024-01-08 18:08:56
  * @Description: 
 -->
 <template>
@@ -45,7 +45,7 @@
       <el-form-item label="设备位置" required prop="location">
         <el-input v-model="state.form.location" placeholder="请输入" />
       </el-form-item>
-      <el-form-item label="系统分类" required prop="sysClassId">
+      <!-- <el-form-item label="系统分类" required prop="sysClassId">
         <el-select v-model="state.form.sysClassId">
           <el-option
             v-for="item in classifyList"
@@ -54,7 +54,7 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="管理人" required prop="managerId">
         <el-select v-model="state.form.managerId">
           <el-option
@@ -108,15 +108,17 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import ProUpload from "@/components/ProUpload.vue";
 import { getInfo } from "@/api/deviceMgr/deviceGroup";
 import { getEquipmentModelList } from "@/api/deviceMgr";
-import { ElMessage } from "element-plus";
+import { getImageUrl } from "@/api/common";
+import { transformFileToUrl } from "@/utils";
 
+let oldRaw;
 const initData = {
   projectId: "",
   name: "",
   propertyNum: "",
   equipmentModelId: "",
   location: "",
-  sysClassId: "",
+  // sysClassId: "",
   managerId: "",
   // classify: "",
   openTime: "",
@@ -170,6 +172,14 @@ const getEqpList = async (projectId) => {
   state.equipmentTypes = data.data;
 };
 
+const parseImage = async (url) => {
+  const data = await getImageUrl(url);
+  oldRaw = data;
+  const imageUrl = transformFileToUrl(data);
+  const [fileName, fileSuffix] = url.split(".");
+  return [{ name: fileName, url: imageUrl }];
+};
+
 const getDetail = async (param) => {
   const { data } = await getInfo({ projectId: param.projectId, id: param.id });
   if (data?.data) {
@@ -178,18 +188,14 @@ const getDetail = async (param) => {
     state.form.managerId = data.data.managerId;
     state.form.equipmentModelId = data.data.equipmentModelId;
     if (data.data.image) {
-      const [fileName, fileSuffix] = data.data.image.split(".");
-      state.form.image = [
-        {
-          name: fileName,
-          url: data.data.image,
-        },
-      ];
+      const images = await parseImage(data.data.image);
+      state.form.image = images;
     }
   }
 };
 
 const handleChange = (fileList) => {
+  oldRaw = null;
   state.form.image = fileList;
 };
 
@@ -199,7 +205,20 @@ const handleProjectChange = () => {
 const confirmDetail = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
-      emits("submit", { ...state.form, file: state.form.image[0].raw });
+      const { image = [], projectId, ...rest } = state.form;
+      const param = { ...rest, file: image[0].raw };
+      if (image[0].raw) {
+        param.file = image[0].raw;
+      } else if (oldRaw) {
+        param.file = new File([oldRaw], `${image[0].name}.png`, {
+          type: oldRaw.type,
+        });
+        oldRaw = null;
+      }
+      if (props.data?.id) {
+        param.id = props.data.id;
+      }
+      emits("submit", param);
     }
   });
 };

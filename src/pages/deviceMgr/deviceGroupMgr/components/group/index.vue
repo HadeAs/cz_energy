@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 13:14:36
+ * @LastEditTime: 2024-01-08 17:31:01
  * @Description: 
 -->
 <template>
@@ -88,6 +88,7 @@
                 <el-form-item>
                   <el-input
                     v-model="state.searchFormData.textQuery"
+                    clearable
                     placeholder="项目名称"
                     :suffix-icon="Search"
                     @change="handleSearchChange"

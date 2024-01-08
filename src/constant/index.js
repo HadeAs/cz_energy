@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 11:12:21
+ * @LastEditTime: 2024-01-08 20:18:21
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -389,8 +389,8 @@ export const WORK_SYSTEM = [
 ];
 
 export const LOCK_STATUS = [
-  { label: "正常", value: "正常" },
-  { label: "锁定", value: "锁定" },
+  { label: "正常", value: 0 },
+  { label: "锁定", value: 1 },
 ];
 
 export const COMMON_ROLE = [
