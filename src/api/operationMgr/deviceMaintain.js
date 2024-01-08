@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-07 13:04:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 16:07:16
+ * @LastEditTime: 2024-01-08 11:10:36
  * @Description: 
  */
 import http from "../http";
@@ -17,12 +17,16 @@ export const getInfo = (params) => {
   return http.get(`${PORT}/maintain/equipment/detail`, params);
 }
 
+export const setInterval = (projectId, params) => {
+  return http.post(`${PORT}/maintain/equipment-model/set-interval?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
+}
+
 export const getDevicePlanList = (params) => {
   return http.get(`${PORT}/maintain/equipment/query`, params);
 }
 
 export const getDeviceMaintainRecords = (params) => {
-  return http.get(`${PORT}/maintain/record/query`, params);
+  return http.get(`${PORT}/maintain/record/query`, params, { ...COMMON_SUBMIT_CONFIG });
 }
 
 export const addDeviceMaintainPlan = (projectId, params) => {
@@ -41,9 +45,6 @@ export const addPlan = (projectId, params) => {
   return http.post(`${PORT}/maintain/plan/save?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
 }
 
-export const getFiveYearPlan = (params) => {
-  return http.get(`${PORT}/maintain/plan/get-five-year`, params);
-}
 export const setFiveYearPlan = (projectId, params) => {
   return http.post(`${PORT}/maintain/plan/set-five-year?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
 }

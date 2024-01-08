@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 12:56:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 23:25:09
+ * @LastEditTime: 2024-01-07 21:41:22
  * @Description: 
 -->
 <template>
@@ -10,9 +10,9 @@
     <el-form-item label="设备名称" required prop="name">
       <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
-    <!-- <el-form-item label="资产编号" required prop="no">
-      <el-input placeholder="请输入" v-model="state.detailForm.no" />
-    </el-form-item> -->
+    <el-form-item label="资产编号" required prop="propertyNum">
+      <el-input placeholder="请输入" v-model="state.detailForm.propertyNum" />
+    </el-form-item>
     <el-form-item label="型号规格" prop="modelNum">
       <el-input placeholder="请输入" v-model="state.detailForm.modelNum" />
     </el-form-item>
@@ -50,6 +50,7 @@ import Param from "./param.vue";
 const init = {
   name: "",
   modelNum: "",
+  propertyNum: "",
   equipmentTypeId: "",
   openTime: "",
 };

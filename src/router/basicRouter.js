@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 19:13:50
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 16:39:01
+ * @LastEditTime: 2024-01-08 12:01:38
  * @Description:
  */
 const BasicRouter = [
@@ -14,7 +14,7 @@ const BasicRouter = [
       import(/* webpackChunkName: "loginPage" */ "@/pages/login/index.vue"),
   },
   {
-    path: "/deviceDetail/:id/:num",
+    path: "/deviceDetail/:projectId/:id/:num",
     name: "deviceDetail",
     component: () =>
       import(
@@ -22,7 +22,7 @@ const BasicRouter = [
       ),
   },
   {
-    path: "/equipmentDetail/:id/:equipmentModelId",
+    path: "/equipmentDetail/:projectId/:id/:equipmentModelId",
     name: "equipmentDetail",
     component: () =>
       import(

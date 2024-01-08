@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:10:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 15:53:50
+ * @LastEditTime: 2024-01-08 12:45:56
  * @Description: 
 -->
 <template>
@@ -80,7 +80,7 @@ import { ElMessage } from "element-plus";
 
 const props = defineProps({
   deviceId: { type: String },
-  projectId: { type: Number },
+  projectId: { type: String },
 });
 const rules = {
   year: [{ required: true, message: "请选择年份", trigger: "blur" }],

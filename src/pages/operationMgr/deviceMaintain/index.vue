@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 14:26:39
+ * @LastEditTime: 2024-01-08 12:01:55
  * @Description: 
 -->
 <template>
@@ -74,16 +74,17 @@
         :rules="rules"
       >
         <el-form-item label="设备组名称" prop="name">
-          <el-input v-model="state.formData.name" />
+          <el-input disabled v-model="state.formData.name" />
         </el-form-item>
         <el-form-item label="型号" prop="modelNum">
           <el-input
+            disabled
             v-model="state.formData.modelNum"
             placeholder="请输入型号"
           />
         </el-form-item>
         <el-form-item label="所属系统分类" prop="sysClassId">
-          <el-select v-model="state.formData.sysClassId">
+          <el-select disabled v-model="state.formData.sysClassId">
             <el-option
               v-for="item in state.classifyList"
               :key="item.id"
@@ -93,7 +94,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="设备数量" prop="equipmentCount">
-          <el-input-number :min="0" v-model="state.formData.equipmentCount" />
+          <el-input-number
+            disabled
+            :min="0"
+            v-model="state.formData.equipmentCount"
+          />
         </el-form-item>
         <el-form-item label="计划保养时间" prop="maintainDate">
           <el-date-picker
@@ -101,7 +106,7 @@
             type="daterange"
             start-placeholder="请选择开始日期"
             end-placeholder="请选择结束日期"
-            value-format="YYYY-MM-DD"
+            :value-format="COMMON_DATE_FORMAT"
           />
         </el-form-item>
       </el-form>
@@ -119,8 +124,11 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
-import { getList, getInfo } from "@/api/operationMgr/deviceMaintain";
+import { getList, setInterval } from "@/api/operationMgr/deviceMaintain";
 import { getClassifyList } from "@/api/deviceMgr";
+import { getInfo } from "@/api/deviceMgr/deviceLedger";
+import { ElMessage } from "element-plus";
+import { COMMON_DATE_FORMAT } from "@/constant";
 
 const { globalState } = storeToRefs(appStore.global);
 
@@ -189,7 +197,7 @@ const column = [
   {
     prop: "startMaintainDate",
     label: "计划保养时间",
-    width: 180,
+    width: 200,
     sortable: "custom",
     render: (scope) => {
       const start = scope.row.startMaintainDate;
@@ -252,29 +260,31 @@ const handleSearchChange = () => {
   searchChange(state.searchFormData);
 };
 
-const getDeviceInfo = async (id) => {
-  const { data } = await getInfo({
-    projectId: state.searchFormData.projectId,
-    equipmentId: id,
-  });
-  if (data?.data) {
-    state.formData.sysClassId = data.data.sysClassId;
-  }
-};
-
 const viewDetail = (row) => {
   const { id } = row;
   const path = router.resolve({
     name: "deviceDetail",
     params: {
+      projectId: state.searchFormData.projectId,
       id,
       num: row.equipmentCount,
     },
   }).href;
   window.open(path, "_blank");
 };
+
+const getDetail = async (id) => {
+  const { data } = await getInfo({
+    projectId: state.searchFormData.projectId,
+    id,
+  });
+  if (data?.data) {
+    state.formData.sysClassId = data.data.sysClassId;
+  }
+};
 const editRow = (row) => {
-  getDeviceInfo(row.id);
+  getDetail(row.id);
+  state.formData.equipmentModelId = row.id;
   state.formData.name = row.name;
   state.formData.modelNum = row.modelNum;
   state.formData.equipmentCount = row.equipmentCount;
@@ -285,9 +295,17 @@ const editRow = (row) => {
 const confirmAddVar = () => {
   formRef.value
     .validate()
-    .then(() => {
-      console.log("success");
-      drawerRef.value.close();
+    .then(async () => {
+      const { code } = await setInterval(state.searchFormData.projectId, {
+        equipmentModelId: state.formData.equipmentModelId,
+        startMaintainDate: state.formData.maintainDate[0] + " 00:00:00",
+        endMaintainDate: state.formData.maintainDate[1] + " 00:00:00",
+      });
+      if (code === 200) {
+        ElMessage("设置保养时间成功");
+        getTableList();
+        drawerRef.value.close();
+      }
     })
     .catch(() => {
       console.log("fail");

@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 10:24:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 17:55:21
+ * @LastEditTime: 2024-01-08 14:32:28
  * @Description: 
  */
 import http from './http';
-
+import { COMMON_SUBMIT_CONFIG } from "./"
 export const PORT = "common";
 // 获取项目列表
 export const getProjectList = () => {
@@ -36,4 +36,13 @@ export const getVariablesByLevel = (param) => {
 // 根据父节点获取变量类型列表
 export const getVariablesByParent = (param) => {
   return http.get(`${PORT}/statistics-type/name-list/parent-id`, param);
+}
+
+// 获取图片URL
+export const getImageUrl = (url) => {
+  return http.get(`images/${url}`, null, {
+    baseURL: "/static",
+    ...COMMON_SUBMIT_CONFIG,
+    responseType: 'blob'
+  });
 }

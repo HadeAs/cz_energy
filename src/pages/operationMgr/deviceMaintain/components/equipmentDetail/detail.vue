@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 16:34:43
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-25 20:57:05
+ * @LastEditTime: 2024-01-08 12:45:23
  * @Description: 
 -->
 <template>
@@ -24,22 +24,42 @@
 </template>
 <script setup name="Detail">
 import { reactive } from "vue";
-import { useRoute } from "vue-router";
 import BoxContainer from "../boxContainer.vue";
+import { getInfo } from "@/api/operationMgr/deviceMaintain";
 
-const route = useRoute();
-const state = reactive({
-  exclData: [
-    { label: "设备名称", value: "某某设备" },
-    { label: "型号", value: "X212" },
-    { label: "资产编号", value: "AL264694" },
-    { label: "设备位置", value: "空调主机—一楼主机机房" },
-    { label: "启用状态", value: "启用" },
-    { label: "计划保养时间", value: "2023-02-15—2023-05-15" },
-    { label: "保养状态", value: "已保养" },
-    { label: "保养时间", value: "2020-05-15" },
-  ],
+const props = defineProps({
+  equipmentModelId: { type: String },
+  equipmentId: { type: String },
+  projectId: { type: String },
 });
+
+const state = reactive({
+  exclData: [],
+});
+
+const getDetail = async () => {
+  const { data } = await getInfo({
+    projectId: props.projectId,
+    equipmentId: props.equipmentId,
+  });
+  if (data.data) {
+    const item = data.data;
+    state.exclData = [
+      { label: "设备名称", value: item.name },
+      { label: "型号", value: item.modelNum },
+      { label: "资产编号", value: item.propertyNum },
+      { label: "设备位置", value: item.location },
+      { label: "启用状态", value: item.status },
+      {
+        label: "计划保养时间",
+        value: `${item.startMaintainDate} ~ ${item.endMaintainDate}`,
+      },
+      { label: "保养状态", value: item.maintainState },
+      { label: "保养时间", value: item.maintainDate },
+    ];
+  }
+};
+getDetail();
 </script>
 <style lang="scss">
 .equipment-box-detail {

@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 16:58:57
+ * @LastEditTime: 2024-01-08 14:58:46
  * @Description: 
 -->
 <template>
-  <BoxContainer title="该型号设备列表（15）">
+  <BoxContainer :title="`该型号设备列表（${pageInfo.total}）`">
     <ProTable
       :column="column"
       :pageInfo="pageInfo"
@@ -97,10 +97,11 @@ import {
   getDevicePlanList,
   addDeviceMaintainPlan,
 } from "@/api/operationMgr/deviceMaintain";
+import { wrapObjWithFormData } from "@/utils";
 
 const props = defineProps({
   deviceId: { type: String },
-  projectId: { type: Number },
+  projectId: { type: String },
 });
 
 const router = useRouter();
@@ -230,6 +231,7 @@ const viewDetail = (row) => {
   const path = router.resolve({
     name: "equipmentDetail",
     params: {
+      projectId: props.projectId,
       id,
       equipmentModelId: props.deviceId,
     },
@@ -244,10 +246,12 @@ const confirmAddVar = () => {
   formRef.value
     .validate()
     .then(async () => {
-      const { code } = await addDeviceMaintainPlan(props.projectId, {
+      const param = {
         ...state.formData,
-        images: state.formData.images.map((item) => item.row),
-      });
+        images: state.formData.images.map((item) => item.raw),
+      };
+      const formData = wrapObjWithFormData(param);
+      const { code } = await addDeviceMaintainPlan(props.projectId, formData);
       if (code === 200) {
         ElMessage.success("设备保养添加成功");
         drawerRef.value.close();

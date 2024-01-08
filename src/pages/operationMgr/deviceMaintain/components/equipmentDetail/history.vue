@@ -2,14 +2,17 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 16:50:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 19:40:25
+ * @LastEditTime: 2024-01-08 14:57:57
  * @Description: 
 -->
 <template>
   <BoxContainer class="equipment-box-history" title="设备历史保养记录">
     <el-form :inline="true" :model="state.formData">
       <el-form-item label="保养时间：" prop="timeType">
-        <el-radio-group v-model="state.formData.timeType">
+        <el-radio-group
+          v-model="state.formData.timeType"
+          @change="getRecords()"
+        >
           <el-radio-button
             v-for="item in state.opts"
             :key="item.value"
@@ -24,8 +27,9 @@
           type="daterange"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
-          value-format="YYYY-MM-DD"
           range-separator="~"
+          :value-format="COMMON_DATE_FORMAT"
+          @change="getRecords(true)"
         />
       </el-form-item>
     </el-form>
@@ -34,7 +38,7 @@
       <el-timeline-item
         v-for="(activity, i) in state.historyList"
         :key="activity.id"
-        :timestamp="activity.time"
+        :timestamp="activity.maintainDate"
         placement="top"
         :color="i === 0 ? '#2985F7' : ''"
       >
@@ -56,7 +60,9 @@
               v-for="item in activity.images"
               :key="item.url"
             >
-              <a href="">{{ item.name }}</a>
+              <el-button link type="primary" @click="handleImgClick(item)">{{
+                item.name
+              }}</el-button>
             </span>
           </div>
         </div>
@@ -68,23 +74,37 @@
         </div>
       </el-timeline-item>
     </el-timeline>
+    <el-image-viewer
+      v-if="state.showPreview"
+      :url-list="state.previewList"
+      hide-on-click-modal
+      @close="state.showPreview = false"
+    />
   </BoxContainer>
 </template>
 <script setup name="History">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import BoxContainer from "../boxContainer.vue";
+import { getImageUrl } from "@/api/common";
 import { getDeviceMaintainRecords } from "@/api/operationMgr/deviceMaintain";
+import dayjs from "dayjs";
+import { COMMON_DATE_TIME_FORMAT, COMMON_DATE_FORMAT } from "@/constant";
+import { transformFileToUrl } from "@/utils";
+import u6595 from "@/assets/img/device/u6595.png";
 
 const props = defineProps({
   equipmentModelId: { type: String },
   equipmentId: { type: String },
-  projectId: { type: Number },
+  projectId: { type: String },
 });
 
+const previewImg = ref();
 const state = reactive({
   formData: {
     timeType: "all",
     timeRange: [],
+    startDate: "",
+    endDate: "",
   },
   opts: [
     { label: "全部", value: "all" },
@@ -94,22 +114,66 @@ const state = reactive({
     { label: "自定义", value: "4" },
   ],
   historyList: [],
+  previewList: [],
+  showPreview: false,
 });
 
-const getRecords = async () => {
+const getFilter = (ifIdentify) => {
+  const { timeType, timeRange } = state.formData;
+  if (timeType === "4" && !ifIdentify) return false;
+  if (timeType === "all") return {};
+  const now = dayjs();
+  let startDate = "";
+  let endDate = "";
+  if (timeType === "1") {
+    startDate = now
+      .subtract(1, "month")
+      .startOf("month")
+      .format(COMMON_DATE_TIME_FORMAT);
+    endDate = now
+      .subtract(1, "month")
+      .endOf("month")
+      .format(COMMON_DATE_TIME_FORMAT);
+  } else if (timeType === "2") {
+    startDate = now
+      .subtract(6, "month")
+      .startOf("month")
+      .format(COMMON_DATE_TIME_FORMAT);
+    endDate = now.endOf("month").format(COMMON_DATE_TIME_FORMAT);
+  } else if (timeType === "3") {
+    startDate = now
+      .subtract(1, "year")
+      .startOf("year")
+      .format(COMMON_DATE_TIME_FORMAT);
+    endDate = now.endOf("month").format(COMMON_DATE_TIME_FORMAT);
+  } else {
+    if (timeRange?.length) {
+      startDate = timeRange[0] + " 00:00:00";
+      endDate = timeRange[1] + " 00:00:00";
+    }
+  }
+  return { startDate, endDate };
+};
+const getRecords = async (ifIdentify = false) => {
+  const filter = getFilter(ifIdentify);
+  if (!filter) return false;
   const { data } = await getDeviceMaintainRecords({
     projectId: props.projectId,
     equipmentId: props.equipmentId,
+    ...filter,
   });
   if (data?.list) {
     state.historyList = data.list.map((item) => {
       const { image1, image2, image3, image4, image5, ...rest } = item;
       const effectiveImages = [image1, image2, image3, image4, image5]
         .filter((item) => item)
-        .map((item, index) => ({
-          url: item,
-          name: `照片0${index + 1}`,
-        }));
+        .map((item, index) => {
+          const [name, suffix] = item.split(".");
+          return {
+            url: item,
+            name: `照片0${index + 1}.${suffix}`,
+          };
+        });
       return {
         ...rest,
         images: effectiveImages,
@@ -119,9 +183,11 @@ const getRecords = async () => {
 };
 getRecords();
 
-const parseUrl = (url) => {
-  const arr = url.split("/");
-  return arr[arr.length - 1];
+const handleImgClick = async (item) => {
+  const { url } = item;
+  const data = await getImageUrl(url);
+  state.previewList = [transformFileToUrl(data)];
+  state.showPreview = true;
 };
 </script>
 <style scoped lang="scss">
@@ -131,7 +197,7 @@ const parseUrl = (url) => {
       color: #a2aabb;
     }
     .cs-text {
-      margin-right: 12px;
+      margin-right: 20px;
     }
     .margin-right-large-5 {
       margin-right: 56px;

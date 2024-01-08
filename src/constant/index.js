@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 10:04:40
+ * @LastEditTime: 2024-01-08 11:12:21
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -790,6 +790,9 @@ export const DEVICE_STATUS = [
   { id: true, name: "启用" },
   { id: false, name: "停用" },
 ];
+
+export const COMMON_DATE_FORMAT = "YYYY-MM-DD";
+export const COMMON_DATE_TIME_FORMAT = `${COMMON_DATE_FORMAT} hh:mm:ss`;
 
 export const COMMON_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.JPG', '.JPEG', '.PNG', '.BMP', '.gif', '.GIF'];
 
