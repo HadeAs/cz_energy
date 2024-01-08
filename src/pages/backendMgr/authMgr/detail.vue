@@ -27,10 +27,17 @@
         placeholder="请输入至少5个字符"
       />
     </el-form-item>
+    <el-form-item label="权限范围" required prop="level">
+      <el-select v-model="state.detailForm.level" placeholder="请选择">
+        <el-option label="部分项目" :value="0"></el-option>
+        <el-option label="所有项目" :value="1"></el-option>
+      </el-select>
+    </el-form-item>
   </el-form>
 </template>
 <script setup>
 import { ref, reactive, onMounted } from "vue";
+import { fetchOneRole } from '@/api/backstageMng/authMng.js';
 
 const init = {
   roleKey: "",
@@ -66,10 +73,12 @@ defineExpose({
 const formRef = ref();
 const state = reactive({ detailForm: init });
 
-onMounted(() => {
+onMounted(async () => {
   if (props.initData) {
-    const formData = { ...init, ...props.initData, level: props.initData?.projectLevel };
-    state.detailForm = formData;
+    const { data } = await fetchOneRole(props.initData);
+    if (data?.data) {
+      state.detailForm = { ...init, ...props.initData, ...data?.data }
+    }
   }
 });
 </script>

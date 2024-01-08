@@ -1,5 +1,5 @@
 import http from '@/api/http.js';
-import { COMMON_UPDATE_CONFIG } from '@/api/index.js';
+import { COMMON_JSON_CONFIG, COMMON_SUBMIT_CONFIG, COMMON_UPDATE_CONFIG } from '@/api/index.js';
 
 export const getList = (params) => {
   // const param = getProjectId(params);
@@ -7,7 +7,7 @@ export const getList = (params) => {
 }
 
 export const updateRoleInfo = (params) => {
-  return http.post('admin/role/save', params, { ...COMMON_UPDATE_CONFIG })
+  return http.post('admin/role/save', params, { ...COMMON_SUBMIT_CONFIG })
 }
 
 export const deleteRoleInfo = (params) => {
@@ -15,5 +15,9 @@ export const deleteRoleInfo = (params) => {
 }
 
 export const distributeRoleAuth = (params) => {
-  return http.post('admin/role/grant', params, { ...COMMON_UPDATE_CONFIG })
+  return http.post('admin/role/grant', params, { ...COMMON_JSON_CONFIG })
+}
+
+export const fetchOneRole = ({ id }) => {
+  return http.get('admin/role/find-one', { id }, { ...COMMON_SUBMIT_CONFIG })
 }

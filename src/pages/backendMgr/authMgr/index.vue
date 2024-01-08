@@ -59,7 +59,7 @@
       ref="distributeDrawerRef"
       @confirm="confirmDistribute"
     >
-      <RoleDistribute ref="roleDistributeRef" :initData="initDistributeData" />
+      <RoleDistribute ref="roleDistributeRef" :initData="initDetailData" />
     </ProDrawer>
   </MainContentContainer>
 </template>
@@ -123,14 +123,15 @@ const editRow = (data) => {
 const distribute = (rowData) => {
   //模拟当前角色的权限点
   const mock_auth = [
-    "project",
-    "systemlog",
+    11,
+    14,
     "carbon",
     "project_add",
     "systemlog_login_search",
   ];
   initDistributeData.value = mock_auth;
   state.currentData = rowData;
+  initDetailData.value = rowData;
   distributeDrawerRef.value.open();
 };
 

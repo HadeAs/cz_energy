@@ -12,10 +12,9 @@
     node-key="key"
     ref="treeRef"
     check-strictly
+    default-expand-all
     @check="checkChange"
     :expand-on-click-node="false"
-    :default-checked-keys="initData"
-    :default-expanded-keys="defaultExpandKeys"
   >
     <template #default="{ node, data }">
       <span class="custom-tree-node">
@@ -32,26 +31,27 @@
   </el-tree>
 </template>
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, nextTick, onMounted, reactive } from "vue";
 import remove from "lodash/remove";
 import { AUTH_POINT_CONFIG } from "@/constant";
 import { Document, Folder, FolderOpened } from "@element-plus/icons-vue";
+import { fetchOneRole } from '@/api/backstageMng/authMng.js';
 
 const treeRef = ref();
 
 const props = defineProps({
   initData: {
-    type: Array,
-    default: [],
+    type: Object,
+    default: {},
   },
 });
-const defaultExpandKeys = [
-  "operation",
-  "device",
-  "statistics",
-  "backend",
-  ...props.initData,
-];
+// const defaultExpandKeys = [
+//   "project",
+//   "systemlog",
+//   "carbon",
+//   "project_add",
+//   "systemlog_login_search",
+// ];
 
 const checkChange = (data) => {
   const node = treeRef.value.getNode(data);
@@ -78,6 +78,19 @@ const getCheckResult = () => {
 defineExpose({
   getCheckResult,
 });
+
+const state = reactive({ keys: [] });
+
+onMounted(async () => {
+  if (props.initData) {
+    const { data } = await fetchOneRole(props.initData);
+    if (data?.data) {
+      state.keys = data?.data?.resourceIds || [];
+      treeRef.value.setCheckedKeys(state.keys)
+    }
+  }
+});
+
 </script>
 <style lang="scss" scoped>
 .custom-tree-node {
