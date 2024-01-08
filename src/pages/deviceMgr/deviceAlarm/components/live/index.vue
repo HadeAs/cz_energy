@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 21:15:15
+ * @LastEditTime: 2024-01-08 16:09:01
  * @Description: 
 -->
 <template>
@@ -167,15 +167,12 @@ const column = [
     render: (scope) => {
       const riskLevel = scope.row.riskLevel;
       let type = "success";
-      let name = "三级";
-      if (riskLevel === 1) {
+      if (riskLevel === "一级") {
         type = "danger";
-        name = "一级";
-      } else if (riskLevel === 2) {
+      } else if (riskLevel === "二级") {
         type = "warning";
-        name = "二级";
       }
-      return <ElTag type={type}>{name}</ElTag>;
+      return <ElTag type={type}>{riskLevel}</ElTag>;
     },
   },
   {

@@ -76,7 +76,7 @@
         </el-row>
       </el-header>
 
-      <el-main class="main-container">
+      <el-main class="main-container" v-if="state.initSuccess">
         <el-scrollbar>
           <router-view />
         </el-scrollbar>
@@ -99,9 +99,9 @@ const { globalState } = storeToRefs(appStore.global);
 const route = useRoute();
 const router = useRouter();
 const defaultMenuKey = route.path;
-// const state = reactive({
-//   projects: [],
-// });
+const state = reactive({
+  initSuccess: false,
+});
 
 const projectChange = (val) => {
   appStore.global.changeName(val);
@@ -119,6 +119,15 @@ const logout = () => {
   appStore.useUserStore.userLogout();
   router.push({ path: "/login" });
 };
+
+const init = async () => {
+  // 获取项目列表
+  await appStore.global.getProList();
+  // 获取角色列表
+  await appStore.global.getRoleList();
+  state.initSuccess = true;
+};
+init();
 </script>
 
 <style scoped lang="scss">

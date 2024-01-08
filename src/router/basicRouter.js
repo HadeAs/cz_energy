@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 19:13:50
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 12:01:38
+ * @LastEditTime: 2024-01-08 15:22:04
  * @Description:
  */
 const BasicRouter = [
@@ -30,7 +30,7 @@ const BasicRouter = [
       ),
   },
   {
-    path: "/recycleBin",
+    path: "/recycleBin/:projectId",
     name: "recycleBin",
     component: () =>
       import(

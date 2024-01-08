@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 18:38:10
+ * @LastEditTime: 2024-01-08 15:23:42
  * @Description: 
 -->
 <template>
@@ -28,7 +28,10 @@ import { useRouter } from "vue-router";
 import MainTabContainer from "@/components/MainTabContainer.vue";
 import Group from "./components/group/index.vue";
 import Run from "./components/run/index.vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
 
+const { globalState } = storeToRefs(appStore.global);
 const defaultTab = ref("group");
 const router = useRouter();
 const tabData = [
@@ -46,6 +49,9 @@ const tabData = [
 const gotoRecycleBin = () => {
   const path = router.resolve({
     name: "recycleBin",
+    params: {
+      projectId: globalState.value.projectId,
+    },
   }).href;
   window.open(path, "_blank");
 };

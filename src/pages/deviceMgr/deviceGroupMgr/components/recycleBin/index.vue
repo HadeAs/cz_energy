@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 12:56:30
+ * @LastEditTime: 2024-01-08 15:29:51
  * @Description: 
 -->
 <template>
@@ -34,7 +34,7 @@
                       @change="handleSearchChange"
                     >
                       <el-option
-                        v-for="item in globalState.projects"
+                        v-for="item in state.projectList"
                         :key="item.id"
                         :label="item.name"
                         :value="item.id"
@@ -72,24 +72,26 @@
 </template>
 <script lang="jsx" setup name="Group">
 import { reactive, watch } from "vue";
+import { useRoute } from "vue-router";
 import { Search, CircleCloseFilled } from "@element-plus/icons-vue";
 import { ElPopover } from "element-plus";
-import { storeToRefs } from "pinia";
-import appStore from "@/store";
 import useTable from "@/hooks/useTable";
 import { getList, recoverDevice, getInfo } from "@/api/deviceMgr/deviceGroup";
 import { getCollectList } from "@/api/deviceMgr";
+import { getProjectList } from "@/api/common";
 
-const { globalState } = storeToRefs(appStore.global);
+const route = useRoute();
+const { projectId } = route.params;
 const state = reactive({
   searchFormData: {
-    projectId: globalState.value.projectId,
+    projectId: Number(projectId),
     textQuery: "",
     isDeleted: 1,
   },
   sortInfo: { prop: "propertyNum", order: "descending" },
   collectList: [],
   relateList: [],
+  projectList: [],
 });
 
 const column = [
@@ -111,7 +113,7 @@ const column = [
     label: "所属项目",
     width: 180,
     render: () => {
-      const target = globalState.value.projects.find(
+      const target = state.projectList.find(
         (item) => item.id === state.searchFormData.projectId
       );
       return target?.name;
@@ -206,6 +208,13 @@ const column = [
   },
 ];
 
+const getProList = async () => {
+  const { data } = await getProjectList();
+  if (data?.data) {
+    state.projectList = data.data;
+  }
+};
+getProList();
 const {
   dataSource,
   loading,

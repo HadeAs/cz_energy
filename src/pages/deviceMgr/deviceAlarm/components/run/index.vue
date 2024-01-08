@@ -125,6 +125,7 @@ const column = [
     prop: "status",
     label: "报警状态",
     width: 120,
+    sortable: "custom",
     render: (scope) => {
       const status = scope.row.status;
       let type = "";

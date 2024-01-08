@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 16:50:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 14:57:57
+ * @LastEditTime: 2024-01-08 15:34:28
  * @Description: 
 -->
 <template>
@@ -192,6 +192,7 @@ const handleImgClick = async (item) => {
 </script>
 <style scoped lang="scss">
 .equipment-box-history {
+  flex: 1;
   .cs-info-wrap {
     .cs-label {
       color: #a2aabb;

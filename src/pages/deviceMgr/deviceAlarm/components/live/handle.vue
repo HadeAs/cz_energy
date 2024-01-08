@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 15:07:51
+ * @LastEditTime: 2024-01-08 16:06:44
  * @Description: 
 -->
 <template>
@@ -14,9 +14,9 @@
           v-model="state.form.equipmentName"
         />
       </el-form-item>
-      <el-form-item label="处理人" required prop="userName">
+      <!-- <el-form-item label="处理人" required prop="userName">
         <el-input placeholder="请输入处理人" v-model="state.form.userName" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="处理详情" required prop="result">
         <el-input
           type="textarea"
@@ -35,7 +35,7 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
 const initData = {
   equipmentName: "",
-  userName: "",
+  // userName: "",
   result: "",
 };
 const emits = defineEmits(["submit"]);
