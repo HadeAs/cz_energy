@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-24 20:16:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 20:29:42
+ * @LastEditTime: 2024-01-09 09:59:36
  * @Description: 
 -->
 <template>
@@ -16,7 +16,12 @@
   >
     <el-form-item label="用户角色" required prop="roleId">
       <el-select v-model="state.detailForm.roleId" placeholder="请选择">
-        <el-option v-for="item in COMMON_ROLE" v-bind="item" />
+        <el-option
+          v-for="item in globalState.roleList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        />
       </el-select>
     </el-form-item>
     <el-form-item label="用户名" required prop="userName">
