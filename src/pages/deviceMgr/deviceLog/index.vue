@@ -101,7 +101,7 @@ const column = [
       const level = scope.row.roleName;
       let type = "";
       if (level === globalState.value.roleList[0]?.name) {
-        type = "danger";
+        type = "warning";
       } else if (level === globalState.value.roleList[1]?.name) {
         type = "success";
       }
@@ -117,6 +117,7 @@ const column = [
   {
     prop: "operation",
     label: "操作内容",
+    sortable: "custom",
   },
 ];
 

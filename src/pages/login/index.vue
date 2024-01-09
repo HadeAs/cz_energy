@@ -33,6 +33,7 @@
                   autocomplete="off"
                   v-model="state.pwdForm.password"
                   placeholder="密码"
+                  @keyup.enter="submitForm"
                 >
                   <template #prefix>
                     <el-icon><Lock /></el-icon>
@@ -60,6 +61,7 @@
                   v-model="state.msgForm.code"
                   placeholder="验证码"
                   class="code-input"
+                  @keyup.enter="submitForm"
                 >
                   <template #prefix>
                     <el-icon><Message /></el-icon>

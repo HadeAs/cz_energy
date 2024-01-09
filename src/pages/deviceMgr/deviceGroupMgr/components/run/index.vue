@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 12:47:37
+ * @LastEditTime: 2024-01-08 23:17:10
  * @Description: 
 -->
 <template>
@@ -53,6 +53,7 @@
                   v-model="state.searchFormData.textQuery"
                   placeholder="设备名称/资产编号"
                   :suffix-icon="Search"
+                  clearable
                   @change="handleSearchChange"
                 />
               </el-form-item>
@@ -95,7 +96,7 @@ const state = reactive({
     projectId: globalState.value.projectId,
     textQuery: "",
   },
-  sortInfo: { prop: "propertyNum", order: "descending" },
+  sortInfo: { prop: "openTime", order: "descending" },
   collectList: [],
   relateList: [],
 });
@@ -105,6 +106,7 @@ const column = [
     prop: "name",
     label: "设备名称",
     width: 110,
+    sortable: "custom",
     fixed: true,
     render: (scope) => {
       return (
@@ -152,6 +154,7 @@ const column = [
     prop: "openTime",
     label: "启用时间",
     width: 180,
+    sortable: "custom",
   },
   {
     prop: "status",

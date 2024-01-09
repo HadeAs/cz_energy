@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 12:56:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 15:58:40
+ * @LastEditTime: 2024-01-08 22:31:15
  * @Description: 
 -->
 <template>
@@ -35,10 +35,10 @@
       />
     </el-form-item>
   </el-form>
-  <Param ref="paramRef" :params="state.params" />
+  <Param v-if="initData?.id" ref="paramRef" :params="state.params" />
 </template>
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, nextTick } from "vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import {
   getInfo,
@@ -46,6 +46,8 @@ import {
   delDeviceParam,
 } from "@/api/deviceMgr/deviceLedger";
 import Param from "./param.vue";
+import { ElMessage } from "element-plus";
+import { wrapObjWithFormData } from "@/utils";
 
 const init = {
   name: "",
@@ -67,7 +69,7 @@ const props = defineProps({
 const formRef = ref();
 const paramRef = ref();
 
-const initData = () => {
+const initDetail = () => {
   if (props.initData) {
     const formData = { ...init, ...props.initData };
     const params = props.initData.equipmentModelParamList || [];
@@ -76,7 +78,7 @@ const initData = () => {
   return [{}, []];
 };
 
-const [formData, params] = initData();
+const [formData, params] = initDetail();
 const state = reactive({
   detailForm: formData,
   params,
@@ -92,7 +94,7 @@ const getDeviceInfo = async (param) => {
 };
 
 onMounted(() => {
-  const [formData, params] = initData();
+  const [formData, params] = initDetail();
   state.detailForm = formData;
   state.params = params;
   if (props.initData?.id) {
@@ -116,6 +118,7 @@ const updateParam = async () => {
         equipmentModelId: props.initData.id,
       });
     }
+    ElMessage.success("设备型号参数删除成功");
   }
   if (addParams.length) {
     changeFlag = true;
@@ -125,13 +128,14 @@ const updateParam = async () => {
         ...addParams[i],
       });
     }
+    ElMessage.success("设备型号参数添加成功");
   }
-  if (changeFlag) {
-    const { data } = await getInfo({
-      projectId: props.initData.projectId,
-      id: props.initData.id,
-    });
-  }
+  // if (changeFlag) {
+  //   const { data } = await getInfo({
+  //     projectId: props.initData.projectId,
+  //     id: props.initData.id,
+  //   });
+  // }
   // const newParams = params.map((item, index) => ({
   //   id: index,
   //   name: item.name,
@@ -140,6 +144,11 @@ const updateParam = async () => {
   // }));
   // state.detailForm.equipmentModelParamList = newParams;
   // state.detailForm.equipmentCount = newParams.length;
+  return params.map((item, index) => ({
+    ...item,
+    id: index,
+    equipmentModelId: Number(props.initData.id),
+  }));
 };
 
 defineExpose({
@@ -147,15 +156,16 @@ defineExpose({
     return formRef.value
       .validate()
       .then(async () => {
+        const { equipmentModelParamList, equipmentCount, ...rest } =
+          state.detailForm;
         if (props.initData?.id) {
           // edit
           await updateParam();
         }
-        const { equipmentModelParamList, equipmentCount, ...rest } =
-          state.detailForm;
         return rest;
       })
-      .catch(() => {
+      .catch((error) => {
+        debugger;
         return false;
       });
   },

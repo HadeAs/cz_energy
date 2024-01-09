@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 11:22:31
+ * @LastEditTime: 2024-01-08 23:09:16
  * @Description: 
 -->
 <template>
@@ -15,6 +15,9 @@
       v-model="state.search"
       placeholder="请输入设备参数名称"
       :prefix-icon="Search"
+      clearable
+      @keyup.enter="handleSearch"
+      @clear="handleSearch"
     />
     <el-scrollbar class="down-content" height="calc(100vh - 200px)">
       <el-form
@@ -74,6 +77,17 @@ const state = reactive({
   collectList: [],
 });
 
+const handleSearch = () => {
+  if (state.search) {
+    const filter = state.originCollectList.filter((item) =>
+      item.name.toLowerCase().includes(state.search.toLowerCase())
+    );
+    state.collectList = filter;
+  } else {
+    state.collectList = [...state.originCollectList];
+  }
+};
+
 const getDetail = async (param) => {
   const { data } = await getInfo({ projectId: param.projectId, id: param.id });
   if (data?.data) {
@@ -93,7 +107,7 @@ const confirmDetail = async () => {
     if (valid) {
       emits("submit", state.form.devices, props.data.id);
     } else {
-      ElMessage.warning("请勾选至少一项")
+      ElMessage.warning("请勾选至少一项");
     }
   });
 };

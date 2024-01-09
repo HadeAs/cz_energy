@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 14:05:26
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 21:04:37
+ * @LastEditTime: 2024-01-08 22:45:51
  * @Description: 
  */
 import http from "../http";
@@ -28,4 +28,8 @@ export const exportLive = (projectId, params) => {
 
 export const getRunList = (params) => {
   return http.get(`${PORT}/alarm/run/query`, params);
+}
+
+export const addRecord = (projectId, params) => {
+  return http.post(`${PORT}/alarm/run/modify?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
 }

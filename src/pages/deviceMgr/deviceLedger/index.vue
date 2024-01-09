@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 23:12:30
+ * @LastEditTime: 2024-01-08 22:47:10
  * @Description: 
 -->
 <template>
@@ -151,6 +151,7 @@ const column = [
     prop: "name",
     label: "设备型号名称",
     width: 160,
+    sortable: "custom",
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
@@ -162,6 +163,7 @@ const column = [
   {
     prop: "modelNum",
     label: "型号规格",
+    sortable: "custom",
     width: 150,
   },
   {

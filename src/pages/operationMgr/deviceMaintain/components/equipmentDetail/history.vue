@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 16:50:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 17:57:58
+ * @LastEditTime: 2024-01-08 23:35:42
  * @Description: 
 -->
 <template>
@@ -126,11 +126,11 @@ const getFilter = (ifIdentify) => {
   let endDate = "";
   if (timeType === "1") {
     startDate = now
-      .subtract(1, "month")
+      .subtract(0, "month")
       .startOf("month")
       .format(COMMON_DATE_TIME_FORMAT);
     endDate = now
-      .subtract(1, "month")
+      .subtract(0, "month")
       .endOf("month")
       .format(COMMON_DATE_TIME_FORMAT);
   } else if (timeType === "2") {

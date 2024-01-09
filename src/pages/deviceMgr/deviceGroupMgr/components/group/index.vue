@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 17:31:01
+ * @LastEditTime: 2024-01-08 23:01:21
  * @Description: 
 -->
 <template>
@@ -175,6 +175,7 @@ const column = [
     label: "设备名称",
     width: 110,
     fixed: true,
+    sortable: "custom",
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
@@ -187,6 +188,7 @@ const column = [
     prop: "propertyNum",
     label: "资产编号",
     width: 120,
+    sortable: "custom",
   },
   {
     prop: "projectName",
@@ -225,11 +227,14 @@ const column = [
   {
     prop: "openTime",
     label: "启用时间",
+    sortable: "custom",
     width: 180,
   },
   {
     prop: "status",
     label: "设备状态",
+    sortable: "custom",
+    width: 110,
     render: (scope) => {
       const status = scope.row.status;
       return (
