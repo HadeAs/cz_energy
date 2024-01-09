@@ -20,6 +20,7 @@
         :pageInfo="pageInfo"
         :datasource="dataSource"
         v-loading="loading"
+        @sort-change="sortChange"
         @page-change="pageChange"
       />
     </MainContentContainer>

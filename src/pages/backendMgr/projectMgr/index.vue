@@ -243,6 +243,7 @@ const column = [
   {
     prop: "name",
     label: "项目名称",
+    sortable: "custom",
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
@@ -254,14 +255,17 @@ const column = [
   {
     prop: "region",
     label: "所在地区",
+    sortable: "custom",
   },
   {
     prop: "area",
     label: "建筑面积(万平方米)",
+    sortable: "custom",
   },
   {
     prop: "mode",
     label: "当前模式",
+    sortable: "custom",
   },
   {
     prop: "openTime",

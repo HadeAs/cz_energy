@@ -59,7 +59,7 @@
       ref="detailDrawerRef"
       @confirm="confirmDetail"
     >
-      <VariableDetail ref="variableDetailRef" :initData="initDetailData" />
+      <VariableDetail ref="variableDetailRef" :vTypeData="state.variablesType" :initData="initDetailData" />
     </ProDrawer>
   </MainContentContainer>
 </template>
@@ -82,6 +82,7 @@ import {
   deleteDeviceTemplate,
 } from '@/api/backstageMng/platform.js';
 import { crudService } from '@/api/backstageMng/utils.js';
+import { getBuildingType, getVariablesByLevel } from '@/api/common.js';
 
 const operateType = ref("");
 const detailDrawerRef = ref();
@@ -98,7 +99,9 @@ const COLOR_MAP = {
 const state = reactive({
   searchFormData: { textQuery: "" },
   currentData: {},
+  sortInfo: { prop: "id", order: "descending" },
   projects: [],
+  variablesType: [],
 });
 
 const {
@@ -145,14 +148,22 @@ const confirmDelete = async ({ id }) => {
   await crudService(deleteDeviceTemplate, { id }, getTableList)
 };
 
+onMounted(async () => {
+  getVariablesByLevel().then(({ data }) => {
+    if (data?.data) {
+      state.variablesType = data?.data;
+    }
+  })
+});
+
 const column = [
   {
     prop: "parentName",
     label: "一级变量",
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.name}>
-          <span className="table-first-col">{scope.row.name}</span>
+        <div className="text-overflow" title={scope.row.parentName}>
+          <span className="table-first-col">{scope.row.parentName}</span>
         </div>
       );
     },
@@ -162,10 +173,10 @@ const column = [
     label: "变量类型",
     render: (scope) => {
       // 临时用 level
-      const item = VARIABLE_TYPE.find((v) => v.value === String(scope.row.level));
+      const item = state.variablesType.find((v) => v.level === scope.row.level);
       return item ? (
         <ElTag type={COLOR_MAP[item.value]}>
-          <span>{item.label}</span>
+          <span>{item.name}</span>
         </ElTag>
       ) : (
         ""

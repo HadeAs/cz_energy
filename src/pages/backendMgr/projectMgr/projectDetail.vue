@@ -25,7 +25,7 @@
     </el-form-item>
     <el-form-item label="建筑分类" required prop="buildingTypeId">
       <el-select v-model="state.detailForm.buildingTypeId" placeholder="请选择">
-        <el-option v-for="item in BUILD_TYPE" v-bind="item" />
+        <el-option v-for="item in state.buildingType" :key="item.id" :value="item.id" :label="item.name" />
       </el-select>
     </el-form-item>
     <el-form-item label="运行系统" required prop="sysClassIds">
@@ -34,7 +34,7 @@
         v-model="state.detailForm.sysClassIds"
         placeholder="请选择"
       >
-        <el-option v-for="item in WORK_SYSTEM" v-bind="item" />
+        <el-option v-for="item in state.sysClass" :key="item.id" :value="item.id" :label="item.name" />
       </el-select>
     </el-form-item>
     <el-form-item label="起始时间" required prop="openTime">
@@ -97,6 +97,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
 import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
+import { getBuildingType, getSysClass } from '@/api/common.js';
 
 const init = {
   name: "",
@@ -185,9 +186,23 @@ defineExpose({
 });
 
 const formRef = ref();
-const state = reactive({ detailForm: init });
+const state = reactive({ 
+  detailForm: init,
+  buildingType: [],
+  sysClass: [],
+});
 
 onMounted(async () => {
+  getBuildingType().then(({ data }) => {
+    if (data?.data) {
+      state.buildingType = data?.data;
+    }
+  })
+  getSysClass().then(({ data }) => {
+    if (data?.data) {
+      state.sysClass = data?.data;
+    }
+  })
   if (props.initData) {
     const { data } = await fetchOneProject(props.initData);
     if (data?.data) {

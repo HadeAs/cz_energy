@@ -91,6 +91,7 @@ const initDistributeData = ref([]);
 
 const state = reactive({
   searchFormData: { textQuery: "" },
+  sortInfo: { prop: "updateTime", order: "descending" },
   currentData: {},
 });
 

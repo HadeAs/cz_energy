@@ -46,3 +46,13 @@ export const getImageUrl = (url) => {
     responseType: 'blob'
   });
 }
+
+// 建筑分类
+export const getBuildingType = (param) => {
+  return http.get(`${PORT}/building-type/name-list`, param);
+}
+
+// 系统类别
+export const getSysClass = (param) => {
+  return http.get(`${PORT}/sys-class/name-list`, param);
+}

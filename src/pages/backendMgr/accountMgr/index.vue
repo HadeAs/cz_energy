@@ -103,6 +103,7 @@ const initDetailData = ref({});
 const state = reactive({
   searchFormData: { projectId: globalState.value.projectId, textQuery: "" },
   currentData: {},
+  sortInfo: { prop: "updateTime", order: "descending" },
   projects: [],
 });
 

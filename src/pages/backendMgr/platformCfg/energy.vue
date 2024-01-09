@@ -77,6 +77,7 @@ const initDetailData = ref(null);
 
 const state = reactive({
   searchFormData: { textQuery: "" },
+  sortInfo: { prop: "id", order: "descending" },
   currentData: {},
   projects: [],
 });
