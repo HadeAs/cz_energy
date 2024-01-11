@@ -2,37 +2,43 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 13:27:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 22:26:51
+ * @LastEditTime: 2024-01-11 14:48:36
  * @Description: 
 -->
 <template>
   <div class="container">
     <div class="title">技术参数</div>
-    <el-form ref="formRef" v-model="state.formValue">
-      <div
-        class="block"
-        v-for="(item, index) in Object.keys(state.formValue)"
-        :key="item"
-      >
-        <div class="block-title">
-          <span class="left">参数{{ index + 1 }}: </span>
-          <el-button class="del-btn" type="danger" text @click="delRule(item)"
-            >删除</el-button
-          >
+    <el-form ref="formRef" :model="state.formValue" :rules="state.rules">
+      <el-empty
+        v-if="!Object.keys(state.formValue).length"
+        description="暂无数据"
+      />
+      <template v-else>
+        <div
+          class="block"
+          v-for="(item, index) in Object.keys(state.formValue)"
+          :key="item"
+        >
+          <div class="block-title">
+            <span class="left">参数{{ index + 1 }}: </span>
+            <el-button class="del-btn" type="danger" text @click="delRule(item)"
+              >删除</el-button
+            >
+          </div>
+          <el-form-item label="参数名称" :prop="`${item}.name`">
+            <el-input
+              v-model="state.formValue[item].name"
+              placeholder="请输入参数名称"
+            />
+          </el-form-item>
+          <el-form-item label="参数内容" :prop="`${item}.value`">
+            <el-input
+              v-model="state.formValue[item].value"
+              placeholder="请输入参数内容"
+            />
+          </el-form-item>
         </div>
-        <el-form-item label="参数名称" :prop="item + '.name'">
-          <el-input
-            v-model="state.formValue[item].name"
-            placeholder="请输入参数名称"
-          />
-        </el-form-item>
-        <el-form-item label="参数内容" :prop="item + '.value'">
-          <el-input
-            v-model="state.formValue[item].value"
-            placeholder="请输入参数内容"
-          />
-        </el-form-item>
-      </div>
+      </template>
     </el-form>
     <el-button
       type="primary"
@@ -45,7 +51,7 @@
   </div>
 </template>
 <script setup name="Param">
-import { reactive, watch, ref } from "vue";
+import { reactive, watch, ref, onMounted } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 
 const props = defineProps({
@@ -65,35 +71,98 @@ const initForm = (params) => {
   return param;
 };
 const state = reactive({
-  formValue: initForm(props.params),
+  formValue: {},
+  rules: {},
 });
-const delRule = (index) => {
-  delete state.formValue[index];
+
+const updateRules = () => {
+  const rules = {};
+  Object.keys(state.formValue).forEach((key) => {
+    rules[key] = {
+      name: [
+        {
+          required: true,
+          message: "请输入参数名",
+          trigger: "blur",
+        },
+      ],
+      value: [
+        {
+          required: true,
+          message: "请输入参数值",
+          trigger: "blur",
+        },
+      ],
+    };
+  });
+  state.rules = rules;
+};
+
+const delRule = (key) => {
+  delete state.formValue[key];
 };
 const addRule = () => {
-  const randomKey = Math.random();
-  state.formValue[randomKey] = {
+  const randomKey = Math.floor(Math.random() * 100);
+  state.formValue[`_${randomKey}`] = {
     name: "",
     value: "",
   };
 };
+
+onMounted(() => {
+  state.formValue = initForm(props.params);
+});
+
 watch(
-  () => props.params,
-  (val) => {
-    state.formValue = initForm(val);
-  },
-  { deep: true }
+  () => Object.keys(state.formValue).length,
+  () => {
+    updateRules();
+  }
 );
-const getValue = () => {
+
+const transformFormValues = () => {
   const params = [];
+  const addParams = [];
+  const editParams = [];
   Object.keys(state.formValue).forEach((key) => {
-    params.push({
+    const param = {
       ...state.formValue[key],
       name: state.formValue[key].name,
       value: state.formValue[key].value,
-    });
+    };
+    params.push(param);
+    // add
+    if (!param.id) {
+      addParams.push(param);
+    } else {
+      const index = props.params.findIndex((v) => v.id === param.id);
+      // edit
+      if (
+        index > -1 &&
+        (param.name !== props.params[index].name ||
+          param.value !== props.params[index].value)
+      ) {
+        editParams.push(param);
+      }
+    }
   });
-  return params;
+  const ids = params.map((item) => item.id);
+  const deleteParams = props.params.filter(
+    (item) => !ids.includes(item.id) && item.equipmentModelId
+  );
+  return { addParams, editParams, deleteParams, params };
+};
+
+const getValue = async () => {
+  let result;
+  await formRef.value.validate((valid) => {
+    if (valid) {
+      result = transformFormValues();
+    } else {
+      result = false;
+    }
+  });
+  return result;
 };
 defineExpose({ getValue });
 </script>
@@ -109,7 +178,7 @@ defineExpose({ getValue });
     margin-bottom: 10px;
     .block-title {
       display: flex;
-      justify-value: space-between;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
       span {

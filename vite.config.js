@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 16:52:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 20:03:48
+ * @LastEditTime: 2024-01-09 14:46:56
  * @Description:
  */
 import { defineConfig, loadEnv } from "vite";
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
   const viteEnv = wrapperEnv(env);
   return {
     server: {
-      host: "localhost",
+      host: "0.0.0.0",
       port: 9999,
       strictPort: true,
       open: true,

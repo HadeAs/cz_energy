@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 22:47:10
+ * @LastEditTime: 2024-01-11 14:47:39
  * @Description: 
 -->
 <template>
@@ -80,6 +80,12 @@
           v-auth="'ledger_edit'"
           >编辑</a
         >
+        <a
+          class="table-operator-btn"
+          @click="editParam(scope.row)"
+          v-auth="'ledger_edit'"
+          >技术参数</a
+        >
         <ProPopConfirm
           title="你确定要删除该配置吗?"
           :icon="CircleCloseFilled"
@@ -101,6 +107,16 @@
         :initData="state.initDetailData"
       />
     </ProDrawer>
+    <ProDrawer
+      title="编辑技术参数"
+      ref="paramDrawerRef"
+      @confirm="confirmParam"
+    >
+      <Param
+        ref="commonParamRef"
+        :params="state.initDetailData.equipmentModelParamList"
+      />
+    </ProDrawer>
     <ProDrawer title="批量导入" ref="importDrawerRef" @confirm="confirmImport">
       <Import ref="importRef" />
     </ProDrawer>
@@ -117,11 +133,15 @@ import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { ElTag } from "element-plus";
 import { storeToRefs } from "pinia";
 import Detail from "./components/detail.vue";
+import Param from "./components/param.vue";
 import Import from "./components/import.vue";
 import {
   getList,
   deleteModel,
   updateModel,
+  getInfo,
+  delDeviceParam,
+  addDeviceParam,
 } from "@/api/deviceMgr/deviceLedger";
 import { getEquipmentTypeList } from "@/api/deviceMgr";
 import appStore from "@/store";
@@ -132,6 +152,8 @@ const { globalState } = storeToRefs(appStore.global);
 const detailDrawerRef = ref();
 const commDetailRef = ref();
 const importDrawerRef = ref();
+const paramDrawerRef = ref();
+const commonParamRef = ref();
 const importRef = ref();
 const state = reactive({
   searchFormData: {
@@ -224,6 +246,14 @@ const {
 
 getTableList();
 
+const getDeviceInfo = async (id) => {
+  const { data } = await getInfo({
+    projectId: state.searchFormData.projectId,
+    id,
+  });
+  return data?.data || {};
+};
+
 const getEqpList = async () => {
   const { data } = await getEquipmentTypeList({
     projectId: state.searchFormData.projectId,
@@ -252,11 +282,24 @@ const imports = () => {
   importDrawerRef.value.open();
 };
 
-const editRow = (data) => {
+const editRow = async (data) => {
+  const detail = await getDeviceInfo(data.id);
   state.operateType = "edit";
   state.detailDrawerTitle = "编辑设备台帐";
   detailDrawerRef.value.open();
-  state.initDetailData = { ...data, projectId: state.searchFormData.projectId };
+  state.initDetailData = {
+    ...data,
+    equipmentTypeId: detail.equipmentTypeId,
+  };
+};
+
+const editParam = async (data) => {
+  const detail = await getDeviceInfo(data.id);
+  paramDrawerRef.value.open();
+  state.initDetailData = {
+    ...data,
+    ...detail,
+  };
 };
 
 const deleteRow = async (row) => {
@@ -280,6 +323,50 @@ const confirmDetail = async () => {
       detailDrawerRef.value.close();
       getTableList();
     }
+  }
+};
+
+const handleParams = async (params, fetchFunc) => {
+  for (let i = 0; i < params.length; i += 1) {
+    await fetchFunc(state.searchFormData.projectId, params[i]);
+  }
+};
+
+const confirmParam = async () => {
+  try {
+    const res = await commonParamRef.value.getValue();
+    if (res) {
+      const { addParams, editParams, deleteParams, params } = res;
+      let changeFlag = false;
+      if (addParams.length) {
+        changeFlag = true;
+        await handleParams(
+          addParams.map((item) => ({
+            ...item,
+            equipmentModelId: state.initDetailData.id,
+          })),
+          addDeviceParam
+        );
+      }
+      if (deleteParams.length) {
+        changeFlag = true;
+        await handleParams(
+          deleteParams.map((item) => ({
+            id: item.id,
+            equipmentModelId: item.equipmentModelId,
+          })),
+          delDeviceParam
+        );
+      }
+      paramDrawerRef.value.close();
+      if (changeFlag) {
+        ElMessage.success("设备型号参数修改成功");
+        getTableList();
+      }
+    }
+  } catch (error) {
+    ElMessage.error("设备型号参数设置异常");
+    console.log("设备型号参数设置异常,", error);
   }
 };
 const confirmImport = async () => {

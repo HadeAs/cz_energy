@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 12:56:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 14:42:40
+ * @LastEditTime: 2024-01-11 14:45:35
  * @Description: 
 -->
 <template>
@@ -35,19 +35,10 @@
       />
     </el-form-item>
   </el-form>
-  <Param v-if="initData?.id" ref="paramRef" :params="state.params" />
 </template>
 <script setup>
-import { ref, reactive, onMounted, nextTick } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
-import {
-  getInfo,
-  addDeviceParam,
-  delDeviceParam,
-} from "@/api/deviceMgr/deviceLedger";
-import Param from "./param.vue";
-import { ElMessage } from "element-plus";
-import { wrapObjWithFormData } from "@/utils";
 
 const init = {
   name: "",
@@ -67,101 +58,22 @@ const props = defineProps({
 });
 
 const formRef = ref();
-const paramRef = ref();
 
-const initDetail = () => {
-  if (props.initData) {
-    const formData = { ...init, ...props.initData };
-    const params = props.initData.equipmentModelParamList || [];
-    return [formData, params];
-  }
-  return [{}, []];
-};
-
-const [formData, params] = initDetail();
 const state = reactive({
-  detailForm: formData,
-  params,
+  detailForm: { ...init },
 });
-
-const getDeviceInfo = async (param) => {
-  const { projectId, id } = param;
-  const { data } = await getInfo({ projectId, id });
-  if (data?.data) {
-    state.params = data.data.equipmentModelParamList || [];
-    state.detailForm.equipmentTypeId = data.data.equipmentTypeId;
-  }
-};
 
 onMounted(() => {
-  const [formData, params] = initDetail();
-  state.detailForm = formData;
-  state.params = params;
-  if (props.initData?.id) {
-    getDeviceInfo(props.initData);
-  }
+  state.detailForm = { ...init, ...props.initData };
 });
-
-const updateParam = async () => {
-  let changeFlag = false;
-  const params = paramRef.value.getValue();
-  const ids = params.map((item) => item.id);
-  const delParams = props.initData.equipmentModelParamList.filter(
-    (item) => !ids.includes(item.id)
-  );
-  const addParams = params.filter((item) => !item.id);
-  if (delParams.length) {
-    changeFlag = true;
-    for (let i = 0; i < delParams.length; i += 1) {
-      await delDeviceParam(props.initData.projectId, {
-        id: delParams[i].id,
-        equipmentModelId: props.initData.id,
-      });
-    }
-    ElMessage.success("设备型号参数删除成功");
-  }
-  if (addParams.length) {
-    changeFlag = true;
-    for (let i = 0; i < addParams.length; i += 1) {
-      await addDeviceParam(props.initData.projectId, {
-        equipmentModelId: props.initData.id,
-        ...addParams[i],
-      });
-    }
-    ElMessage.success("设备型号参数添加成功");
-  }
-  // if (changeFlag) {
-  //   const { data } = await getInfo({
-  //     projectId: props.initData.projectId,
-  //     id: props.initData.id,
-  //   });
-  // }
-  // const newParams = params.map((item, index) => ({
-  //   id: index,
-  //   name: item.name,
-  //   value: item.value,
-  //   equipmentModelId: props.initData.id,
-  // }));
-  // state.detailForm.equipmentModelParamList = newParams;
-  // state.detailForm.equipmentCount = newParams.length;
-  return params.map((item, index) => ({
-    ...item,
-    id: index,
-    equipmentModelId: Number(props.initData.id),
-  }));
-};
 
 defineExpose({
   validate: () => {
     return formRef.value
       .validate()
-      .then(async () => {
+      .then(() => {
         const { equipmentModelParamList, equipmentCount, ...rest } =
           state.detailForm;
-        if (props.initData?.id) {
-          // edit
-          await updateParam();
-        }
         return rest;
       })
       .catch(() => {
