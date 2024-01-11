@@ -1,7 +1,7 @@
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="@/assets/img/screen/mainB/u7.png">实时告警
+      <img src="@/assets/img/screen/mainB/u7.png" />实时告警
     </div>
     <ul class="cs-right-tab">
       <li class="active">全部</li>
@@ -57,7 +57,9 @@
         </div>
         <div>
           <span class="spot"></span>
-          <span class="text-overflow">编号1157空气源热泵机组2 清洗处理完成</span>
+          <span class="text-overflow"
+            >编号1157空气源热泵机组2 清洗处理完成</span
+          >
         </div>
         <div>09:14:45</div>
       </li>
@@ -67,7 +69,16 @@
 <style lang="scss" scoped>
 .content {
   height: 295px;
-
+  .light {
+    color: #eb9e05;
+    background-color: rgba(235, 158, 5, 0.2);
+    border: rgba(1, 179, 202, 0.4);
+  }
+  .label-success.light {
+    color: #00d400;
+    background-color: rgba(0, 212, 0, 0.3);
+    border: rgba(0, 212, 0, 0.4);
+  }
   .cs-right-wrap1 {
     list-style: none;
     padding: 0;
@@ -77,7 +88,7 @@
     height: 38px;
     line-height: 36px;
     border-bottom: 1px solid #485468;
-    color: #6ED7FE;
+    color: #6ed7fe;
     display: flex;
   }
 
@@ -90,15 +101,15 @@
   }
 
   .cs-right-wrap1 .cs-table-info:nth-child(3n) .spot {
-    background-color: #FF6600;
+    background-color: #ff6600;
   }
 
-  .cs-right-wrap1 .cs-table-info:nth-child(3n+1) .spot {
-    background-color: #FFCC00;
+  .cs-right-wrap1 .cs-table-info:nth-child(3n + 1) .spot {
+    background-color: #ffcc00;
   }
 
-  .cs-right-wrap1 .cs-table-info:nth-child(3n+2) .spot {
-    background-color: #FF3000;
+  .cs-right-wrap1 .cs-table-info:nth-child(3n + 2) .spot {
+    background-color: #ff3000;
   }
 
   .cs-right-wrap1 .cs-table-info div {
@@ -129,7 +140,7 @@
     height: 18px;
     line-height: 18px;
     flex: 1;
-    color: #A9C5E7;
+    color: #a9c5e7;
     border-right: 1px solid #485468;
     padding-right: 6px;
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="@/assets/img/screen/mainB/u4.png">用能趋势分析
+      <img src="@/assets/img/screen/mainB/u4.png" />用能趋势分析
       <div class="pull-right">
         <UnitSelect label="单位：kW·h" />
       </div>
@@ -13,7 +13,10 @@
     <div class="cs-sub-header">
       <span class="cs-sub-header-text">用电趋势（逐日）</span>
       <div class="cs-sub-right">
-        <UnitSelect :options="state.dataMonth" />
+        <UnitSelect
+          :options="state.dataMonth"
+          :default-value="state.dataMonth[4].id"
+        />
       </div>
     </div>
     <Echart id="chart4" class="cs-center-wrap2" :option="option2" />
@@ -40,53 +43,53 @@ const state = reactive({
   dataMonth: [
     {
       id: 1,
-      text: '1月',
+      text: "1月",
     },
     {
       id: 2,
-      text: '2月',
+      text: "2月",
     },
     {
       id: 3,
-      text: '3月',
+      text: "3月",
     },
     {
       id: 4,
-      text: '4月',
+      text: "4月",
     },
     {
       id: 5,
-      text: '5月',
+      text: "5月",
       selected: true,
     },
     {
       id: 6,
-      text: '6月',
+      text: "6月",
     },
   ],
   dataDate: [
     {
       id: 1,
-      text: '09-26',
+      text: "09-26",
     },
     {
       id: 2,
-      text: '09-27',
+      text: "09-27",
     },
     {
       id: 3,
-      text: '09-28',
+      text: "09-28",
     },
     {
       id: 4,
-      text: '09-29',
+      text: "09-29",
     },
     {
       id: 5,
-      text: '09-30',
+      text: "09-30",
     },
-  ]
-})
+  ],
+});
 </script>
 <style lang="scss" scoped>
 .content {

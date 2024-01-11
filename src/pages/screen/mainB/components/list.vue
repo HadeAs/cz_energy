@@ -1,7 +1,7 @@
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="@/assets/img/screen/mainB/u5.png">设备能耗列表
+      <img src="@/assets/img/screen/mainB/u5.png" />设备能耗列表
     </div>
     <ul class="cs-table-wrap cs-right-table">
       <li class="cs-table-header">
@@ -12,27 +12,37 @@
       <li class="cs-table-info">
         <span> 螺杆式水源热泵机组1</span>
         <span>502,200</span>
-        <span><el-icon class="aidicon-check-circle-outline"><CircleCheck /></el-icon></span>
+        <span
+          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
+        ></span>
       </li>
       <li class="cs-table-info">
         <span>空气能热水机组1</span>
         <span>125,475.4</span>
-        <span><el-icon class="aidicon-check-circle-outline"><CircleCheck /></el-icon></span>
+        <span
+          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
+        ></span>
       </li>
       <li class="cs-table-info">
         <span>空气能热水机组2</span>
         <span>131,284.8</span>
-        <span><el-icon class="aidicon-check-circle-outline"><CircleCheck /></el-icon></span>
+        <span
+          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
+        ></span>
       </li>
       <li class="cs-table-info">
         <span>空气能热水机组3</span>
         <span>103,731.2</span>
-        <span><el-icon class="aidicon-check-circle-outline"><CircleCheck /></el-icon></span>
+        <span
+          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
+        ></span>
       </li>
       <li class="cs-table-info">
         <span>曳引驱动乘客电梯1</span>
         <span>114,048</span>
-        <span><el-icon class="aidicon-check-circle-outline"><CircleCheck /></el-icon></span>
+        <span
+          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
+        ></span>
       </li>
     </ul>
   </div>
@@ -56,7 +66,7 @@ import { CircleCheck } from "@element-plus/icons-vue";
     background-color: #2d2837;
     border-bottom: 1px solid #485468;
     font-weight: bold;
-    color: #7A7886;
+    color: #7a7886;
     display: flex;
   }
 
@@ -64,7 +74,7 @@ import { CircleCheck } from "@element-plus/icons-vue";
     height: 40px;
     line-height: 38px;
     border-bottom: 1px solid #485468;
-    color: #A9C5E7;
+    color: #a9c5e7;
     display: flex;
   }
 
@@ -78,12 +88,12 @@ import { CircleCheck } from "@element-plus/icons-vue";
     top: 4px;
   }
 
-  .cs-table-wrap .cs-table-info .aidicon-close-circle-outline {
-    color: #FF6600;
+  .cs-table-wrap .cs-table-info .close-circle-outline {
+    color: #ff6600;
   }
 
-  .cs-table-wrap .cs-table-info .aidicon-check-circle-outline {
-    color: #63FB96;
+  .cs-table-wrap .cs-table-info .check-circle-outline {
+    color: #63fb96;
   }
 
   .cs-table-wrap span {

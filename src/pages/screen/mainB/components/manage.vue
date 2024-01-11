@@ -231,7 +231,7 @@ const goDeviceMgr = () => {
   router.push({ path: "/deviceLedger" });
 };
 onMounted(() => {
-  renderCanvas(80);
+  renderCanvas(85);
 });
 </script>
 <style lang="scss" scoped>
@@ -399,6 +399,24 @@ onMounted(() => {
     margin-left: 0;
     margin-top: 8px;
     color: #7a7886;
+    &.label-primary {
+      color: #00f9ff;
+      background-color: rgba(0, 249, 255, 0.2);
+      border: 1px solid rgba(0, 249, 255, 0.6);
+      padding: 0 6px;
+      font-size: 14px;
+      line-height: 20px;
+      height: 20px;
+    }
+    &.label-carrot {
+      color: #ff6600;
+      background-color: rgba(255, 102, 0, 0.2);
+      border: 1px solid rgba(255, 102, 0, 0.6);
+      padding: 0 6px;
+      font-size: 14px;
+      line-height: 20px;
+      height: 20px;
+    }
   }
 
   .cs-right-wrap3 .cs-right-box .cs-info-detail .cs-info-num .num {

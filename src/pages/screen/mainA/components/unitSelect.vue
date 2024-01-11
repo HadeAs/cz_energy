@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-06 18:55:26
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-11 15:06:45
  * @Description: 
 -->
 <template>
@@ -14,6 +14,7 @@
       v-model="state.value"
       class="cs-title-select"
       :style="{ width: state.width }"
+      @change="handleChange"
     >
       <el-option
         v-for="item in state.opts"
@@ -42,12 +43,20 @@ const localOpts = [
   },
 ];
 const defaultWidth = "90px";
-const props = defineProps(["label", "options", "width"]);
+const emits = defineEmits(["change"]);
+const props = defineProps(["label", "options", "width", "defaultValue"]);
+const getDefaultValue = () => {
+  if (props.defaultValue) return props.defaultValue;
+  return props.options ? props.options[0].id : localOpts[0].id;
+};
 const state = reactive({
-  value: props.options ? props.options[0].id : localOpts[0].id,
+  value: getDefaultValue(),
   opts: props.options || localOpts,
   width: props.width || defaultWidth,
 });
+const handleChange = () => {
+  emits("change", state.value);
+};
 </script>
 <style lang="scss" scoped>
 .select-container {
