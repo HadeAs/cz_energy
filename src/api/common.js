@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 10:24:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 14:32:28
+ * @LastEditTime: 2024-01-09 13:57:24
  * @Description: 
  */
 import http from './http';
@@ -55,4 +55,14 @@ export const getBuildingType = (param) => {
 // 系统类别
 export const getSysClass = (param) => {
   return http.get(`${PORT}/sys-class/name-list`, param);
+}
+
+// 获取系统内权限列表
+export const getResourceList = (params = {}) => {
+  return http.get(`admin/resource/name-list`, params);
+}
+
+// 获取当前用户的权限
+export const getCurrentResource = () => {
+  return http.get(`${PORT}/resource/level-list`);
 }

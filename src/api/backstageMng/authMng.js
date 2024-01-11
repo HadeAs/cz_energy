@@ -1,3 +1,10 @@
+/*
+ * @Author: ymZhang
+ * @Date: 2024-01-09 09:30:03
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-09 13:10:44
+ * @Description: 
+ */
 import http from '@/api/http.js';
 import { COMMON_JSON_CONFIG, COMMON_SUBMIT_CONFIG, COMMON_UPDATE_CONFIG } from '@/api/index.js';
 

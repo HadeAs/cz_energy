@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 12:56:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 22:31:15
+ * @LastEditTime: 2024-01-09 14:42:40
  * @Description: 
 -->
 <template>
@@ -164,8 +164,7 @@ defineExpose({
         }
         return rest;
       })
-      .catch((error) => {
-        debugger;
+      .catch(() => {
         return false;
       });
   },

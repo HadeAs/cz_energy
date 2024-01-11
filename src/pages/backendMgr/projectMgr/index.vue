@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:31:33
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-09 15:05:49
  * @Description: 
 -->
 <template>
@@ -98,10 +98,16 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import useTable from '@/hooks/useTable.js';
-import { deleteProject, getList, saveConfigPrice, saveImages, saveProject } from '@/api/backstageMng/pmMng.js';
-import { crudService } from '@/api/backstageMng/utils.js';
-import { wrapObjWithFormData } from '@/utils/index.js';
+import useTable from "@/hooks/useTable.js";
+import {
+  deleteProject,
+  getList,
+  saveConfigPrice,
+  saveImages,
+  saveProject,
+} from "@/api/backstageMng/pmMng.js";
+import { crudService } from "@/api/backstageMng/utils.js";
+import { wrapObjWithFormData } from "@/utils/index.js";
 
 const selectRows = ref([]);
 const operateType = ref("");
@@ -164,7 +170,7 @@ const confirmDetail = async () => {
     await crudService(saveProject, res, () => {
       getTableList();
       detailDrawerRef.value.close();
-    })
+    });
   }
 };
 
@@ -176,14 +182,18 @@ const handleToPrice = (rowData) => {
   state.currentData = rowData;
   initDetailData.value = rowData;
   priceDrawerRef.value.open();
-}
+};
 
 const confirmImage = async () => {
   const res = await projectImageRef.value.getPictures();
   if (res) {
-    await crudService(saveImages, wrapObjWithFormData({ projectId: state.currentData.id, ...res }), () => {
-      imageDrawerRef.value.close();
-    })
+    await crudService(
+      saveImages,
+      wrapObjWithFormData({ projectId: state.currentData.id, ...res }),
+      () => {
+        imageDrawerRef.value.close();
+      }
+    );
   }
 };
 
@@ -194,10 +204,14 @@ const confirmImage = async () => {
 const confirmPrice = async () => {
   const res = await priceConfigRef.value.validate();
   if (res) {
-    await crudService(saveConfigPrice, { ...res, projectId: state.currentData?.id }, () => {
-      getTableList();
-      priceDrawerRef.value.close();
-    })
+    await crudService(
+      saveConfigPrice,
+      { ...res, projectId: state.currentData?.id },
+      () => {
+        getTableList();
+        priceDrawerRef.value.close();
+      }
+    );
   }
 };
 
@@ -210,7 +224,7 @@ const handleSearch = () => {
  * @param data
  */
 const confirmDelete = async ({ id }) => {
-  await crudService(deleteProject, { id }, getTableList)
+  await crudService(deleteProject, { id }, getTableList);
 };
 
 const selectionChange = (data) => {
@@ -261,6 +275,7 @@ const column = [
     prop: "area",
     label: "建筑面积(万平方米)",
     sortable: "custom",
+    width: 180,
   },
   {
     prop: "mode",

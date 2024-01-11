@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 21:14:39
+ * @LastEditTime: 2024-01-09 14:25:07
  * @Description: 
 -->
 <template>
@@ -20,8 +20,15 @@
       <template #toolbar>
         <el-row align="middle">
           <el-col :span="4">
-            <el-button type="primary" v-auth="'auth_add'" @click="addRow">新增</el-button>
-            <el-button :disabled="!selectRows.length" v-auth="'auth_batch_delete'" @click="batchDelete">批量删除</el-button>
+            <el-button type="primary" v-auth="'auth_add'" @click="addRow"
+              >新增</el-button
+            >
+            <el-button
+              :disabled="!selectRows.length"
+              v-auth="'auth_batch_delete'"
+              @click="batchDelete"
+              >批量删除</el-button
+            >
           </el-col>
           <el-col :offset="16" :span="4">
             <el-input
@@ -35,7 +42,12 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" v-auth="'auth_edit'" @click="editRow(scope.row)">编辑</a>
+        <a
+          class="table-operator-btn"
+          v-auth="'auth_edit'"
+          @click="editRow(scope.row)"
+          >编辑</a
+        >
         <ProPopConfirm
           title="你确定要删除该角色嘛?"
           :icon="CircleCloseFilled"
@@ -44,7 +56,12 @@
         >
           <a class="table-operator-btn" v-auth="'auth_delete'">删除</a>
         </ProPopConfirm>
-        <a class="table-operator-btn" v-auth="'auth_distribute'" @click="distribute(scope.row)">分配</a>
+        <a
+          class="table-operator-btn"
+          v-auth="'auth_distribute'"
+          @click="distribute(scope.row)"
+          >分配</a
+        >
       </template>
     </ProTable>
     <ProDrawer
@@ -75,9 +92,14 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import useTable from '@/hooks/useTable.js';
-import { deleteRoleInfo, updateRoleInfo, getList, distributeRoleAuth } from '@/api/backstageMng/authMng.js';
-import { crudService } from '@/api/backstageMng/utils.js';
+import useTable from "@/hooks/useTable.js";
+import {
+  deleteRoleInfo,
+  updateRoleInfo,
+  getList,
+  distributeRoleAuth,
+} from "@/api/backstageMng/authMng.js";
+import { crudService } from "@/api/backstageMng/utils.js";
 
 const selectRows = ref([]);
 const operateType = ref("");
@@ -123,13 +145,7 @@ const editRow = (data) => {
 
 const distribute = (rowData) => {
   //模拟当前角色的权限点
-  const mock_auth = [
-    11,
-    14,
-    "carbon",
-    "project_add",
-    "systemlog_login_search",
-  ];
+  const mock_auth = [11, 14, "carbon", "project_add", "systemlog_login_search"];
   initDistributeData.value = mock_auth;
   state.currentData = rowData;
   initDetailData.value = rowData;
@@ -140,10 +156,14 @@ const confirmDistribute = async () => {
   const res = roleDistributeRef.value.getCheckResult();
   console.log(state.currentData);
   if (res) {
-    await crudService(distributeRoleAuth, { id: state.currentData?.id, resourceIds: res }, () => {
-      getTableList();
-      distributeDrawerRef.value.close();
-    });
+    await crudService(
+      distributeRoleAuth,
+      { id: state.currentData?.id, resourceIds: res },
+      () => {
+        getTableList();
+        distributeDrawerRef.value.close();
+      }
+    );
   }
 };
 
@@ -157,7 +177,7 @@ const confirmDetail = async () => {
     await crudService(updateRoleInfo, res, () => {
       getTableList();
       detailDrawerRef.value.close();
-    })
+    });
   }
 };
 
@@ -171,7 +191,7 @@ const handleSearch = () => {
  * @return {Promise<void>}
  */
 const confirmDelete = async ({ id }) => {
-  await crudService(deleteRoleInfo, { id }, getTableList)
+  await crudService(deleteRoleInfo, { id }, getTableList);
 };
 
 const selectionChange = (data) => {
@@ -235,5 +255,4 @@ const column = [
     },
   },
 ];
-
 </script>

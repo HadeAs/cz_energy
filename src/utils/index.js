@@ -2,9 +2,11 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 22:20:12
+ * @LastEditTime: 2024-01-09 14:15:33
  * @Description: 
  */
+import cloneDeep from "lodash/cloneDeep";
+
 export * from "./cookies";
 
 // 导出文件制作下载链接
@@ -38,4 +40,22 @@ export const wrapObjWithFormData = (param) => {
 export const transformFileToUrl = (file) => {
   const url = window.URL.createObjectURL(file);
   return url;
+}
+
+export const transformArrayToTree = (arr, parentKey, key, childKey = "children") => {
+  const result = [];
+  const obj = {};
+  const data = cloneDeep(arr);
+  data.forEach(item => {
+    obj[item[key]] = Object.assign(item, obj[item[key]] || {});
+    if (item[parentKey]) {
+      const parent = obj[item[parentKey]] || {};
+      parent[childKey] = parent[childKey] || [];
+      parent[childKey].push(item);
+      obj[item[parentKey]] = parent;
+    } else {
+      result.push(obj[item[key]])
+    }
+  })
+  return result;
 }

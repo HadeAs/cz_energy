@@ -1,19 +1,18 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-26 13:19:34
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 20:49:30
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-09 14:28:37
  * @Description: 
 -->
 <template>
   <el-tree
-    :data="AUTH_POINT_CONFIG"
+    :props="treeProp"
+    :data="state.resourceList"
     show-checkbox
-    node-key="key"
+    node-key="id"
     ref="treeRef"
-    check-strictly
     default-expand-all
-    @check="checkChange"
     :expand-on-click-node="false"
   >
     <template #default="{ node, data }">
@@ -25,17 +24,20 @@
           ><FolderOpened
         /></el-icon>
         <el-icon color="#B4BCCC" v-if="!data.children"><Document /></el-icon>
-        <span class="custom-tree-node-text">{{ data.label }}</span>
+        <span class="custom-tree-node-text">{{ data.name }}</span>
       </span>
     </template>
   </el-tree>
 </template>
 <script setup>
 import { ref, nextTick, onMounted, reactive } from "vue";
+import appStore from "@/store";
+import { storeToRefs } from "pinia";
 import remove from "lodash/remove";
-import { AUTH_POINT_CONFIG } from "@/constant";
 import { Document, Folder, FolderOpened } from "@element-plus/icons-vue";
-import { fetchOneRole } from '@/api/backstageMng/authMng.js';
+import { fetchOneRole } from "@/api/backstageMng/authMng.js";
+import { transformArrayToTree } from "@/utils";
+const { globalState } = storeToRefs(appStore.global);
 
 const treeRef = ref();
 
@@ -45,6 +47,12 @@ const props = defineProps({
     default: {},
   },
 });
+
+const treeProp = {
+  label: "name",
+  children: "children",
+  disabled: (data) => data.level === 1,
+};
 // const defaultExpandKeys = [
 //   "project",
 //   "systemlog",
@@ -58,13 +66,13 @@ const checkChange = (data) => {
   const checks = treeRef.value.getCheckedNodes();
   if (
     node.checked &&
-    data.type === "component" &&
-    !checks.find((v) => v.key === node.parent.data.key)
+    data.level === 3 &&
+    !checks.find((v) => v.id === node.parent.data.id)
   ) {
     checks.push(node.parent.data);
   }
-  if (!node.checked && data.type === "page") {
-    remove(checks, (v) => !!data.children.find((item) => item.key === v.key));
+  if (!node.checked && data.level === 2) {
+    remove(checks, (v) => !!data.children.find((item) => item.id === v.id));
   }
   nextTick(() => {
     treeRef.value.setCheckedNodes(checks);
@@ -72,25 +80,33 @@ const checkChange = (data) => {
 };
 
 const getCheckResult = () => {
-  return treeRef.value.getCheckedKeys();
+  const checkedKeys = treeRef.value.getCheckedKeys();
+  const halfCheckedKeys = treeRef.value.getHalfCheckedKeys();
+  return [...halfCheckedKeys, ...checkedKeys];
 };
 
 defineExpose({
   getCheckResult,
 });
 
-const state = reactive({ keys: [] });
+const transformResource = () => {
+  const list = globalState.value.resourceList || [];
+  const tree = transformArrayToTree(list, "parentId", "id");
+  return tree;
+};
+
+const state = reactive({ keys: [], resourceList: [] });
 
 onMounted(async () => {
+  state.resourceList = transformResource();
   if (props.initData) {
     const { data } = await fetchOneRole(props.initData);
     if (data?.data) {
       state.keys = data?.data?.resourceIds || [];
-      treeRef.value.setCheckedKeys(state.keys)
+      treeRef.value.setCheckedKeys(state.keys);
     }
   }
 });
-
 </script>
 <style lang="scss" scoped>
 .custom-tree-node {

@@ -125,6 +125,8 @@ const init = async () => {
   await appStore.global.getProList();
   // 获取角色列表
   await appStore.global.getRoleList();
+  // 获取权限列表
+  await appStore.global.getResources();
   state.initSuccess = true;
 };
 init();
