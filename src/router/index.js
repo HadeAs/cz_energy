@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 18:28:16
+ * @LastEditTime: 2024-01-11 14:55:42
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -82,7 +82,7 @@ const routesArray = [
       {
         path: "/carbonData",
         name: "carbonData",
-        meta: { title: "能碳数据", auth: "carbon" },
+        meta: { title: "能源数据", auth: "carbon" },
         component: () =>
           import(
             /* webpackChunkName: "carbonData" */ "@/pages/statistics/carbonData/index.vue"

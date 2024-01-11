@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 20:18:21
+ * @LastEditTime: 2024-01-11 14:55:31
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -50,7 +50,7 @@ export const MENU_DATA = [
     icon: "aidicon aidicon-file-chart",
     children: [
       {
-        name: "能碳数据",
+        name: "能源数据",
         path: "/carbonData",
       },
       {
@@ -546,7 +546,7 @@ export const AUTH_POINT_CONFIG = [
     children: [
       {
         key: 21,
-        label: "能碳数据",
+        label: "能源数据",
         type: "page",
         children: [
           {
