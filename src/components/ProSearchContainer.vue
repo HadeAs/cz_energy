@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-25 13:16:28
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-26 21:08:17
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-12 14:46:59
  * @Description: 
 -->
 <template>
@@ -20,13 +20,26 @@
           clearable
         />
         <el-date-picker
-          v-if="domain.type === 'datetimerange'"
+          v-else-if="domain.type === 'datetimerange'"
           v-model="domain.value"
           type="datetimerange"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           value-format="YYYY-MM-DD hh:mm:ss"
         />
+        <el-select
+          v-else-if="domain.type === 'select'"
+          v-model="domain.value"
+          placeholder="请选择"
+          clearable
+        >
+          <el-option
+            v-for="opt in domain.options"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button v-auth="authKey" type="primary" @click="onSubmit">{{

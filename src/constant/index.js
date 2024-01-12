@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 14:55:31
+ * @LastEditTime: 2024-01-11 15:40:28
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -98,6 +98,25 @@ export const MENU_DATA = [
       {
         name: "设备保养",
         path: "/deviceMaintain",
+      },
+    ],
+  },
+  {
+    name: "建筑碳管理",
+    path: "/buildCarbonMgr",
+    icon: "aidicon aidicon-dropbox",
+    children: [
+      {
+        name: "碳排放",
+        path: "/carbonEmission",
+      },
+      {
+        name: "碳减排",
+        path: "/carbonReduction",
+      },
+      {
+        name: "碳中和",
+        path: "/carbonNeutral",
       },
     ],
   },

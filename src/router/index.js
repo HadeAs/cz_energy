@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 14:55:42
+ * @LastEditTime: 2024-01-12 15:08:05
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -158,6 +158,33 @@ const routesArray = [
         component: () =>
           import(
             /* webpackChunkName: "deviceMaintain" */ "@/pages/operationMgr/deviceMaintain/index.vue"
+          ),
+      },
+      {
+        path: "/carbonEmission",
+        name: "carbonEmission",
+        meta: { title: "碳排放", auth: "emission" },
+        component: () =>
+          import(
+            /* webpackChunkName: "deviceMaintain" */ "@/pages/buildCarbonMgr/emission/index.vue"
+          ),
+      },
+      {
+        path: "/carbonReduction",
+        name: "carbonReduction",
+        meta: { title: "碳减排", auth: "reduction" },
+        component: () =>
+          import(
+            /* webpackChunkName: "deviceMaintain" */ "@/pages/buildCarbonMgr/reduction/index.vue"
+          ),
+      },
+      {
+        path: "/carbonNeutral",
+        name: "carbonNeutral",
+        meta: { title: "碳中和", auth: "neutral" },
+        component: () =>
+          import(
+            /* webpackChunkName: "deviceMaintain" */ "@/pages/buildCarbonMgr/neutral/index.vue"
           ),
       },
     ],
