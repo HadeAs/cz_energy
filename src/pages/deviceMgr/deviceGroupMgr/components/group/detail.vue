@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 23:03:18
+ * @LastEditTime: 2024-01-12 21:40:27
  * @Description: 
 -->
 <template>
@@ -32,20 +32,7 @@
           v-model="state.form.propertyNum"
         />
       </el-form-item>
-      <el-form-item label="设备种类" required prop="equipmentModelId">
-        <el-select v-model="state.form.equipmentModelId">
-          <el-option
-            v-for="item in state.equipmentTypes"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="设备位置" required prop="location">
-        <el-input v-model="state.form.location" placeholder="请输入" />
-      </el-form-item>
-      <!-- <el-form-item label="系统分类" required prop="sysClassId">
+      <!-- <el-form-item label="设备种类" required prop="sysClassId">
         <el-select v-model="state.form.sysClassId">
           <el-option
             v-for="item in classifyList"
@@ -55,10 +42,23 @@
           />
         </el-select>
       </el-form-item> -->
+      <el-form-item label="设备位置" required prop="location">
+        <el-input v-model="state.form.location" placeholder="请输入" />
+      </el-form-item>
+      <el-form-item label="设备型号" required prop="equipmentModelId">
+        <el-select v-model="state.form.equipmentModelId">
+          <el-option
+            v-for="item in state.equipmentTypes"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="管理人" required prop="managerId">
         <el-select v-model="state.form.managerId">
           <el-option
-            v-for="item in roleList"
+            v-for="item in state.managerList"
             :key="item.id"
             :label="item.name"
             :value="item.id"
@@ -107,7 +107,7 @@ import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import ProUpload from "@/components/ProUpload.vue";
 import { getInfo } from "@/api/deviceMgr/deviceGroup";
-import { getEquipmentModelList } from "@/api/deviceMgr";
+import { getEquipmentModelList, getProjectManagerList } from "@/api/deviceMgr";
 import { getImageUrl } from "@/api/common";
 import { transformFileToUrl } from "@/utils";
 
@@ -122,7 +122,7 @@ const initData = {
   managerId: "",
   // classify: "",
   openTime: "",
-  status: "1",
+  status: true,
   image: [],
 };
 const rules = {
@@ -141,7 +141,6 @@ const props = defineProps({
   data: { type: Object, default: {} },
   projectList: { type: Array },
   classifyList: { type: Array },
-  roleList: { type: Array },
 });
 
 const handleDrawerRef = ref();
@@ -164,13 +163,16 @@ const state = reactive({
   ],
   detailInfo: {},
   equipmentTypes: [],
+  managerList: [],
 });
 
 const getEqpList = async (projectId) => {
-  const { data } = await getEquipmentModelList({
+  const { data: equipmentTypes } = await getEquipmentModelList({
     projectId,
   });
-  state.equipmentTypes = data.data;
+  const { data: managerList } = await getProjectManagerList({ projectId });
+  state.equipmentTypes = equipmentTypes?.data || [];
+  state.managerList = managerList?.data || [];
 };
 
 const parseImage = async (url) => {

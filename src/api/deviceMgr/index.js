@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 10:18:55
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 10:53:52
+ * @LastEditTime: 2024-01-12 21:27:54
  * @Description: 
  */
 import http from "../http";
@@ -37,4 +37,9 @@ export const getClassifyList = (params) => {
 // 获取项目下采集点列表
 export const getCollectList = (params) => {
   return http.get(`${PORT}/device/name-list`, params);
+}
+
+// 获取项目下管理员列表
+export const getProjectManagerList = (params) => {
+  return http.get(`${PORT}/user/name-list`, params);
 }

@@ -20,12 +20,12 @@
         <template #toolbar>
           <el-row align="middle" :gutter="5">
             <el-col :span="6">
-              <el-button
+              <!-- <el-button
                 type="primary"
                 @click="addRow"
                 v-auth="'alarm_work_add'"
                 >数据补录</el-button
-              >
+              > -->
             </el-col>
             <el-col :span="18">
               <el-form

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 10:24:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 13:57:24
+ * @LastEditTime: 2024-01-12 22:25:50
  * @Description: 
  */
 import http from './http';
@@ -65,4 +65,9 @@ export const getResourceList = (params = {}) => {
 // 获取当前用户的权限
 export const getCurrentResource = () => {
   return http.get(`${PORT}/resource/level-list`);
+}
+
+// 获取系统中用能类型列表
+export const getEnergyList = () => {
+  return http.get(`${PORT}/energy-statistics/name-list`);
 }

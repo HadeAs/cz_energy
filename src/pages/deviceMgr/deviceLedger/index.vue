@@ -2,18 +2,20 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 14:47:39
+ * @LastEditTime: 2024-01-12 20:08:25
  * @Description: 
 -->
 <template>
   <MainContentContainer>
     <ProTable
+      multiple
       :column="column"
       :pageInfo="pageInfo"
       :default-sort="state.sortInfo"
       :datasource="dataSource"
       v-loading="loading"
       @page-change="pageChange"
+      @selection-change="selectionChange"
       @sort-change="sortChange"
     >
       <template #toolbar>
@@ -22,8 +24,11 @@
             <el-button type="primary" v-auth="'ledger_add'" @click="addRow"
               >新增</el-button
             >
-            <el-button @click="imports" v-auth="'ledger_batch_import'"
-              >批量导入</el-button
+            <el-button
+              @click="batchExport"
+              v-auth="'ledger_batch_import'"
+              :disabled="!selectRows.length"
+              >批量导出</el-button
             >
           </el-col>
           <el-col :span="18">
@@ -142,11 +147,14 @@ import {
   getInfo,
   delDeviceParam,
   addDeviceParam,
+  batchExportDevice,
 } from "@/api/deviceMgr/deviceLedger";
 import { getEquipmentTypeList } from "@/api/deviceMgr";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
+import { exportWithExcel } from "@/utils";
 
+const TAGS_MAP = ["", "success", "info", "warning", "danger"];
 const { globalState } = storeToRefs(appStore.global);
 
 const detailDrawerRef = ref();
@@ -194,34 +202,27 @@ const column = [
     width: 100,
     render: (scope) => {
       const type = scope.row.typeName;
-      // let tagType = "";
-      // if (type === "空调") {
-      //   tagType = "";
-      // } else if (type === "供配电") {
-      //   tagType = "success";
-      // } else if (type === "照明") {
-      //   tagType = "warning";
-      // } else if (type === "动力") {
-      //   tagType = "danger";
-      // } else {
-      //   tagType = "info";
-      // }
-      return <ElTag>{type}</ElTag>;
+      const tagType = TAGS_MAP[Math.floor(Math.random() * 5)];
+      return <ElTag type={tagType}>{type}</ElTag>;
     },
   },
   {
     prop: "equipmentModelParamList",
     label: "技术参数",
     width: 210,
-    showOverflowTooltip: false,
+    // showOverflowTooltip: false,
     render: (scope) => {
       const { equipmentModelParamList = [] } = scope.row;
       if (equipmentModelParamList.length) {
-        return equipmentModelParamList.map((item) => (
-          <ElTag class="param-tag" effect="dark">
-            {item.name}
-          </ElTag>
-        ));
+        return (
+          <div style="display: flex;">
+            {equipmentModelParamList.map((item) => (
+              <ElTag class="param-tag" effect="dark">
+                {item.name}: {item.value}
+              </ElTag>
+            ))}
+          </div>
+        );
       }
       return null;
     },
@@ -238,10 +239,12 @@ const {
   dataSource,
   loading,
   pageInfo,
+  selectRows,
   pageChange,
   sortChange,
   searchChange,
   getTableList,
+  selectionChange,
 } = useTable(getList, state.searchFormData, state.sortInfo);
 
 getTableList();
@@ -278,8 +281,25 @@ const addRow = () => {
   state.initDetailData = null;
 };
 
-const imports = () => {
-  importDrawerRef.value.open();
+const batchExport = () => {
+  // importDrawerRef.value.open();
+  ElMessageBox.confirm("确认导出选中的内容？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      const ids = selectRows.value.map((item) => item.id);
+      const data = await batchExportDevice(state.searchFormData.projectId, ids);
+      if (data && !data.code) {
+        exportWithExcel(data, "设备台账");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
+    })
+    .catch(() => {});
 };
 
 const editRow = async (data) => {
@@ -336,7 +356,7 @@ const confirmParam = async () => {
   try {
     const res = await commonParamRef.value.getValue();
     if (res) {
-      const { addParams, editParams, deleteParams, params } = res;
+      const { addParams, deleteParams } = res;
       let changeFlag = false;
       if (addParams.length) {
         changeFlag = true;

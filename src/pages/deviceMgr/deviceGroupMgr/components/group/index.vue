@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 23:01:21
+ * @LastEditTime: 2024-01-12 21:42:22
  * @Description: 
 -->
 <template>
@@ -89,7 +89,7 @@
                   <el-input
                     v-model="state.searchFormData.textQuery"
                     clearable
-                    placeholder="项目名称"
+                    placeholder="设备名称/资产编号"
                     :suffix-icon="Search"
                     @change="handleSearchChange"
                   />
@@ -128,7 +128,6 @@
       :data="state.currentData"
       :project-list="globalState.projects"
       :classify-list="state.classifyList"
-      :role-list="globalState.roleList"
       @submit="detailSubmit"
     />
     <Relate ref="relateRef" :data="state.paramData" @submit="relateSubmit" />
@@ -163,6 +162,7 @@ const state = reactive({
     projectId: globalState.value.projectId,
   },
   classifyList: [],
+  unitList: [],
   sortInfo: { prop: "propertyNum", order: "descending" },
   currentData: {},
   paramData: {},
@@ -260,7 +260,6 @@ const getDeviceClassifyList = async () => {
     state.classifyList = data.data;
   }
 };
-getDeviceClassifyList();
 
 const {
   dataSource,

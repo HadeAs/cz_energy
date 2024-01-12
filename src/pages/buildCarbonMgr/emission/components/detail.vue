@@ -68,10 +68,10 @@ const state = reactive({
 });
 const init = async () => {
   const { data: gatewayData } = await getGatewayList();
-  const { data: varData } = await getVariablesByLevel();
+  // const { data: varData } = await getVariablesByLevel();
   const { data: tempData } = await getVariablesByParent();
   state.gatewayList = gatewayData.data;
-  state.variableList = varData.data;
+  // state.variableList = varData.data;
   state.templateList = tempData.data;
   state.initFlag = true;
 };
@@ -104,7 +104,7 @@ watch(
 );
 const open = () => {
   if (!state.initFlag) {
-    init();
+    // init();
   }
   handleDrawerRef.value.open();
 };

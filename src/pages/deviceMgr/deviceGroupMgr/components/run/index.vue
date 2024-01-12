@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 23:17:10
+ * @LastEditTime: 2024-01-12 22:02:04
  * @Description: 
 -->
 <template>
@@ -87,6 +87,7 @@ import {
   deleteDevice,
   getInfo,
 } from "@/api/deviceMgr/deviceGroup";
+import { getInfo as getEquipmentInfo } from "@/api/deviceMgr/deviceLedger";
 import { getCollectList } from "@/api/deviceMgr";
 import { exportWithExcel } from "@/utils";
 
@@ -99,6 +100,7 @@ const state = reactive({
   sortInfo: { prop: "openTime", order: "descending" },
   collectList: [],
   relateList: [],
+  equipmentInfo: {},
 });
 
 const column = [
@@ -214,6 +216,22 @@ const column = [
     prop: "time",
     label: "参数信息",
     width: 150,
+    render: (scope) => {
+      const relate = state.relateList.find((item) => item.id === scope.row.id);
+      if (!relate) return null;
+      const { equipmentModelId } = relate;
+      if (!state.equipmentInfo[equipmentModelId]) return null;
+      const list = state.equipmentInfo[equipmentModelId] || [];
+      return (
+        <div style="display: flex;">
+          {list.map((item) => (
+            <span>
+              {item.name}: {item.value};{" "}
+            </span>
+          ))}
+        </div>
+      );
+    },
   },
 ];
 
@@ -242,8 +260,21 @@ const getCollectionList = async () => {
 
 getCollectionList();
 
+const getEqpInfo = async (modelId) => {
+  const { data } = await getEquipmentInfo({
+    projectId: state.searchFormData.projectId,
+    id: modelId,
+  });
+  if (data?.data) {
+    const { equipmentModelParamList = [] } = data.data;
+    return equipmentModelParamList;
+  }
+  return [];
+};
+
 const getRelateList = async (source) => {
   const relates = [];
+  const equipmentMap = {};
   for (let i = 0; i < source.length; i += 1) {
     const item = source[i];
     const { data } = await getInfo({
@@ -252,9 +283,14 @@ const getRelateList = async (source) => {
     });
     if (data?.data) {
       relates.push(data.data);
+      if (!state.equipmentInfo[data.data.equipmentModelId]) {
+        const eqpInfo = await getEqpInfo(data.data.equipmentModelId);
+        equipmentMap[data.data.equipmentModelId] = eqpInfo;
+      }
     }
   }
   state.relateList = relates;
+  state.equipmentInfo = equipmentMap;
 };
 
 const handleSearchChange = () => {

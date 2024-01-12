@@ -60,7 +60,9 @@
               <el-dropdown>
                 <span class="el-dropdown-link">
                   <el-avatar size="small" :src="imgUrl" />
-                  <span class="user-name">管理员</span>
+                  <span class="user-name">{{
+                    userState.userInfo.userName
+                  }}</span>
                   <el-icon class="el-icon--right">
                     <arrow-down />
                   </el-icon>
@@ -96,6 +98,7 @@ import logoTextUrl from "@/assets/img/logo-text.png";
 import { useRoute, useRouter } from "vue-router";
 
 const { globalState } = storeToRefs(appStore.global);
+const { userState } = storeToRefs(appStore.useUserStore);
 const route = useRoute();
 const router = useRouter();
 const defaultMenuKey = route.path;

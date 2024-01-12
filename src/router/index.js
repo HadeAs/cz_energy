@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 15:08:05
+ * @LastEditTime: 2024-01-12 22:08:51
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -242,9 +242,10 @@ router.beforeEach(async (to, from) => {
       path: "/401",
     };
   }
-  const { code } = await checkToken();
+  const { code, data } = await checkToken();
   // 判断是否有 Token，没有重定向到 login 页面
   if (code !== 200) return { path: "/login", replace: true };
+  appStore.useUserStore.setUserInfo(data.data)
   return true;
 });
 

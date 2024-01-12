@@ -2,12 +2,13 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 20:49:06
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-05 23:34:57
+ * @LastEditTime: 2024-01-12 22:11:11
  * @Description: 
  */
 import { defineStore } from "pinia";
 import { reactive } from "vue";
 import { logout } from "@/api/login";
+// import isEqual from "lodash/isEqual";
 
 export const useUserStore = defineStore("user", () => {
   const userState = reactive({
@@ -18,7 +19,9 @@ export const useUserStore = defineStore("user", () => {
     userState.token = token;
   }
   const setUserInfo = (userInfo) => {
+    // if (!isEqual(userInfo, userState.userInfo)) {
     userState.userInfo = userInfo;
+    // }
   }
 
   const userLogout = () => {

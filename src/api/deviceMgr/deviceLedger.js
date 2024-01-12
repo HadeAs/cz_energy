@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 00:03:17
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 22:36:09
+ * @LastEditTime: 2024-01-12 19:59:51
  * @Description: 
  */
 import http from "../http";
-import { COMMON_UPDATE_CONFIG } from "../index"
+import { COMMON_UPDATE_CONFIG, COMMON_EXPORT_CONFIG } from "../index"
 
 export const PORT = "web";
 export const getList = (params) => {
@@ -30,4 +30,8 @@ export const addDeviceParam = (projectId, param) => {
 }
 export const delDeviceParam = (projectId, param) => {
   return http.post(`${PORT}/equipment-model/params/delete?projectId=${projectId}`, param, { ...COMMON_UPDATE_CONFIG });
+}
+
+export const batchExportDevice = (projectId, params) => {
+  return http.post(`${PORT}/equipment-model/export-in-batch?projectId=${projectId}`, JSON.stringify(params), { ...COMMON_EXPORT_CONFIG });
 }

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 22:43:43
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 17:30:36
+ * @LastEditTime: 2024-01-12 22:30:48
  * @Description: 
 -->
 
@@ -34,10 +34,20 @@
       <el-form-item label="最小阈值" required prop="minThreshold">
         <el-input-number v-model="state.form.minThreshold" />
       </el-form-item>
-      <el-form-item label="关联变量" required prop="statisticsTypeId">
-        <el-select v-model="state.form.statisticsTypeId">
+      <el-form-item label="数据聚合" prop="function">
+        <el-select v-model="state.form.function">
           <el-option
-            v-for="item in state.variableList"
+            v-for="item in state.funcList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="用能变量" prop="energyStatisticsId">
+        <el-select v-model="state.form.energyStatisticsId">
+          <el-option
+            v-for="item in state.energyList"
             :key="item.id"
             :label="item.name"
             :value="item.id"
@@ -54,39 +64,24 @@
           />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="点位模板" required prop="template">
-        <el-select v-model="state.form.template">
+      <el-form-item label="点位模板" required prop="templateId">
+        <el-select v-model="state.form.templateId">
           <el-option
-            v-for="item in state.templateList"
+            v-for="item in state.unitList"
             :key="item.id"
             :label="item.name"
             :value="item.id"
           />
         </el-select>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="通讯站号" required prop="commNum">
         <el-input-number v-model="state.form.commNum" :min="0" />
       </el-form-item>
-      <el-form-item label="检测周期" required prop="period">
-        <el-select v-model="state.form.period">
-          <el-option
-            v-for="item in state.timeOpts"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
+      <el-form-item label="检测周期(分钟)" required prop="period">
+        <el-input-number v-model="state.form.period" :min="0" :max="9999" />
       </el-form-item>
       <el-form-item label="点位编号" required prop="number">
-        <el-input-number v-model="state.form.number" />
-        <!-- <el-select v-model="state.form.number">
-          <el-option
-            v-for="item in state.timeOpts"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select> -->
+        <el-input-number v-model="state.form.number" :min="1" :max="255" />
       </el-form-item>
       <el-form-item label="启用状态" required prop="status">
         <el-radio-group v-model="state.form.status">
@@ -110,11 +105,7 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import { getInfo } from "@/api/deviceMgr/pointMgr";
-import {
-  getGatewayList,
-  getVariablesByLevel,
-  getVariablesByParent,
-} from "@/api/common";
+import { getGatewayList, getUnitList, getEnergyList } from "@/api/common";
 
 const { globalState } = storeToRefs(appStore.global);
 const initData = {
@@ -124,14 +115,15 @@ const initData = {
   type: "",
   maxThreshold: null,
   minThreshold: null,
-  statisticsTypeId: "",
+  energyStatisticsId: "",
   gatewayId: "",
-  template: "",
+  templateId: "",
   commNum: null,
-  period: "",
-  number: "",
+  period: 60,
+  number: null,
   status: true,
   hidden: false,
+  function: "",
 };
 const emits = defineEmits(["submit"]);
 const props = defineProps({
@@ -146,34 +138,36 @@ const state = reactive({
   info: {},
   gatewayList: [],
   variableList: [],
-  templateList: [],
-  timeOpts: [
-    { id: 5, name: "5分钟" },
-    { id: 10, name: "10分钟" },
-    { id: 15, name: "15分钟" },
-    { id: 30, name: "30分钟" },
-    { id: 60, name: "60分钟" },
-    { id: 90, name: "90分钟" },
+  unitList: [],
+  funcList: [
+    { id: "null", name: "无" },
+    { id: "sum", value: "求和" },
+    { id: "avg", value: "均值" },
+    { id: "max", value: "最大值" },
+    { id: "min", value: "最小值" },
   ],
+  energyList: [],
 });
 const init = async () => {
   const { data: gatewayData } = await getGatewayList();
-  const { data: varData } = await getVariablesByLevel();
-  const { data: tempData } = await getVariablesByParent();
+  const { data: unitData } = await getUnitList();
+  const { data: energyData } = await getEnergyList();
   state.gatewayList = gatewayData.data;
-  state.variableList = varData.data;
-  state.templateList = tempData.data;
+  state.unitList = unitData.data;
+  state.energyList = energyData.data;
   state.initFlag = true;
 };
 
 const getDetail = async (param) => {
   const { data } = await getInfo({ projectId: param.projectId, id: param.id });
   state.info = data.data;
-  state.form.statisticsTypeId = data.data.statisticsTypeId;
   state.form.number = data.data.number;
   state.form.tag = data.data.tag;
   state.form.type = data.data.type;
   state.form.gatewayId = data.data.gatewayId;
+  state.form.templateId = data.data.templateId;
+  state.form.energyStatisticsId = data.data.energyStatisticsId;
+  state.form.function = data.data.function;
 };
 const confirmDetail = async () => {
   await formRef.value.validate((valid) => {

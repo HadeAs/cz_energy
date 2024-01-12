@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 13:27:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 14:48:36
+ * @LastEditTime: 2024-01-12 20:27:44
  * @Description: 
 -->
 <template>
@@ -117,13 +117,16 @@ watch(
   () => Object.keys(state.formValue).length,
   () => {
     updateRules();
+    setTimeout(() => {
+      formRef.value.clearValidate();
+    }, 0);
   }
 );
 
 const transformFormValues = () => {
   const params = [];
   const addParams = [];
-  const editParams = [];
+  const deleteParams = [];
   Object.keys(state.formValue).forEach((key) => {
     const param = {
       ...state.formValue[key],
@@ -142,15 +145,16 @@ const transformFormValues = () => {
         (param.name !== props.params[index].name ||
           param.value !== props.params[index].value)
       ) {
-        editParams.push(param);
+        addParams.push(param);
+        deleteParams.push(param);
       }
     }
   });
   const ids = params.map((item) => item.id);
-  const deleteParams = props.params.filter(
+  const delParams = props.params.filter(
     (item) => !ids.includes(item.id) && item.equipmentModelId
   );
-  return { addParams, editParams, deleteParams, params };
+  return { addParams, deleteParams: [...deleteParams, ...delParams], params };
 };
 
 const getValue = async () => {

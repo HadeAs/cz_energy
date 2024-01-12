@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 23:26:47
+ * @LastEditTime: 2024-01-12 21:03:19
  * @Description: 
 -->
 <template>
@@ -143,8 +143,16 @@ const column = [
     width: 100,
   },
   {
-    prop: "label",
+    prop: "templateName",
     label: "单位",
+    render: (scope) => {
+      if (!scope.row.templateName) return null;
+      return (
+        <div>
+          {scope.row.templateName}({scope.row.templateTag})
+        </div>
+      );
+    },
     // width: 100,
   },
   {
