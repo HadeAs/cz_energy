@@ -2,7 +2,7 @@
   <el-container class="basic-layout-container">
     <el-aside width="240px">
       <div class="logo-container">
-        <el-image style="width: 70px; height: 53px" :src="logoUrl" fit="fill" />
+        <el-image style="height: 53px" :src="logoUrl" fit="fill" />
         <el-image
           style="width: 154px; height: 31px"
           :src="logoTextUrl"
@@ -79,9 +79,9 @@
       </el-header>
 
       <el-main class="main-container" v-if="state.initSuccess">
-        <el-scrollbar>
-          <router-view />
-        </el-scrollbar>
+        <!-- <el-scrollbar> -->
+        <router-view />
+        <!-- </el-scrollbar> -->
       </el-main>
     </el-container>
   </el-container>
@@ -147,6 +147,7 @@ init();
   .el-aside {
     background-color: var(--menu-color);
     color: var(--el-text-color-primary);
+    border-top-right-radius: 50px;
   }
   .el-menu {
     border-right: none;

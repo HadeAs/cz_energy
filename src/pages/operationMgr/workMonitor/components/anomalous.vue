@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 18:50:31
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-13 18:29:57
  * @Description: 
 -->
 <template>
@@ -121,7 +121,7 @@ const column = [
   {
     prop: "name",
     label: "报警设备名称",
-    width: 110,
+    width: 130,
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.name}>
