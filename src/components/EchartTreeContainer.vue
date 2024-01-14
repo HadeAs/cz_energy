@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 19:56:35
+ * @LastEditTime: 2024-01-14 19:59:38
  * @Description: 
 -->
 <template>
@@ -56,6 +56,7 @@
         <el-tree
           :data="treeData"
           node-key="id"
+          :props="props"
           show-checkbox
           ref="treeRef"
           default-expand-all
@@ -92,7 +93,7 @@ import { Search } from "@element-plus/icons-vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 
-const props = defineProps({
+const prop = defineProps({
   showSwitch: {
     type: Boolean,
     default: false,
@@ -120,6 +121,13 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  props: {
+    type: Object,
+    default: () => ({
+      label: "label",
+      children: "children",
+    }),
+  },
 });
 defineExpose({
   getCheckedNodes: () => treeRef.value.getCheckedNodes(),
@@ -132,7 +140,7 @@ const drawerRef = ref();
 const formRef = ref();
 const hoverNodeId = ref("");
 const activeTab = ref("hour");
-const treeData = ref(props.treeData);
+const treeData = ref(prop.treeData);
 const varGroupOptions = ref([]);
 const varForm = reactive({
   groupName: "",
@@ -144,7 +152,7 @@ watch(varName, (val) => {
 });
 
 watch(
-  () => props.treeData,
+  () => prop.treeData,
   (val) => {
     treeData.value = val;
   }
@@ -164,7 +172,7 @@ const leaveTreeNode = () => {
 };
 
 const treeCheckChangeHandle = (data, { checkedKeys }) => {
-  if (!props.conflict) {
+  if (!prop.conflict) {
     emits("tree-check-change");
     return;
   }
@@ -290,8 +298,8 @@ const handleTabChange = (val) => {
 };
 
 onMounted(() => {
-  if (props.defaultTreeCheckKeys.length) {
-    treeRef.value.setCheckedKeys(props.defaultTreeCheckKeys);
+  if (prop.defaultTreeCheckKeys.length) {
+    treeRef.value.setCheckedKeys(prop.defaultTreeCheckKeys);
   }
 });
 </script>
