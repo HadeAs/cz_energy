@@ -1,33 +1,41 @@
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="@/assets/img/screen/mainA/u5.png">碳中和进程
+      <img src="@/assets/img/screen/mainA/u5.png" />碳中和进程
     </div>
     <div class="cs-right-wrap1">
       <div class="cs-info-wrap">
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">碳达峰倒计时</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />碳达峰倒计时
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">1542</span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">考核时间</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />考核时间
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">2026</span>
             <span class="cs-unit-text"></span>
           </div>
         </div>
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">碳中和倒计时</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />碳中和倒计时
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">2654 </span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">考核时间</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />考核时间
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">2023</span>
             <span class="cs-unit-text"></span>
@@ -54,18 +62,28 @@
 </template>
 <script setup name="Process">
 import { ref } from "vue";
-import UnitSelect from "./unitSelect.vue"
+import UnitSelect from "./unitSelect.vue";
 import { COLUM_OPT } from "./constant";
-import img1 from '@/assets/img/screen/mainA/bar1.png';
-import img2 from '@/assets/img/screen/mainA/bar2.png';
-import img3 from '@/assets/img/screen/mainA/bar3.png';
-import img4 from '@/assets/img/screen/mainA/bar4.png';
-import img5 from '@/assets/img/screen/mainA/bar5.png';
-import img6 from '@/assets/img/screen/mainA/bar6.png';
+import img1 from "@/assets/img/screen/mainA/bar1.png";
+import img2 from "@/assets/img/screen/mainA/bar2.png";
+import img3 from "@/assets/img/screen/mainA/bar3.png";
+import img4 from "@/assets/img/screen/mainA/bar4.png";
+import img5 from "@/assets/img/screen/mainA/bar5.png";
+import img6 from "@/assets/img/screen/mainA/bar6.png";
 
 import Echart from "@/components/Echart.vue";
 
-const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6))
+const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));
+
+// const handleChange = (val) => {
+//   option.value.series[1].data = option.value.series[1].data.map((item) => {
+//     return { ...item, value: parseInt(item.value + 50, 10) };
+//   });
+//   option.value.series[0].data = option.value.series[0].data.map((item) => {
+//     if (item === 0) return item;
+//     return item + 50;
+//   });
+// };
 </script>
 <style lang="scss" scoped>
 .content {

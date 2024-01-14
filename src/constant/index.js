@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 15:40:28
+ * @LastEditTime: 2024-01-15 01:40:54
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -167,6 +167,7 @@ export const COMMON_ECHART_OPTION = {
       nameTextStyle: {
         color: "#2D2F33",
         fontSize: 14,
+        padding: [0, 0, 0, 30]
       },
       axisTick: {
         show: false,
@@ -198,18 +199,22 @@ export const CARBON_CATEGORY_DATA = [
       {
         id: 8,
         label: "空调系统",
+        unit: "kWh"
       },
       {
         id: 9,
         label: "动力系统",
+        unit: "kWh"
       },
       {
         id: 10,
         label: "照明插座",
+        unit: "kWh"
       },
       {
         id: 11,
         label: "特殊用电",
+        unit: "kWh"
       },
     ],
   },
@@ -220,18 +225,22 @@ export const CARBON_CATEGORY_DATA = [
       {
         id: 12,
         label: "食堂用气",
+        unit: "m³"
       },
       {
         id: 13,
         label: "供热用气",
+        unit: "m³"
       },
       {
         id: 14,
         label: "供冷用气",
+        unit: "m³"
       },
       {
         id: 15,
         label: "生活热水用气",
+        unit: "m³"
       },
     ],
   },
@@ -247,6 +256,7 @@ export const CARBON_CATEGORY_DATA = [
       {
         id: 16,
         label: "生活热水量",
+        unit: "m³"
       },
     ],
   },
@@ -267,10 +277,12 @@ export const CARBON_CATEGORY_DATA = [
       {
         id: 17,
         label: "光伏",
+        unit: "kWh"
       },
       {
         id: 18,
         label: "风力发电",
+        unit: "kWh"
       },
     ],
   },

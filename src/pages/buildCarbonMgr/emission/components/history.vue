@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 18:20:33
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 15:44:53
+ * @LastEditTime: 2024-01-15 01:51:38
  * @Description: 
 -->
 <template>
@@ -33,9 +33,10 @@ import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
 import { CARBTON_TREE_DATA, UNIT_MAP as carbtonMap } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
 const state = reactive({
   activeTab: 0,
@@ -63,9 +64,10 @@ const initChart = () => {
   const checkchilds = checks.filter((v) => !v.children);
   const seriesData = [];
   const legendData = [];
-  if (!checkchilds.length) return;
+  // if (!checkchilds.length) return;
   const unit = UNIT_MAP[state.activeTab];
-  const unitLabel = carbtonMap[checkchilds[0].parentId || checkchilds[0].id];
+  const unitLabel =
+    carbtonMap[checkchilds?.[0]?.parentId || checkchilds?.[0]?.id] || {};
   checkchilds.forEach((item) => {
     legendData.push(item.label);
     seriesData.push({

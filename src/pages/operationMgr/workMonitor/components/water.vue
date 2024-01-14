@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 15:52:20
+ * @LastEditTime: 2024-01-15 01:48:14
  * @Description: 
 -->
 
@@ -39,9 +39,10 @@ import {
   WATER_X_MAP,
 } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 const state = reactive({
   activeTab: 0,
 });
@@ -66,7 +67,9 @@ const randomArr = (times, num) => {
 const initChart = () => {
   const seriesData = [];
   const unit = UNIT_MAP[state.activeTab];
-  new Array(3).fill("").forEach((item, index) => {
+  const checks = echartTreeRef.value.getCheckedNodes();
+  const checkchilds = checks.filter((v) => !v.children);
+  checkchilds.forEach((item, index) => {
     seriesData.push({
       name: WATER_X_MAP[index],
       type: "line",
@@ -75,6 +78,7 @@ const initChart = () => {
       data: randomArr(unit.num, 1000),
     });
   });
+  chartOption.value.yAxis[0].name = `单位：m³`;
   chartOption.value.xAxis[0].data = new Array(unit.num).fill("").map((v, i) => {
     if (state.activeTab === 0) {
       return `${i}${unit.unit}`;

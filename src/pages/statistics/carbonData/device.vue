@@ -32,11 +32,12 @@ import { ref, onMounted } from "vue";
 import { COMMON_ECHART_OPTION, DEVICE_CATEGORY_DATA } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts } from "@/utils";
 
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const echartTreeRef = ref();
-const chartOption = ref(COMMON_ECHART_OPTION);
+const chartOption = ref(handleOpts(COMMON_ECHART_OPTION));
 
 const searchFormCfg = [
   {

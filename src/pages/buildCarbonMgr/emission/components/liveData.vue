@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:51:57
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 15:45:38
+ * @LastEditTime: 2024-01-15 01:50:09
  * @Description: 
 -->
 <template>
@@ -21,9 +21,10 @@ import { ref, onMounted } from "vue";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import { UNIT_MAP, CARBTON_TREE_DATA } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
 const randomArr = (times, num) => {
   return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));
@@ -34,8 +35,9 @@ const initChart = () => {
   const checkchilds = checks.filter((v) => !v.children);
   const seriesData = [];
   const legendData = [];
-  if (!checkchilds.length) return;
-  const unit = UNIT_MAP[checkchilds[0].parentId || checkchilds[0].id];
+  // if (!checkchilds.length) return;
+  const unit =
+    UNIT_MAP[checkchilds?.[0]?.parentId || checkchilds?.[0]?.id] || {};
   checkchilds.forEach((item) => {
     legendData.push(item.label);
     seriesData.push({

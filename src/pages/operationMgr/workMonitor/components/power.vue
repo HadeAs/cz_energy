@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:45:04
+ * @LastEditTime: 2024-01-15 01:38:51
  * @Description: 
 -->
 <template>
@@ -37,9 +37,10 @@ import {
 } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 const state = reactive({
   activeTab: 0,
 });
@@ -67,6 +68,7 @@ const initChart = () => {
   const seriesData = [];
   const legendData = [];
   const unit = UNIT_MAP[state.activeTab];
+  let unitLabel = "";
   checkchilds.forEach((item) => {
     legendData.push(item.label);
     seriesData.push({
@@ -76,6 +78,9 @@ const initChart = () => {
       showSymbol: false,
       data: randomArr(unit.num, 1000),
     });
+    if (item.unit) {
+      unitLabel = item.unit;
+    }
   });
   chartOption.value.xAxis[0].data = new Array(unit.num).fill("").map((v, i) => {
     if (state.activeTab === 0) {
@@ -87,6 +92,11 @@ const initChart = () => {
     return `${i + 2010}${unit.unit}`;
   });
   chartOption.value.legend.data = legendData;
+  if (unitLabel) {
+    chartOption.value.yAxis[0].name = `单位：${unitLabel}`;
+  } else {
+    chartOption.value.yAxis[0].name = "";
+  }
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };

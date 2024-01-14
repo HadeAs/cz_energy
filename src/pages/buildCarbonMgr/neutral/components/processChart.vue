@@ -15,7 +15,7 @@
       </el-col>
     </el-row>
     <div class="content">
-      <el-tabs v-model="state.activeTab" @tab-click="initChart">
+      <el-tabs v-model="state.activeTab" @tab-change="initChart">
         <el-tab-pane
           v-for="item in tabs"
           :key="item.id"
@@ -31,6 +31,7 @@
 import { ref, reactive, onMounted } from "vue";
 import Echart from "@/components/Echart.vue";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
+import { handleOpts } from "@/utils";
 
 const tabs = [
   {
@@ -90,7 +91,7 @@ const dataMaps = [
     bgColor: "#e1d7ff",
   },
 ];
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 const state = reactive({
   timeRange: [],
   activeTab: 0,
