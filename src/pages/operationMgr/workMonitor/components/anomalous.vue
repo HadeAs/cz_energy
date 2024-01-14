@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-13 18:29:57
+ * @LastEditTime: 2024-01-15 02:27:46
  * @Description: 
 -->
 <template>
@@ -44,9 +44,9 @@
         <el-form-item label="报警名称" prop="name">
           <el-input v-model="state.formData.name" />
         </el-form-item>
-        <el-form-item label="处理人" prop="user">
+        <!-- <el-form-item label="处理人" prop="user">
           <el-input v-model="state.formData.user" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="处理详情" prop="desc">
           <el-input
             v-model="state.formData.desc"
@@ -64,6 +64,9 @@ import { reactive, ref } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
+import { ElMessage } from "element-plus";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
+import dayjs from "dayjs";
 
 const DEVICE_MAP = {
   0: "空气源热泵",
@@ -84,7 +87,7 @@ const STATUS_MAP = {
 
 const rules = {
   name: { required: true, message: "请输入报警名称", trigger: "blur" },
-  user: { required: true, message: "请输入处理人", trigger: "blur" },
+  // user: { required: true, message: "请输入处理人", trigger: "blur" },
   desc: [
     { required: true, message: "请输入至少5个字符", trigger: "blur" },
     { min: 5, message: "请输入至少5个字符", trigger: "blur" },
@@ -103,6 +106,17 @@ const searchFormCfg = [
 
 const onSearch = (data) => {
   console.log(data);
+  const param = {};
+  data.forEach((item) => {
+    param[item.prop] = item.value;
+  });
+  if (param.timeRange) {
+    state.dataSource = [];
+  } else {
+    state.dataSource = state.initSource.filter((item) =>
+      item.name.includes(param.deviceName || "")
+    );
+  }
 };
 
 const drawerRef = ref();
@@ -110,9 +124,10 @@ const formRef = ref();
 const state = reactive({
   formData: {
     name: "",
-    user: "",
+    // user: "",
     desc: "",
   },
+  initSource: [],
   dataSource: [],
   loading: true,
 });
@@ -230,11 +245,13 @@ const getList = async () => {
       ]);
     }, 600);
   });
+  state.initSource = [...res];
   state.dataSource = res;
 };
 getList();
 
 const handle = (row) => {
+  state.formData.id = row.id;
   state.formData.name = row.name;
   state.formData.user = row.user;
   state.formData.desc = row.desc;
@@ -244,7 +261,12 @@ const confirmAddVar = () => {
   formRef.value
     .validate()
     .then(() => {
-      console.log("success");
+      const { id } = state.formData;
+      const target = state.dataSource.find((v) => v.id === id);
+      if (target) {
+        target.time2 = dayjs(new Date()).format(COMMON_DATE_TIME_FORMAT);
+      }
+      ElMessage.success("处理成功");
       drawerRef.value.close();
     })
     .catch(() => {
