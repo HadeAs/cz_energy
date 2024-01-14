@@ -78,7 +78,7 @@
       <ProjectDetail ref="projectDetailRef" :initData="initDetailData" />
     </ProDrawer>
     <ProDrawer title="项目图片" ref="imageDrawerRef" @confirm="confirmImage">
-      <ProjectImage ref="projectImageRef" />
+      <ProjectImage ref="projectImageRef" :initData="initDetailData" />
     </ProDrawer>
     <ProDrawer title="费用配置" ref="priceDrawerRef" @confirm="confirmPrice">
       <PriceConfig ref="priceConfigRef" :initData="initDetailData" />
@@ -157,6 +157,7 @@ const editRow = (data) => {
 
 const openImageDetail = (record) => {
   state.currentData = record;
+  initDetailData.value = record;
   imageDrawerRef.value.open();
 };
 
@@ -186,6 +187,7 @@ const handleToPrice = (rowData) => {
 
 const confirmImage = async () => {
   const res = await projectImageRef.value.getPictures();
+  console.log(`res`, res);
   if (res) {
     await crudService(
       saveImages,
@@ -206,7 +208,7 @@ const confirmPrice = async () => {
   if (res) {
     await crudService(
       saveConfigPrice,
-      { ...res, projectId: state.currentData?.id },
+      { list: res, projectId: state.currentData?.id },
       () => {
         getTableList();
         priceDrawerRef.value.close();
