@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 18:51:47
+ * @LastEditTime: 2024-01-14 19:56:35
  * @Description: 
 -->
 <template>
@@ -142,6 +142,13 @@ const varForm = reactive({
 watch(varName, (val) => {
   treeRef.value && treeRef.value.filter(val);
 });
+
+watch(
+  () => props.treeData,
+  (val) => {
+    treeData.value = val;
+  }
+);
 
 const filterNode = (value, data) => {
   if (!value) return true;

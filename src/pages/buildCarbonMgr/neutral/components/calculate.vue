@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-12 14:17:53
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 19:03:24
+ * @LastEditTime: 2024-01-14 19:57:02
  * @Description: 
 -->
 <template>
@@ -70,7 +70,6 @@ const onSearch = (data) => {
 
 const randomArr = (times, num) => {
   const item = COMMON_SERIES_DATA[0].data;
-  debugger;
   const arr = new Array(times).fill("").map((v, index) => {
     if (index === 0) return item[index];
     const diff = num - item[index];
