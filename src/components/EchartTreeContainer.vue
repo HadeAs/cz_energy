@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:48:17
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-14 18:45:54
  * @Description: 
 -->
 <template>
@@ -55,14 +55,13 @@
         />
         <el-tree
           :data="treeData"
-          show-checkbox
           node-key="id"
+          show-checkbox
           ref="treeRef"
           default-expand-all
           @check="treeCheckChangeHandle"
           :expand-on-click-node="false"
           :filter-node-method="filterNode"
-          :default-checked-keys="defaultTreeCheckKeys"
         >
           <template #default="{ node, data }">
             <div
@@ -86,6 +85,7 @@
 </template>
 <script setup>
 import { ref, watch, nextTick, onMounted, reactive } from "vue";
+import isEqual from "lodash/isEqual";
 import uniqueId from "lodash/uniqueId";
 import Echart from "@/components/Echart.vue";
 import { Search } from "@element-plus/icons-vue";
@@ -115,6 +115,10 @@ const props = defineProps({
   defaultTreeCheckKeys: {
     type: Array,
     default: [],
+  },
+  conflict: {
+    type: Boolean,
+    default: true,
   },
 });
 defineExpose({
@@ -152,44 +156,40 @@ const leaveTreeNode = () => {
   hoverNodeId.value = "";
 };
 
-const treeCheckValid = (data) => {
-  const checks = treeRef.value.getCheckedNodes();
-  if (checks.length === 0 && data) {
-    nextTick(() => {
-      treeRef.value.setCheckedNodes([data]);
-    });
-    return false;
-  }
-  const checkchilds = checks.filter((v) => !v.children);
-  //跨父节点节点禁止点击
-  if (checkchilds.length) {
-    const node = checkchilds[0];
-    treeData.value.forEach((v) => {
-      if (!v.children.find((item) => item.id === node.id)) {
-        v.disabled = true;
-        v.children.forEach((j) => {
-          j.disabled = true;
-        });
+const treeCheckChangeHandle = (data, { checkedKeys }) => {
+  const { id } = data;
+  const currentNode = treeRef.value.getNode(data.id);
+  const parentId = currentNode.data?.children?.length
+    ? undefined
+    : currentNode.parent.data.id;
+  if (checkedKeys.includes(id)) {
+    // 当前节点选中 （取消选中互斥的节点）
+    const newCheckedNodes = [];
+    const newChildKeys = checkedKeys.filter((v) => {
+      const nodeData = treeRef.value.getNode(v);
+      if (
+        nodeData.data.id === parentId ||
+        (parentId &&
+          !nodeData.data?.children?.length &&
+          nodeData.parent.data.id === parentId) ||
+        (!parentId && nodeData.data.id === id)
+      ) {
+        newCheckedNodes.push(nodeData);
+        return true;
       }
+      return false;
     });
-  } else {
-    treeData.value.forEach((v) => {
-      v.disabled = false;
-      v.children.forEach((j) => {
-        j.disabled = false;
+    if (!isEqual(newChildKeys, checkedKeys)) {
+      nextTick(() => {
+        treeRef.value.setCheckedKeys(newChildKeys);
+        emits("tree-check-change");
       });
-    });
+    } else {
+      emits("tree-check-change");
+    }
+  } else {
+    emits("tree-check-change");
   }
-  treeData.value = [...treeData.value];
-  nextTick(() => {
-    treeRef.value.setCheckedNodes(checks);
-  });
-  return true;
-};
-
-const treeCheckChangeHandle = (data) => {
-  const res = treeCheckValid(data);
-  res && emits("tree-check-change");
 };
 
 const openAddVarForm = () => {
@@ -279,7 +279,9 @@ const handleTabChange = (val) => {
 };
 
 onMounted(() => {
-  treeCheckValid();
+  if (props.defaultTreeCheckKeys.length) {
+    treeRef.value.setCheckedKeys(props.defaultTreeCheckKeys);
+  }
 });
 </script>
 <style lang="scss" scoped>
