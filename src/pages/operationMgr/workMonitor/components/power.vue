@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:38:51
+ * @LastEditTime: 2024-01-15 03:49:39
  * @Description: 
 -->
 <template>
@@ -12,6 +12,7 @@
       buttonContent="导出"
       :form-info="searchFormCfg"
       @button-click="onSearch"
+      @search-change="handleSearchChange"
       authKey="monitor_electric_export"
     />
     <EchartTreeContainer
@@ -45,14 +46,14 @@ const state = reactive({
   activeTab: 0,
 });
 
-const searchFormCfg = [
+const searchFormCfg = ref([
   {
     label: "时间范围",
     prop: "timeRange",
     type: "datetimerange",
     value: "",
   },
-];
+]);
 
 const onSearch = (data) => {
   console.log(data);
@@ -99,6 +100,10 @@ const initChart = () => {
   }
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
+};
+
+const handleSearchChange = (type) => {
+  initChart();
 };
 
 const handleChangeTab = (tab) => {

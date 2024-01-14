@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-25 13:16:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 14:46:59
+ * @LastEditTime: 2024-01-15 02:07:35
  * @Description: 
 -->
 <template>
@@ -26,6 +26,8 @@
           start-placeholder="开始时间"
           end-placeholder="结束时间"
           value-format="YYYY-MM-DD hh:mm:ss"
+          v-bind="domain.config || {}"
+          @change="handleChange(domain)"
         />
         <el-select
           v-else-if="domain.type === 'select'"
@@ -67,10 +69,13 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["button-click"]);
+const emits = defineEmits(["button-click", "search-change"]);
 
 const dynamicFormData = reactive(props.formInfo);
 const onSubmit = () => {
   emits("button-click", dynamicFormData);
+};
+const handleChange = (item) => {
+  emits("search-change", item.prop);
 };
 </script>

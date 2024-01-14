@@ -3,7 +3,7 @@
     <div class="cs-header-content">
       <img src="@/assets/img/screen/mainB/u4.png" />用能趋势分析
       <div class="pull-right">
-        <UnitSelect label="单位：kW·h" />
+        <UnitSelect label="单位：kW·h" @change="handleChange1" />
       </div>
     </div>
     <div class="cs-sub-header">
@@ -16,6 +16,7 @@
         <UnitSelect
           :options="state.dataMonth"
           :default-value="state.dataMonth[4].id"
+          @change="handleChange2"
         />
       </div>
     </div>
@@ -23,7 +24,7 @@
     <div class="cs-sub-header">
       <span class="cs-sub-header-text">用电趋势（逐时）</span>
       <div class="cs-sub-right">
-        <UnitSelect :options="state.dataDate" />
+        <UnitSelect :options="state.dataDate" @change="handleChange3" />
       </div>
     </div>
     <Echart id="chart5" class="cs-center-wrap3" :option="option3" />
@@ -90,6 +91,34 @@ const state = reactive({
     },
   ],
 });
+const handleChange1 = () => {
+  option1.value.series = option1.value.series.map((item) => {
+    return {
+      ...item,
+      data: item.data.map((v) => v + Math.floor(Math.random() * 70)),
+    };
+  });
+};
+const handleChange2 = (val) => {
+  option2.value.xAxis[0].data = option2.value.xAxis[0].data.map((item) => {
+    const [m, d] = item.split(".");
+    return `${val}.${d}`;
+  });
+  option2.value.series = option2.value.series.map((item) => {
+    return {
+      ...item,
+      data: item.data.map((v) => v + Math.floor(Math.random() * 70)),
+    };
+  });
+};
+const handleChange3 = () => {
+  option3.value.series = option3.value.series.map((item) => {
+    return {
+      ...item,
+      data: item.data.map((v) => v + Math.floor(Math.random() * 70)),
+    };
+  });
+};
 </script>
 <style lang="scss" scoped>
 .content {

@@ -4,68 +4,92 @@
       <img src="@/assets/img/screen/mainB/u7.png" />实时告警
     </div>
     <ul class="cs-right-tab">
-      <li class="active">全部</li>
-      <li>设备故障</li>
-      <li>耗电量超标</li>
-      <li>能耗超标</li>
+      <li
+        v-for="(item, index) in tabs"
+        :key="index"
+        :class="state.activeTab === item.id ? 'active' : ''"
+        @click="handleChangeTab(item.id)"
+      >
+        {{ item.name }}
+      </li>
     </ul>
 
     <ul class="cs-right-wrap1">
-      <li class="cs-table-info">
+      <li
+        v-for="(item, index) in state[state.activeTab]"
+        :key="index"
+        class="cs-table-info"
+      >
         <div>
-          <span class="label label-info light label-sm">待处理</span>
-        </div>
-        <div>
-          <span class="spot"></span>
-          <span class="text-overflow">编号1006压力传感器6公斤故障</span>
-        </div>
-        <div>18:54:45</div>
-      </li>
-      <li class="cs-table-info">
-        <div>
-          <span class="label label-info light label-sm">待处理</span>
-        </div>
-        <div>
-          <span class="spot"></span>
-          <span class="text-overflow">编号1156空气热泵机组1设备故障</span>
-        </div>
-        <div>16:10:12</div>
-      </li>
-      <li class="cs-table-info">
-        <div>
-          <span class="label label-info light label-sm">待处理</span>
-        </div>
-        <div>
-          <span class="spot"></span>
-          <span class="text-overflow">编号1021水箱温度升高 报警</span>
-        </div>
-        <div>15:08:33</div>
-      </li>
-      <li class="cs-table-info">
-        <div>
-          <span class="label label-success light label-sm">已处理</span>
-        </div>
-        <div>
-          <span class="spot"></span>
-          <span class="text-overflow">编号1014液位传感器故障处理</span>
-        </div>
-        <div>10:08:33</div>
-      </li>
-      <li class="cs-table-info">
-        <div>
-          <span class="label label-success light label-sm">已处理</span>
-        </div>
-        <div>
-          <span class="spot"></span>
-          <span class="text-overflow"
-            >编号1157空气源热泵机组2 清洗处理完成</span
+          <span
+            class="label label-info light label-sm"
+            :class="item.status === 0 ? 'label-info' : 'label-success'"
+            >{{ item.tag }}</span
           >
         </div>
-        <div>09:14:45</div>
+        <div>
+          <span class="spot"></span>
+          <span class="text-overflow">{{ item.content }}</span>
+        </div>
+        <div>{{ item.date }}</div>
       </li>
     </ul>
   </div>
 </template>
+<script setup>
+import { reactive } from "vue";
+const tabs = [
+  { id: "all", name: "全部" },
+  { id: "tag1", name: "设备故障" },
+  { id: "tag2", name: "耗电量超标" },
+  { id: "tag3", name: "能耗超标" },
+];
+
+const values = [
+  {
+    tag: "待处理",
+    status: 0,
+    content: "编号1006压力传感器6公斤故障",
+    date: "18:54:45",
+  },
+  {
+    tag: "待处理",
+    status: 0,
+    content: "编号1156空气热泵机组1设备故障",
+    date: "16:10:12",
+  },
+  {
+    tag: "待处理",
+    status: 0,
+    content: "编号1021水箱温度升高 报警",
+    date: "12:08:33",
+  },
+  {
+    tag: "已处理",
+    status: 1,
+    content: "编号1014液位传感器故障处理",
+    date: "10:08:33",
+  },
+  {
+    tag: "已处理",
+    status: 1,
+    content: "编号1157空气源热泵机组2 清洗处理完成",
+    date: "09:14:45",
+  },
+];
+const state = reactive({
+  activeTab: "all",
+  all: values,
+  tag1: [values[0], values[1]],
+  tag2: [values[0], values[1], values[2]],
+  tag3: [values[3], values[4]],
+});
+const handleChangeTab = (value) => {
+  if (state.activeTab !== value) {
+    state.activeTab = value;
+  }
+};
+</script>
 <style lang="scss" scoped>
 .content {
   height: 295px;

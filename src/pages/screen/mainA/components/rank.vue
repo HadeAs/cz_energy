@@ -1,28 +1,59 @@
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="@/assets/img/screen/mainA/u2.png">建筑碳排放排名
+      <img src="@/assets/img/screen/mainA/u2.png" />建筑碳排放排名
       <div class="pull-right">
         <ul class="cs-list-group">
-          <li class="active">强度</li>
-          <li>总量</li>
+          <li
+            :class="state.active1 === 0 ? 'active' : ''"
+            @click="handleClick('active1', 0)"
+          >
+            强度
+          </li>
+          <li
+            :class="state.active1 === 1 ? 'active' : ''"
+            @click="handleClick('active1', 1)"
+          >
+            总量
+          </li>
         </ul>
         <ul class="cs-btn-group margin-left-large-4">
-          <li class="active">月</li>
-          <li>年</li>
+          <li
+            :class="state.active2 === 0 ? 'active' : ''"
+            @click="handleClick('active2', 0)"
+          >
+            月
+          </li>
+          <li
+            :class="state.active2 === 1 ? 'active' : ''"
+            @click="handleClick('active2', 1)"
+          >
+            年
+          </li>
         </ul>
       </div>
     </div>
     <div class="cs-left-wrap3">
       <div class="cs-unit">单位：<span id="js-unit">kgCO₂e/(㎡·a)</span></div>
       <ul class="cs-rank">
-        <li class="cs-rank-wrap" v-for="(item, index) in state.rankData" :key="item.value">
-          <div class="cs-rank-num" :class="'num' + Number(index + 1)">{{ index + 1 }}</div>
+        <li
+          class="cs-rank-wrap"
+          v-for="(item, index) in state.rankData"
+          :key="item.value"
+        >
+          <div class="cs-rank-num" :class="'num' + Number(index + 1)">
+            {{ index + 1 }}
+          </div>
           <div class="cs-rank-name text-overflow">{{ item.name }}</div>
           <div class="cs-progress-wrap">
-            <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"
-              :style="{ width: item.percent }">
-            </div>
+            <div
+              class="progress-bar"
+              role="progressbar"
+              aria-valuenow="90"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :style="{ width: item.percent }"
+            ></div>
             <div class="cs-total-num">{{ item.value }}</div>
           </div>
         </li>
@@ -32,35 +63,51 @@
 </template>
 <script setup name="Rank">
 import { reactive } from "vue";
+const values = ["90%", "80%", "60%", "40%", "30%"];
 const state = reactive({
+  active1: 0,
+  active2: 0,
   rankData: [
     {
       name: "常州天辉锂电池制造",
       percent: "90%",
-      value: 156
+      value: 156,
     },
     {
       name: "太仓市第一人民医院",
       percent: "80%",
-      value: 126
+      value: 126,
     },
     {
       name: "苏州独墅湖书",
       percent: "60%",
-      value: 106
+      value: 106,
     },
     {
       name: "金陵新城酒店",
       percent: "40%",
-      value: 66
+      value: 66,
     },
     {
       name: "武家嘴办公楼",
       percent: "30%",
-      value: 56
-    }
-  ]
-})
+      value: 56,
+    },
+  ],
+});
+const handleClick = (name, value) => {
+  if (state[name] !== value) {
+    state[name] = value;
+    const percent = values.sort(function () {
+      return Math.random() - 0.5;
+    });
+    state.rankData = state.rankData.map((item, index) => ({
+      ...item,
+      value: item.value + Math.floor(Math.random() * 70),
+      percent: percent[index],
+    }));
+  }
+};
 </script>
 <style lang="scss" scoped>
 .content {
@@ -70,7 +117,7 @@ const state = reactive({
     padding-top: 8px;
 
     .cs-unit {
-      color: #7A7886;
+      color: #7a7886;
     }
 
     .cs-rank {
@@ -127,9 +174,9 @@ const state = reactive({
         border-radius: 0 5px 5px 0;
       }
       .cs-total-num {
-  color: #fff;
-  margin-left: 6px;
-}
+        color: #fff;
+        margin-left: 6px;
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:40:54
+ * @LastEditTime: 2024-01-15 03:26:20
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -828,3 +828,9 @@ export const COMMON_DATE_TIME_FORMAT = `${COMMON_DATE_FORMAT} hh:mm:ss`;
 export const COMMON_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.JPG', '.JPEG', '.PNG', '.BMP', '.gif', '.GIF'];
 
 export const COMMON_FILE_TYPES = ['.rar', '.zip', '.doc', '.docx'];
+
+// export const COMMON_DATA_TIME_MAP = {
+//   "hour": {
+    
+//   }
+// }
