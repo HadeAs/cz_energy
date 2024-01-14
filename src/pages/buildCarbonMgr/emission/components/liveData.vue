@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:51:57
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 14:07:57
+ * @LastEditTime: 2024-01-14 15:45:38
  * @Description: 
 -->
 <template>
@@ -18,15 +18,12 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import {
-  CARBTON_LIVE_ECHART_OPT,
-  UNIT_MAP,
-  CARBTON_TREE_DATA,
-} from "@/constant/carbton";
+import { POWER_ECHART_OPT } from "@/constant/workMonitor";
+import { UNIT_MAP, CARBTON_TREE_DATA } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
 const echartTreeRef = ref();
-const chartOption = ref(CARBTON_LIVE_ECHART_OPT);
+const chartOption = ref(POWER_ECHART_OPT);
 
 const randomArr = (times, num) => {
   return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));

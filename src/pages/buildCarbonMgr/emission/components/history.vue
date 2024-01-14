@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 18:20:33
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 14:07:51
+ * @LastEditTime: 2024-01-14 15:44:53
  * @Description: 
 -->
 <template>
@@ -18,7 +18,7 @@
       ref="echartTreeRef"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[13]"
+      :defaultTreeCheckKeys="[11, 12, 13]"
       :treeData="CARBTON_TREE_DATA"
       @tree-check-change="initChart"
       @type-change="handleChangeTab"
@@ -29,17 +29,13 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import { UNIT_MAP, TYPES_MAP } from "@/constant/workMonitor";
-import {
-  CARBTON_LIVE_ECHART_OPT,
-  CARBTON_TREE_DATA,
-  UNIT_MAP as carbtonMap,
-} from "@/constant/carbton";
+import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
+import { CARBTON_TREE_DATA, UNIT_MAP as carbtonMap } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 
 const echartTreeRef = ref();
-const chartOption = ref(CARBTON_LIVE_ECHART_OPT);
+const chartOption = ref(POWER_ECHART_OPT);
 
 const state = reactive({
   activeTab: 0,

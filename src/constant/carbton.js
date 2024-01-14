@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:57:56
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 15:28:42
+ * @LastEditTime: 2024-01-14 16:57:08
  * @Description: 
  */
 export const colorArr = ['#29b7f4', '#7dc856', '#f9bf03', '#fa5555', '#6666ff']
@@ -214,22 +214,22 @@ export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
       {
         id: 11,
         label: "能源使用减少",
-        color: "#C5CEDF"
+        color: "rgba(33, 109, 245, 1)"
       },
       {
         id: 12,
         label: "绿色能源",
-        color: "#00A040"
+        color: "rgba(0, 161, 171, 1)"
       },
       {
         id: 13,
         label: "碳汇(植树等）",
-        color: "#FF8873"
+        color: "rgba(10, 209, 100, 1)"
       },
       {
         id: 14,
         label: "电网碳排因子降低",
-        color: "#e4a304"
+        color: "rgba(190, 175, 158, 1)"
       }
     ]
   },
@@ -240,17 +240,17 @@ export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
       {
         id: 21,
         label: "碳信用抵消(碳交易)",
-        color: "#947D63"
+        color: "rgba(228, 163, 3, 1)"
       },
       {
         id: 22,
         label: "绿电购买抵消",
-        color: "#00a1ab"
+        color: "rgba(148, 125, 99, 1)"
       },
       {
         id: 23,
         label: "净排放",
-        color: "#BEAF9E"
+        color: "rgba(255, 136, 115, 1)"
       }
     ]
   }
@@ -264,77 +264,16 @@ export const UNIT_MAP = {
   5: { unit: "个", num: 24 }
 }
 
-export const CARBTON_LIVE_ECHART_OPT = {
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      label: {
-        backgroundColor: '#6a7985',
-      },
-    },
-  },
-  legend: {
-    top: 12,
-    right: 24,
-  },
-  grid: {
-    left: '24',
-    right: '24',
-    bottom: '24',
-    top: '40',
-    containLabel: true,
-  },
-  xAxis: [
-    {
-      type: 'category',
-      boundaryGap: false,
-      axisLine: {
-        lineStyle: {
-          color: '#cad3e2',
-        },
-      },
-      axisLabel: {
-        color: '#2D2F33',
-      },
-    },
-  ],
-  yAxis: [
-    {
-      type: 'value',
-      name: '单位：tCO₂',
-      nameTextStyle: {
-        color: '#2D2F33',
-        fontSize: 14,
-      },
-      axisTick: {
-        show: false,
-      },
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: '#cad3e2',
-        },
-      },
-      axisLabel: {
-        color: '#2D2F33',
-      },
-      splitLine: {
-        show: false,
-      },
-    },
-  ],
-  color: colorArr,
-};
-
 export const COMMON_SERIES_DATA = [
   {
     name: 'Placeholder',
     type: 'bar',
     stack: 'Total',
-    silent: true,
+    // silent: true,
+    barWidth: '35%',
     itemStyle: {
       borderColor: 'transparent',
-      color: 'transparent'
+      color: 'transparent',
     },
     emphasis: {
       itemStyle: {
@@ -342,12 +281,13 @@ export const COMMON_SERIES_DATA = [
         color: 'transparent'
       }
     },
-    data: [0, 900, 1245, 1530, 1376, 1376, 250]
+    data: [0, 200, 200, 200, 200, 200, 200, 200]
   },
   {
     name: 'Start',
     type: 'bar',
     stack: 'Total',
+    barWidth: '35%',
     label: {
       show: true,
       position: 'top'

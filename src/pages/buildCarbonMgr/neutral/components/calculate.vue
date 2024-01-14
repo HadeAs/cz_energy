@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-12 14:17:53
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 15:49:04
+ * @LastEditTime: 2024-01-14 16:51:34
  * @Description: 
 -->
 <template>
@@ -29,9 +29,8 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import { UNIT_MAP, TYPES_MAP } from "@/constant/workMonitor";
+import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
 import {
-  CARBTON_LIVE_ECHART_OPT,
   CARBON_NETURAL_CALCULATE_TREE_DATA,
   COMMON_SERIES_DATA,
 } from "@/constant/carbton";
@@ -39,7 +38,7 @@ import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 
 const echartTreeRef = ref();
-const chartOption = ref(CARBTON_LIVE_ECHART_OPT);
+const chartOption = ref(POWER_ECHART_OPT);
 
 const state = reactive({
   activeTab: 0,
@@ -71,19 +70,26 @@ const onSearch = (data) => {
 const randomArr = (times, num) => {
   const arr = new Array(times)
     .fill("")
-    .map((v) => (Math.random() * num).toFixed(0));
+    .map((v) => Math.floor(Math.random() * (num - 200 + 1)) + 200);
   return arr;
+};
+
+const totalMap = {
+  id: 0,
+  color: "rgba(197, 206, 223, 1)",
+  label: "碳排基准",
 };
 
 const initChart = () => {
   const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
+  const checkchilds = [totalMap, ...checks.filter((v) => !v.children)];
   const seriesData = [...COMMON_SERIES_DATA];
   const legendData = [];
   if (!checkchilds.length) return;
   const unit = UNIT_MAP[state.activeTab];
-  const endData = randomArr(checkchilds.length, 1000);
+  const endData = randomArr(checkchilds.length, 800);
   seriesData[1].data = endData.map((item) => Number(Number(item) + unit.num));
+  seriesData[1].data[0] = 1000;
   seriesData[1].itemStyle = {
     color: ({ dataIndex }) => {
       return checkchilds[dataIndex].color;
@@ -92,6 +98,9 @@ const initChart = () => {
   checkchilds.forEach((item) => {
     legendData.push(item.label);
   });
+  // chartOption.value.tooltip.formatter = (params) => {
+
+  // }
   chartOption.value.legend = { show: false };
   chartOption.value.yAxis[0].name = "单位：万t";
   chartOption.value.xAxis[0].axisLabel = { show: false };

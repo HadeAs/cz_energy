@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 19:46:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 14:19:49
+ * @LastEditTime: 2024-01-14 15:50:04
  * @Description: 
 -->
 <template>
@@ -29,16 +29,13 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import { UNIT_MAP, TYPES_MAP } from "@/constant/workMonitor";
-import {
-  CARBTON_LIVE_ECHART_OPT,
-  CARBTON_CALCULATE_TREE_DATA,
-} from "@/constant/carbton";
+import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
+import { CARBTON_CALCULATE_TREE_DATA } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 
 const echartTreeRef = ref();
-const chartOption = ref(CARBTON_LIVE_ECHART_OPT);
+const chartOption = ref(POWER_ECHART_OPT);
 
 const state = reactive({
   activeTab: 0,

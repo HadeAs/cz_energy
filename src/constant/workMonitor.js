@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:58:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-23 21:03:26
+ * @LastEditTime: 2024-01-14 15:52:30
  * @Description: 
  */
 export const colorArr = ['#55c5f7', '#7dc856', '#f9bf00', '#fa5555', '#6666ff']
@@ -208,87 +208,3 @@ export const WATER_TREE_DATA = [
 ];
 
 export const WATER_X_MAP = ['电费', '燃气费', '水费'];
-
-export const WATER_ECHART_OPT = {
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      label: {
-        backgroundColor: '#6a7985',
-      },
-    },
-  },
-  legend: {
-    data: WATER_X_MAP,
-    top: 12,
-    right: 24,
-  },
-  grid: {
-    left: '24',
-    right: '24',
-    bottom: '24',
-    top: '40',
-    containLabel: true,
-  },
-  xAxis: [
-    {
-      type: 'category',
-      boundaryGap: false,
-      // data: xArr,
-      axisLine: {
-        lineStyle: {
-          color: '#cad3e2',
-        },
-      },
-      axisLabel: {
-        color: '#2D2F33',
-      },
-    },
-  ],
-  yAxis: [
-    {
-      type: 'value',
-      name: '单位：KWh',
-      nameTextStyle: {
-        color: '#2D2F33',
-        fontSize: 14,
-      },
-      axisTick: {
-        show: false,
-      },
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: '#cad3e2',
-        },
-      },
-      axisLabel: {
-        color: '#2D2F33',
-      },
-      splitLine: {
-        show: false,
-      },
-    },
-  ],
-  // series: [
-  //   {
-  //     name: '电费',
-  //     type: 'line',
-  //     smooth: true,
-  //     // data: yArr1,
-  //   },
-  //   {
-  //     name: '燃气费',
-  //     type: 'line',
-  //     smooth: true,
-  //     data: yArr2,
-  //   },
-  //   {
-  //     name: '水费',
-  //     type: 'line',
-  //     smooth: true,
-  //     // data: yArr3,
-  //   },
-  // ],
-  color: colorArr,
-}

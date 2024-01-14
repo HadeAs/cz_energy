@@ -11,7 +11,7 @@
       ref="echartTreeRef"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[13]"
+      :defaultTreeCheckKeys="[15, 16]"
       :treeData="SUB_SYSTEM_TREE_DATA"
       @tree-check-change="initChart"
       @type-change="handleChangeTab"
@@ -22,16 +22,13 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import { UNIT_MAP, TYPES_MAP } from "@/constant/workMonitor";
-import {
-  CARBTON_LIVE_ECHART_OPT,
-  SUB_SYSTEM_TREE_DATA,
-} from "@/constant/carbton";
+import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
+import { SUB_SYSTEM_TREE_DATA } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 
 const echartTreeRef = ref();
-const chartOption = ref(CARBTON_LIVE_ECHART_OPT);
+const chartOption = ref(POWER_ECHART_OPT);
 
 const state = reactive({
   activeTab: 0,

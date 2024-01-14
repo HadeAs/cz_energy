@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-27 13:45:30
+ * @LastEditTime: 2024-01-14 15:52:20
  * @Description: 
 -->
 
@@ -32,7 +32,7 @@
 import { ref, reactive, onMounted } from "vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import {
-  WATER_ECHART_OPT,
+  POWER_ECHART_OPT,
   WATER_TREE_DATA,
   UNIT_MAP,
   TYPES_MAP,
@@ -41,7 +41,7 @@ import {
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 
 const echartTreeRef = ref();
-const chartOption = ref(WATER_ECHART_OPT);
+const chartOption = ref(POWER_ECHART_OPT);
 const state = reactive({
   activeTab: 0,
 });
