@@ -1,4 +1,4 @@
-import { ResultEnum } from '@/api/http.js';
+import http, { ResultEnum } from '@/api/http.js';
 
 export const crudService = async (service, params = {}, callbackSuccess = () => {}, callbackError = () => {}) => {
   if (!service) return;
@@ -8,4 +8,17 @@ export const crudService = async (service, params = {}, callbackSuccess = () => 
     return;
   }
   callbackError?.(res);
+}
+
+export const ifSuccess = (res, callback) => {
+  if (res && res?.code === ResultEnum.SUCCESS) {
+    callback?.();
+  }
+}
+
+export const isSuccess = (res) => res?.code === ResultEnum.SUCCESS;
+
+export const commonResult = async (asyncFun, params, defaultResult) => {
+  const res = await http.get(asyncFun, params);
+  return isSuccess(res) ? res?.data?.data : defaultResult
 }

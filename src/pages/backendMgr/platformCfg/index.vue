@@ -35,11 +35,11 @@ const tabData = [
     name: "unit",
     component: Unit,
   },
-  {
-    label: "变量管理",
-    name: "variable",
-    component: Variable,
-  },
+  // {
+  //   label: "变量管理",
+  //   name: "variable",
+  //   component: Variable,
+  // },
   {
     label: "建筑类型管理",
     name: "build",
