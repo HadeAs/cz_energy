@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:57:56
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 16:57:08
+ * @LastEditTime: 2024-01-14 18:52:41
  * @Description: 
  */
 export const colorArr = ['#29b7f4', '#7dc856', '#f9bf03', '#fa5555', '#6666ff']
@@ -270,7 +270,7 @@ export const COMMON_SERIES_DATA = [
     type: 'bar',
     stack: 'Total',
     // silent: true,
-    barWidth: '35%',
+    barWidth: 55,
     itemStyle: {
       borderColor: 'transparent',
       color: 'transparent',
@@ -281,13 +281,13 @@ export const COMMON_SERIES_DATA = [
         color: 'transparent'
       }
     },
-    data: [0, 200, 200, 200, 200, 200, 200, 200]
+    data: [0, 900, 800, 700, 600, 500, 400, 200]
   },
   {
     name: 'Start',
     type: 'bar',
     stack: 'Total',
-    barWidth: '35%',
+    barWidth: 55,
     label: {
       show: true,
       position: 'top'

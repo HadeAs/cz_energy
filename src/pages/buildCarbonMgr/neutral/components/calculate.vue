@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-12 14:17:53
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 16:51:34
+ * @LastEditTime: 2024-01-14 19:03:24
  * @Description: 
 -->
 <template>
@@ -17,6 +17,7 @@
     <EchartTreeContainer
       ref="echartTreeRef"
       :showSwitch="true"
+      :conflict="false"
       :chartOption="chartOption"
       :defaultTreeCheckKeys="[11, 12, 13, 14, 21, 22, 23]"
       :treeData="CARBON_NETURAL_CALCULATE_TREE_DATA"
@@ -68,9 +69,13 @@ const onSearch = (data) => {
 };
 
 const randomArr = (times, num) => {
-  const arr = new Array(times)
-    .fill("")
-    .map((v) => Math.floor(Math.random() * (num - 200 + 1)) + 200);
+  const item = COMMON_SERIES_DATA[0].data;
+  debugger;
+  const arr = new Array(times).fill("").map((v, index) => {
+    if (index === 0) return item[index];
+    const diff = num - item[index];
+    return Math.ceil(Math.random() * (diff - 1)) + 1;
+  });
   return arr;
 };
 
@@ -87,7 +92,7 @@ const initChart = () => {
   const legendData = [];
   if (!checkchilds.length) return;
   const unit = UNIT_MAP[state.activeTab];
-  const endData = randomArr(checkchilds.length, 800);
+  const endData = randomArr(checkchilds.length, 1000);
   seriesData[1].data = endData.map((item) => Number(Number(item) + unit.num));
   seriesData[1].data[0] = 1000;
   seriesData[1].itemStyle = {

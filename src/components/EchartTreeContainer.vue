@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 18:45:54
+ * @LastEditTime: 2024-01-14 18:51:47
  * @Description: 
 -->
 <template>
@@ -157,6 +157,10 @@ const leaveTreeNode = () => {
 };
 
 const treeCheckChangeHandle = (data, { checkedKeys }) => {
+  if (!props.conflict) {
+    emits("tree-check-change");
+    return;
+  }
   const { id } = data;
   const currentNode = treeRef.value.getNode(data.id);
   const parentId = currentNode.data?.children?.length
