@@ -12,39 +12,38 @@
         <img :src="totalImg" alt="" />
         <div>
           <div class="price-title">整体用能费用（万元）</div>
-          <div class="price-num">1,000</div>
+          <div class="price-num">{{ staData.total }}</div>
         </div>
       </div>
       <div>
         <img :src="electricImg" alt="" />
         <div>
           <div class="price-title">电费（万元）</div>
-          <div class="price-num">600</div>
+          <div class="price-num">{{ staData.electric }}</div>
         </div>
       </div>
       <div>
         <img :src="gasImg" alt="" />
         <div>
           <div class="price-title">燃气（万元）</div>
-          <div class="price-num">300</div>
+          <div class="price-num">{{ staData.gasBill }}</div>
         </div>
       </div>
       <div>
         <img :src="waterImg" alt="" />
         <div>
           <div class="price-title">水费（万元）</div>
-          <div class="price-num">100</div>
+          <div class="price-num">{{ staData.water }}</div>
         </div>
       </div>
     </div>
     <MainContentContainer style="height: calc(100vh - 219px)">
       <ProTable
+          row-key="key"
         :multiple="true"
+        :hasPagination="false"
         :column="column"
-        :pageInfo="pageInfo"
         :datasource="datasource"
-        v-loading="loading"
-        @page-change="pageChange"
         @selection-change="selectionChange"
       >
         <template #toolbar>
@@ -52,7 +51,6 @@
             <el-col :span="3">
               <el-button
                 v-auth="'cost_detail_batch_export'"
-                :disabled="!selectRows.length"
                 @click="batchExport"
                 >批量导出</el-button
               >
@@ -64,15 +62,16 @@
                 start-placeholder="开始时间"
                 end-placeholder="结束时间"
                 value-format="YYYY-MM-DD hh:mm:ss"
+                @change="handleSearch"
               />
             </el-col>
             <el-col :span="4">
-              <el-select v-model="sysClass" placeholder="全部所属系统分类">
+              <el-select v-model="sysClassId" style="width:100%" @change="handleSearch" placeholder="全部所属系统分类">
                 <el-option
                   v-for="item in sysCategory"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 />
               </el-select>
             </el-col>
@@ -100,204 +99,115 @@ import gasImg from "@/assets/img/gas_price.jpg";
 import totalImg from "@/assets/img/total_price.jpg";
 import waterImg from "@/assets/img/water_price.jpg";
 import electricImg from "@/assets/img/electric_price.jpg";
-import { ElMessage, ElMessageBox } from "element-plus";
+// import { ElMessage, ElMessageBox } from "element-plus";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import { exportInBatch, queryCostDetail } from '@/api/staMng/statistics.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+import { getSysClass } from '@/api/common.js';
+import { exportWithExcel } from '@/utils/index.js';
+
+const { globalState } = storeToRefs(appStore.global);
 
 const projName = ref("");
 const timeRange = ref([]);
-const sysClass = ref("");
-const loading = ref(false);
+const sysClassId = ref("");
+// const loading = ref(false);
 const datasource = ref([]);
 const selectRows = ref([]);
+const sysCategory = ref([]);
+const staData = ref({});
 
-const sysCategory = [
-  { label: "电力", value: "电力" },
-  { label: "燃气", value: "燃气" },
-  { label: "水", value: "水" },
-  { label: "市政热力", value: "市政热力" },
-  { label: "石油", value: "石油" },
-];
+const nameList = ['用电量', '用气量', '用水量']
+
+const state = reactive({
+  searchFormData: {
+    projectId: globalState.value.projectId,
+  },
+});
+
+const renderData = list => {
+  return list.map((i, index) => {
+    return {
+      ...i,
+      key: String(index),
+      children: i?.children ? i?.children.map((child, ind) => ({ ...child, energyStatisticsName: child?.sysClassName, key: `${index}-${ind}` })) : i,
+    };
+  });
+}
+
+const reloadTable = async params => {
+  const res = await queryCostDetail(params);
+  datasource.value = renderData(res);
+  const staBase = {};
+  res.forEach(i => {
+    if (i?.energyStatisticsName === '用电量') {
+      staBase.electric = i?.totalCost;
+    }
+    if (i?.energyStatisticsName === '用气量') {
+      staBase.gasBill = i?.totalCost;
+    }
+    if (i?.energyStatisticsName === '用水量') {
+      staBase.water = i?.totalCost;
+    }
+  })
+  staData.value = {
+    electric: staBase.electric.toFixed(2),
+    total: Object.values(staBase).reduce((last, next) => last + next, 0).toFixed(2),
+    gasBill: staBase.electric.toFixed(2),
+    water: staBase.electric.toFixed(2),
+  }
+};
 
 const handleSearch = () => {
-  console.log(projName.value);
+  const param = { startDate: timeRange.value?.[0], endDate: timeRange.value?.[1] };
+  reloadTable({ sysClassId: sysClassId.value, energyStatisticsName: projName.value, projectId: globalState.value.projectId, ...param });
 };
 
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
+// const pageChange = (currentPage, pageSize) => {
+//   console.log(currentPage, pageSize);
+// };
 
 const selectionChange = (data) => {
   selectRows.value = data;
 };
 
-const batchExport = () => {
-  ElMessageBox.confirm("确认删除选中的内容？", "警告", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(() => {
-      ElMessage({
-        type: "success",
-        message: "Delete completed",
-      });
-    })
-    .catch(() => {
-      ElMessage({
-        type: "info",
-        message: "Delete canceled",
-      });
-    });
+const batchExport = async () => {
+  const param = { startDate: timeRange.value?.[0], endDate: timeRange.value?.[1] };
+  const res = await exportInBatch({ sysClassId: sysClassId.value, energyStatisticsName: projName.value, projectId: globalState.value.projectId, ...param });
+  exportWithExcel(res, new Date().getTime());
 };
-
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 3,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
-});
 
 const column = [
   {
-    prop: "sysName",
+    prop: "energyStatisticsName",
     label: "用能系统名称",
   },
   {
-    prop: "unit",
+    prop: "tag",
     label: "单位",
   },
   {
-    prop: "price",
+    prop: "cost",
     label: "费用单价",
   },
   {
-    prop: "totalNum",
+    prop: "totalEnergyAmount",
     label: "用能总量",
   },
   {
-    prop: "totalPrice",
+    prop: "totalCost",
     label: "费用总计(元)",
   },
 ];
 
 onMounted(async () => {
-  loading.value = true;
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false;
-      resolve([
-        {
-          id: 1,
-          sysName: "电力",
-          totalNum: "40",
-          totalPrice: "200",
-          unit: "kWh/元",
-          price: "5",
-          children: [
-            {
-              id: 6,
-              sysName: "空调系统",
-              totalNum: "10",
-              totalPrice: "50",
-              unit: "",
-              price: "",
-            },
-            {
-              id: 7,
-              sysName: "动力系统",
-              totalNum: "10",
-              totalPrice: "50",
-              unit: "",
-              price: "",
-            },
-            {
-              id: 8,
-              sysName: "照明插座",
-              totalNum: "10",
-              totalPrice: "50",
-              unit: "",
-              price: "",
-            },
-            {
-              id: 9,
-              sysName: "特殊用电",
-              totalNum: "10",
-              totalPrice: "50",
-              unit: "",
-              price: "",
-            },
-          ],
-        },
-        {
-          id: 2,
-          sysName: "燃气",
-          totalNum: "100",
-          totalPrice: "1000",
-          unit: "m³/元",
-          price: "10",
-          children: [
-            {
-              id: 10,
-              sysName: "食堂用气",
-              totalNum: "30",
-              totalPrice: "300",
-              unit: "",
-              price: "",
-            },
-            {
-              id: 11,
-              sysName: "供热用气",
-              totalNum: "30",
-              totalPrice: "300",
-              unit: "",
-              price: "",
-            },
-            {
-              id: 12,
-              sysName: "供冷用气",
-              totalNum: "30",
-              totalPrice: "300",
-              unit: "",
-              price: "",
-            },
-            {
-              id: 13,
-              sysName: "生活热水用气",
-              totalNum: "10",
-              totalPrice: "100",
-              unit: "",
-              price: "",
-            },
-          ],
-        },
-        {
-          id: 3,
-          sysName: "水",
-          totalNum: "10",
-          totalPrice: "40",
-          unit: "吨/元",
-          price: "4",
-        },
-        {
-          id: 4,
-          sysName: "市政热力",
-          totalNum: "10",
-          totalPrice: "100",
-          unit: "kWh/元",
-          price: "10",
-        },
-        {
-          id: 5,
-          sysName: "石油",
-          totalNum: "100",
-          totalPrice: "1000",
-          unit: "吨/元",
-          price: "10",
-        },
-      ]);
-    }, 1000);
-  });
-  datasource.value = res;
+  const res = await getSysClass();
+  if (res) {
+    sysCategory.value = res;
+    sysClassId.value = res?.[0]?.id;
+    handleSearch();
+  }
 });
 </script>
 <style lang="scss" scoped>

@@ -7,6 +7,7 @@
  */
 import http from './http';
 import { COMMON_SUBMIT_CONFIG } from "./"
+import { commonResult } from '@/api/backstageMng/utils.js';
 export const PORT = "common";
 // 获取项目列表
 export const getProjectList = () => {
@@ -54,7 +55,7 @@ export const getBuildingType = (param) => {
 
 // 系统类别
 export const getSysClass = (param) => {
-  return http.get(`${PORT}/sys-class/name-list`, param);
+  return commonResult(`${PORT}/sys-class/name-list`, param, []);
 }
 
 // 获取系统内权限列表

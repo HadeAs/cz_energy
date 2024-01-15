@@ -131,6 +131,7 @@ const prop = defineProps({
 });
 defineExpose({
   getCheckedNodes: () => treeRef.value.getCheckedNodes(),
+  setCheckedKeys: keys => treeRef.value.setCheckedKeys(keys)
 });
 const emits = defineEmits(["type-change", "tree-check-change"]);
 

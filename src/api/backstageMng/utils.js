@@ -22,3 +22,9 @@ export const commonResult = async (asyncFun, params, defaultResult) => {
   const res = await http.get(asyncFun, params);
   return isSuccess(res) ? res?.data?.data : defaultResult
 }
+
+// 不支持多个变量id查询 暂时做并发处理
+export const simServiceRequest = async (service, keys, params) => {
+  const list = Array.from(new Set(keys)); // energyStatisticsId 基础数据重复
+  return Promise.all(list.map(energyStatisticsId => service({ ...params, energyStatisticsId })));
+}

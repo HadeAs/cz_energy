@@ -13,6 +13,7 @@
       :form-info="searchFormCfg"
       @button-click="onSearch"
       authKey="cost_compare_export"
+      @search-change="handleOnSearch"
     />
     <EchartTreeContainer
       ref="echartTreeRef"
@@ -20,43 +21,78 @@
       :allowAddVar="true"
       :allowDelVar="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[2, 3]"
-      :treeData="CHARGE_CATEGORY_DATA"
+      :treeData="state.treeData"
       @type-change="handleTypeChange"
-      @tree-check-change="initChart"
+      @tree-check-change="renderChart"
       style="height: calc(100vh - 198px)"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { COMMON_ECHART_OPTION, CHARGE_CATEGORY_DATA } from "@/constant";
+import { ref, onMounted, reactive, watch } from "vue";
+import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import { handleOpts } from "@/utils";
+import { exportWithExcel, handleOpts } from "@/utils";
+import { exportCostQsBatch, getCostSta, querySysClassSide } from '@/api/staMng/statistics.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+import { simServiceRequest } from '@/api/backstageMng/utils.js';
 
+const { globalState } = storeToRefs(appStore.global);
+
+const defaultKeys = [2, 3];
+const searchType = ref('hour');
+const searchDate = ref({})
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const echartTreeRef = ref();
 const chartOption = ref(handleOpts(COMMON_ECHART_OPTION));
 
-const searchFormCfg = [
+const state = reactive({
+  searchFormData: {
+    projectId: globalState.value.projectId,
+  },
+  treeData: [],
+});
+
+const searchFormCfg = ref([
   {
     label: "时间范围",
     prop: "timeRange",
     type: "datetimerange",
     value: "",
   },
-];
+]);
 
-const onSearch = (data) => {
-  console.log(data);
+const handleOnSearch = () => {
+  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
+  searchDate.value = { startDate, endDate };
+  renderChart();
+}
+
+const onSearch = async () => {
+  const checks = echartTreeRef.value.getCheckedNodes();
+  const checkchilds = checks.filter((v) => !v.children);
+  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
+  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
+  const res = await exportCostQsBatch({
+    type: searchType.value,
+    projectId: state.searchFormData.projectId,
+    startDate,
+    endDate,
+    // 直接单个数字
+    energyStatisticsId: energyStatisticsIds?.[0],
+  });
+  exportWithExcel(res, new Date().getTime());
 };
+
 const randomArr = (count, num) => {
   return new Array(count).fill("").map((v) => (Math.random() * num).toFixed(0));
 };
 
 const handleTypeChange = (val) => {
+  searchType.value = val;
   switch (val) {
     case "hour":
       xAxisCnt.value = 12;
@@ -77,38 +113,66 @@ const handleTypeChange = (val) => {
     default:
       break;
   }
-  initChart();
+  renderChart();
 };
 
-const initChart = () => {
+const initChart = res => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
   // 动态更改图表数据
   const seriesData = [];
   const legendData = [];
-  checkchilds.forEach((item) => {
+  checkchilds.forEach((item, index) => {
     legendData.push(item.label);
     seriesData.push({
       name: item.label,
       type: "line",
       smooth: true,
       showSymbol: false,
-      data: randomArr(xAxisCnt.value, 1000),
+      data: (res?.[index] || []).map(i => i?.data),
     });
   });
-  chartOption.value.xAxis[0].data = new Array(xAxisCnt.value)
-    .fill("")
-    .map(
-      (v, i) => `${suffix.value === "年" ? 2001 + i : i + 1}${suffix.value}`
-    );
+  chartOption.value.xAxis[0].data = res?.[0].map(i => i?.createTime);
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };
 
-onMounted(() => {
-  initChart();
+const renderChart = async () => {
+  const checks = echartTreeRef.value.getCheckedNodes();
+  const checkchilds = checks.filter((v) => !v.children);
+  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
+  const res = await simServiceRequest(getCostSta, energyStatisticsIds, {
+    type: searchType.value,
+    projectId: state.searchFormData.projectId,
+    ...searchDate.value,
+  });
+  initChart(res);
+};
+
+onMounted(async () => {
+  const res = await querySysClassSide({ projectId: state.searchFormData.projectId });
+  // todo: 临时处理 目前基础数据为二维数组
+  state.treeData = res.map(i => ({
+    ...i,
+    id: i?.energyStatisticsId,
+    label: i?.energyStatisticsName,
+    children: i?.children.map(child=> ({
+      ...child,
+      label: child?.name,
+    }))}
+  ));
+  echartTreeRef.value.setCheckedKeys(state.treeData?.[0]?.children.map(i => i?.id));
+  renderChart();
 });
+
+watch(
+    () => globalState.value.projectId,
+    () => {
+      renderChart();
+    }
+);
+
 </script>
 <style lang="scss" scoped>
 .search {

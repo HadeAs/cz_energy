@@ -49,6 +49,7 @@
       </template>
     </el-table>
     <el-pagination
+        v-if="props.hasPagination"
       class="pagination"
       background
       :total="state.pageConfig.total"
@@ -64,6 +65,7 @@
 import { ref, reactive, watch } from "vue";
 
 const props = defineProps({
+  hasPagination: { type: Boolean, default: true },
   column: { type: Array, default: [] },
   datasource: { type: Array, default: [] },
   multiple: { type: Boolean, default: false },
