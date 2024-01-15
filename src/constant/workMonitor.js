@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:58:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 15:52:30
+ * @LastEditTime: 2024-01-15 01:06:01
  * @Description: 
  */
 export const colorArr = ['#55c5f7', '#7dc856', '#f9bf00', '#fa5555', '#6666ff']
@@ -30,7 +30,8 @@ export const POWER_TREE_DATA = [
     children: [
       {
         id: 11,
-        label: "电压偏差"
+        label: "电压偏差",
+        unit: "%"
       },
       {
         id: 12,
@@ -48,15 +49,18 @@ export const POWER_TREE_DATA = [
     children: [
       {
         id: 21,
-        label: "电缆电流"
+        label: "电缆电流",
+        unit: "A"
       },
       {
         id: 22,
-        label: "主变压器电流"
+        label: "主变压器电流",
+        unit: "A"
       },
       {
         id: 23,
-        label: "母线电流"
+        label: "母线电流",
+        unit: "A"
       }
     ]
   },
@@ -66,7 +70,8 @@ export const POWER_TREE_DATA = [
     children: [
       {
         id: 31,
-        label: "电压合格率"
+        label: "电压合格率",
+        unit: "%"
       }
     ]
   },
@@ -123,10 +128,11 @@ export const POWER_ECHART_OPT = {
   yAxis: [
     {
       type: 'value',
-      name: '单位：KWh',
+      name: '单位：kWh',
       nameTextStyle: {
         color: '#2D2F33',
         fontSize: 14,
+        padding: [0, 0, 0, 30]
       },
       axisTick: {
         show: false,

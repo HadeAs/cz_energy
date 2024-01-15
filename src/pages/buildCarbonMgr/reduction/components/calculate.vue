@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 19:46:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 15:50:04
+ * @LastEditTime: 2024-01-15 01:55:38
  * @Description: 
 -->
 <template>
@@ -33,9 +33,10 @@ import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
 import { CARBTON_CALCULATE_TREE_DATA } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
 const state = reactive({
   activeTab: 0,
@@ -66,7 +67,7 @@ const initChart = () => {
   const checkchilds = checks.filter((v) => !v.children);
   const seriesData = [];
   const legendData = [];
-  if (!checkchilds.length) return;
+  // if (!checkchilds.length) return;
   const unit = UNIT_MAP[state.activeTab];
   checkchilds.forEach((item, index) => {
     legendData.push(item.label);
@@ -94,6 +95,7 @@ const initChart = () => {
     }
     return `${i + 2010}${unit.unit}`;
   });
+  chartOption.value.yAxis[0].name = `单位：tCO₂`;
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };

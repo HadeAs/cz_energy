@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:57:56
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 18:52:41
+ * @LastEditTime: 2024-01-15 00:03:53
  * @Description: 
  */
 export const colorArr = ['#29b7f4', '#7dc856', '#f9bf03', '#fa5555', '#6666ff']
@@ -266,31 +266,35 @@ export const UNIT_MAP = {
 
 export const COMMON_SERIES_DATA = [
   {
-    name: 'Placeholder',
-    type: 'bar',
-    stack: 'Total',
-    // silent: true,
-    barWidth: 55,
+    name: "辅助",
+    type: "bar",
+    stack: "总量",
+    barWidth: 40,
     itemStyle: {
-      borderColor: 'transparent',
-      color: 'transparent',
+      borderColor: "rgba(0,0,0,0)",
+      color: "rgba(0,0,0,0)",
+    },
+    tooltip: {
+      show: false,
     },
     emphasis: {
       itemStyle: {
-        borderColor: 'transparent',
-        color: 'transparent'
-      }
+        borderColor: "rgba(0,0,0,0)",
+        color: "rgba(0,0,0,0)",
+      },
     },
-    data: [0, 900, 800, 700, 600, 500, 400, 200]
+
+    data: [],
   },
   {
-    name: 'Start',
-    type: 'bar',
-    stack: 'Total',
-    barWidth: 55,
+    name: "碳中和趋势",
+    type: "bar",
+    stack: "总量",
+    barWidth: 40,
     label: {
       show: true,
-      position: 'top'
+      position: "bottom",
+      color: "#acabb4",
     },
     data: []
   }

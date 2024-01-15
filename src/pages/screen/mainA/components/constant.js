@@ -629,18 +629,21 @@ export const COLUM_OPT = (
         },
         axisLabel: {
           color: "#acabb4",
-          formatter: function (value) {
-            const start = value.slice(0, 5);
-            const end = value.slice(5);
-            return start + "\n" + end;
+          formatter: function (value, index) {
+            if ([0, 4].includes(index)) {
+              return value;
+            }
+            return null;
           },
         },
         data: [
           "碳排基准",
-          "能源使用量减少",
-          "电网碳排因子降低",
+          "能源使用\n减少",
+          "绿色能源",
+          "碳汇(植树等",
           "碳排放",
-          "碳信用抵消",
+          "碳信用抵消\n(碳交易)",
+          "绿店购买\n抵消",
           "净排放",
         ],
       },
@@ -680,7 +683,7 @@ export const COLUM_OPT = (
             color: "rgba(0,0,0,0)",
           },
         },
-        data: [0, 644, 507, 765, 722, 614],
+        data: [0, 806.3, 656.3, 506.3, 0, 406.3, 306.3, 0],
       },
       {
         name: "碳中和趋势",
@@ -689,12 +692,17 @@ export const COLUM_OPT = (
         barWidth: 24,
         label: {
           show: true,
-          position: "top",
+          position: "bottom",
           color: "#acabb4",
+          formatter: (data) => {
+            const { dataIndex } = data;
+            if ([0, 4].includes(dataIndex)) return "";
+            return data.name
+          }
         },
         data: [
           {
-            value: 900,
+            value: 956.3,
             itemStyle: {
               color: {
                 image: imageDom1,
@@ -703,7 +711,7 @@ export const COLUM_OPT = (
             },
           },
           {
-            value: 256,
+            value: 150,
             itemStyle: {
               color: {
                 image: imageDom2,
@@ -712,7 +720,7 @@ export const COLUM_OPT = (
             },
           },
           {
-            value: 393,
+            value: 150,
             itemStyle: {
               color: {
                 image: imageDom3,
@@ -721,7 +729,16 @@ export const COLUM_OPT = (
             },
           },
           {
-            value: 135,
+            value: 150,
+            itemStyle: {
+              color: {
+                image: imageDom3,
+                repeat: "repeat",
+              },
+            },
+          },
+          {
+            value: 506.3,
             itemStyle: {
               color: {
                 image: imageDom4,
@@ -730,7 +747,7 @@ export const COLUM_OPT = (
             },
           },
           {
-            value: 178,
+            value: 100,
             itemStyle: {
               color: {
                 image: imageDom5,
@@ -739,7 +756,16 @@ export const COLUM_OPT = (
             },
           },
           {
-            value: 286,
+            value: 100,
+            itemStyle: {
+              color: {
+                image: imageDom5,
+                repeat: "repeat",
+              },
+            },
+          },
+          {
+            value: 306.3,
             itemStyle: {
               color: {
                 image: imageDom6,
@@ -748,6 +774,69 @@ export const COLUM_OPT = (
             },
           },
         ],
+      },
+      {
+        name: 'test',
+        type: 'line',
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        showSymbol: false,
+        data: [956.3, 956.3]
+      },
+      {
+        name: 'test1',
+        type: 'line',
+        showSymbol: false,
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        data: ['-', 806.3, 806.3]
+      },
+      {
+        name: 'test2',
+        type: 'line',
+        showSymbol: false,
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        data: ['-', '-', 656.3, 656.3]
+      },
+      {
+        name: 'test3',
+        type: 'line',
+        showSymbol: false,
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        data: ['-', '-', '-', 506.3, 506.3]
+      },
+      {
+        name: 'test4',
+        type: 'line',
+        showSymbol: false,
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        data: ['-', '-', '-', '-', 506.3, 506.3]
+      },
+      {
+        name: 'test5',
+        type: 'line',
+        showSymbol: false,
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        data: ['-', '-', '-', '-', '-', 406.3, 406.3]
+      },
+      {
+        name: 'test6',
+        type: 'line',
+        showSymbol: false,
+        lineStyle: {
+          color: "#6c6a77"
+        },
+        data: ['-', '-', '-', '-', '-', '-', 306.3, 306.3]
       },
     ],
   };

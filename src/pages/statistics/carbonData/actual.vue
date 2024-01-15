@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-27 11:26:24
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-15 01:13:17
  * @Description: 
 -->
 <template>
@@ -21,9 +21,10 @@
 import { ref, onMounted } from "vue";
 import { COMMON_ECHART_OPTION, CARBON_CATEGORY_DATA } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(COMMON_ECHART_OPTION);
+const chartOption = ref(handleOpts(COMMON_ECHART_OPTION));
 
 const randomArr = (num) => {
   return new Array(13).fill("").map((v) => (Math.random() * num).toFixed(0));
@@ -35,6 +36,7 @@ const initChart = () => {
   // 动态更改图表数据
   const seriesData = [];
   const legendData = [];
+  let unitLabel = "";
   checkchilds.forEach((item) => {
     legendData.push(item.label);
     seriesData.push({
@@ -44,7 +46,15 @@ const initChart = () => {
       showSymbol: false,
       data: randomArr(1000),
     });
+    if (item.unit) {
+      unitLabel = item.unit;
+    }
   });
+  if (unitLabel) {
+    chartOption.value.yAxis[0].name = `单位：${unitLabel}`;
+  } else {
+    chartOption.value.yAxis[0].name = "";
+  }
   chartOption.value.xAxis[0].data = new Array(13)
     .fill("")
     .map((v, i) => `${i}:00`);

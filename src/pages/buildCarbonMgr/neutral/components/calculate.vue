@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-12 14:17:53
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 19:57:02
+ * @LastEditTime: 2024-01-15 02:02:42
  * @Description: 
 -->
 <template>
@@ -30,16 +30,18 @@
 
 <script setup>
 import { ref, onMounted, reactive } from "vue";
-import { UNIT_MAP, TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
+import cloneDeep from "lodash/cloneDeep";
+import { TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
 import {
   CARBON_NETURAL_CALCULATE_TREE_DATA,
   COMMON_SERIES_DATA,
 } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts } from "@/utils";
 
 const echartTreeRef = ref();
-const chartOption = ref(POWER_ECHART_OPT);
+const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
 const state = reactive({
   activeTab: 0,
@@ -83,33 +85,79 @@ const totalMap = {
   color: "rgba(197, 206, 223, 1)",
   label: "碳排基准",
 };
+const basicTop = [
+  [850.3, 100, 100, 100, 150, 400.3, 100, 300.3],
+  [956.3, 150, 150, 150, 506.3, 100, 100, 306.3],
+  [1200, 200, 200, 250, 550, 100, 100, 350],
+  [2000, 350, 350, 250, 1050, 500, 200, 350],
+];
+const basicBottom = [
+  [0, 750.3, 650.3, 550.3, 400.3, 0, 300.3, 0],
+  [0, 806.3, 656.3, 506.3, 0, 406.3, 306.3, 0],
+  [0, 1000, 800, 550, 0, 450, 350, 0],
+  [0, 1650, 1300, 1050, 0, 550, 350, 0],
+];
 
 const initChart = () => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = [totalMap, ...checks.filter((v) => !v.children)];
-  const seriesData = [...COMMON_SERIES_DATA];
+  const seriesData = cloneDeep(COMMON_SERIES_DATA);
   const legendData = [];
+  const lineData = [];
   if (!checkchilds.length) return;
-  const unit = UNIT_MAP[state.activeTab];
-  const endData = randomArr(checkchilds.length, 1000);
-  seriesData[1].data = endData.map((item) => Number(Number(item) + unit.num));
-  seriesData[1].data[0] = 1000;
-  seriesData[1].itemStyle = {
-    color: ({ dataIndex }) => {
-      return checkchilds[dataIndex].color;
+  const num = state.activeTab % 4;
+  const basicTop_copy = [...basicTop[num]];
+  const basicBottom_copy = [...basicBottom[num]];
+  checkchilds.forEach((item, index) => {
+    legendData.push(item.label);
+    seriesData[0].data.push(basicBottom_copy[index]);
+    seriesData[1].data.push({
+      value: basicTop_copy[index],
+      itemStyle: {
+        color: item.color,
+      },
+    });
+    const prefix = new Array(index).fill().map((item) => "-");
+    const max = Math.max(basicBottom_copy[index], basicTop_copy[index]);
+    lineData.push({
+      name: `test${index}`,
+      type: "line",
+      lineStyle: {
+        color: "#b5bcc7",
+      },
+      showSymbol: false,
+      tooltip: {
+        show: false,
+      },
+      data: [...prefix, max, max],
+    });
+  });
+  seriesData[1].label.formatter = (data) => {
+    return legendData[data.dataIndex];
+  };
+  chartOption.value.legend = { show: false };
+  chartOption.value.yAxis[0] = {
+    ...chartOption.value.yAxis[0],
+    name: "单位：万t",
+    axisLine: {
+      show: false,
+    },
+    axisTick: {
+      show: false,
+    },
+    axisLabel: {
+      color: "#fff",
     },
   };
-  checkchilds.forEach((item) => {
-    legendData.push(item.label);
-  });
-  // chartOption.value.tooltip.formatter = (params) => {
-
-  // }
-  chartOption.value.legend = { show: false };
-  chartOption.value.yAxis[0].name = "单位：万t";
+  chartOption.value.tooltip = {
+    ...chartOption.value.tooltip,
+    axisPointer: {
+      type: "shadow",
+    },
+  };
   chartOption.value.xAxis[0].axisLabel = { show: false };
   chartOption.value.xAxis[0].data = legendData;
-  chartOption.value.series = seriesData;
+  chartOption.value.series = [...seriesData, ...lineData];
   chartOption.value = { ...chartOption.value };
 };
 

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 14:15:33
+ * @LastEditTime: 2024-01-15 01:37:03
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
@@ -58,4 +58,15 @@ export const transformArrayToTree = (arr, parentKey, key, childKey = "children")
     }
   })
   return result;
+}
+
+// 批量处理opts
+export const handleOpts = (opts) => {
+  const newOpts = cloneDeep(opts);
+  // newOpts.yAxis[0].axisLabel.formatter = (data) => {
+  //   if (data) return data;
+  //   return ""
+  // };
+  newOpts.yAxis[0].nameTextStyle.padding = [0, 0, 0, 30];
+  return newOpts;
 }

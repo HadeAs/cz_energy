@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 22:39:18
+ * @LastEditTime: 2024-01-14 22:10:46
  * @Description: 
 -->
 <template>
@@ -50,7 +50,7 @@
               >
                 <el-form-item>
                   <el-select
-                    v-model="state.searchFormData.riskLevel"
+                    v-model="state.searchFormData.level"
                     placeholder="选择报警等级"
                     clearable
                     @change="handleSearchChange"
@@ -133,7 +133,7 @@ const handleRef = ref();
 const state = reactive({
   searchFormData: {
     projectId: globalState.value.projectId,
-    riskLevel: "",
+    level: "",
     startDate: "",
     endDate: "",
     textQuery: "",

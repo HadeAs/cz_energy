@@ -1,12 +1,19 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 10:35:38
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-03 10:21:37
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-15 01:34:26
  * @Description: 
 -->
 <template>
-  <v-chart ref="chartRef" class="chart" :option="option" autoresize />
+  <v-chart
+    v-if="option.series?.length"
+    ref="chartRef"
+    class="chart"
+    :option="option"
+    autoresize
+  />
+  <el-empty v-else description="暂无数据" />
 </template>
 <script setup>
 import { ref } from "vue";

@@ -1,33 +1,41 @@
 <template>
   <div class="cs-box-content content">
     <div class="cs-header-content">
-      <img src="@/assets/img/screen/mainA/u5.png">碳中和进程
+      <img src="@/assets/img/screen/mainA/u5.png" />碳中和进程
     </div>
     <div class="cs-right-wrap1">
       <div class="cs-info-wrap">
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">碳达峰倒计时</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />碳达峰倒计时
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">1542</span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">考核时间</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />考核时间
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">2026</span>
             <span class="cs-unit-text"></span>
           </div>
         </div>
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">碳中和倒计时</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />碳中和倒计时
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">2654 </span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
         <div class="cs-info-box">
-          <div class="cs-title-text"><img src="@/assets/img/screen/mainA/u311.png">考核时间</div>
+          <div class="cs-title-text">
+            <img src="@/assets/img/screen/mainA/u311.png" />考核时间
+          </div>
           <div class="cs-main-text">
             <span class="cs-num-text">2023</span>
             <span class="cs-unit-text"></span>
@@ -45,7 +53,7 @@
     <div class="cs-sub-header">
       <span class="cs-sub-header-text">碳中和趋势</span>
       <div class="cs-sub-right">
-        <UnitSelect label="单位：万t" />
+        <UnitSelect label="单位：万t" @change="handleChange" />
       </div>
     </div>
     <!-- <div class="cs-right-wrap2" id="chart3"></div> -->
@@ -54,18 +62,72 @@
 </template>
 <script setup name="Process">
 import { ref } from "vue";
-import UnitSelect from "./unitSelect.vue"
+import UnitSelect from "./unitSelect.vue";
 import { COLUM_OPT } from "./constant";
-import img1 from '@/assets/img/screen/mainA/bar1.png';
-import img2 from '@/assets/img/screen/mainA/bar2.png';
-import img3 from '@/assets/img/screen/mainA/bar3.png';
-import img4 from '@/assets/img/screen/mainA/bar4.png';
-import img5 from '@/assets/img/screen/mainA/bar5.png';
-import img6 from '@/assets/img/screen/mainA/bar6.png';
+import img1 from "@/assets/img/screen/mainA/bar1.png";
+import img2 from "@/assets/img/screen/mainA/bar2.png";
+import img3 from "@/assets/img/screen/mainA/bar3.png";
+import img4 from "@/assets/img/screen/mainA/bar4.png";
+import img5 from "@/assets/img/screen/mainA/bar5.png";
+import img6 from "@/assets/img/screen/mainA/bar6.png";
 
 import Echart from "@/components/Echart.vue";
 
-const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6))
+const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));
+const basicTop = [
+  [850.3, 100, 100, 100, 150, 400.3, 100, 300.3],
+  // [956.3, 150, 150, 150, 506.3, 100, 100, 306.3],
+  [2000, 350, 350, 250, 1050, 500, 200, 350],
+  [1200, 200, 200, 250, 550, 100, 100, 350],
+  [2000, 350, 350, 250, 1050, 500, 200, 350],
+];
+const basicBottom = [
+  [0, 750.3, 650.3, 550.3, 400.3, 0, 300.3, 0],
+  // [0, 806.3, 656.3, 506.3, 0, 406.3, 306.3, 0],
+  [0, 1650, 1300, 1050, 0, 550, 350, 0],
+  [0, 1000, 800, 550, 0, 450, 350, 0],
+  // [0, 1650, 1300, 1050, 0, 550, 350, 0],
+];
+const dateMap = {
+  2023: 0,
+  2022: 1,
+  2021: 2,
+};
+
+const handleChange = (val) => {
+  // option.value.series[1].data = option.value.series[1].data.map((item) => {
+  //   return { ...item, value: parseInt(item.value + 50, 10) };
+  // });
+  // option.value.series[0].data = option.value.series[0].data.map((item) => {
+  //   if (item === 0) return item;
+  //   return item + 50;
+  // });
+  const num = dateMap[val];
+
+  const s1 = { ...option.value.series[0], data: basicBottom[num] };
+  const s2 = {
+    ...option.value.series[1],
+    data: option.value.series[1].data.map((item, index) => {
+      return { ...item, value: basicTop[num][index] };
+    }),
+  };
+  const lineArr = [];
+  new Array(7).fill("").forEach((v, index) => {
+    const prefix = new Array(index).fill().map((item) => "-");
+    const max = Math.max(basicBottom[num][index], basicTop[num][index]);
+    lineArr.push({
+      name: `test${index}`,
+      type: "line",
+      lineStyle: {
+        color: "#6c6a77",
+      },
+      showSymbol: false,
+      data: [...prefix, max, max],
+    });
+  });
+
+  option.value.series = [s1, s2, ...lineArr];
+};
 </script>
 <style lang="scss" scoped>
 .content {
