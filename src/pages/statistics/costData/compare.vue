@@ -33,7 +33,7 @@
 import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import { exportWithExcel, handleOpts } from "@/utils";
+import { exportWithExcel, handleOpts, renderAxis } from "@/utils";
 import { exportCostQsBatch, getCostSta, querySysClassSide } from '@/api/staMng/statistics.js';
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
@@ -41,7 +41,7 @@ import { simServiceRequest } from '@/api/backstageMng/utils.js';
 
 const { globalState } = storeToRefs(appStore.global);
 
-const defaultKeys = [2, 3];
+const defaultKeys = ref([2, 3]);
 const searchType = ref('hour');
 const searchDate = ref({})
 const xAxisCnt = ref(12);
@@ -132,7 +132,7 @@ const initChart = res => {
       data: (res?.[index] || []).map(i => i?.data),
     });
   });
-  chartOption.value.xAxis[0].data = res?.[0].map(i => i?.createTime);
+  chartOption.value.xAxis[0].data = res?.[0].map(i => renderAxis(searchType.value, i?.createTime));
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
@@ -141,7 +141,7 @@ const initChart = res => {
 const renderChart = async () => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
+  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys.value;
   const res = await simServiceRequest(getCostSta, energyStatisticsIds, {
     type: searchType.value,
     projectId: state.searchFormData.projectId,
@@ -162,7 +162,8 @@ onMounted(async () => {
       label: child?.name,
     }))}
   ));
-  echartTreeRef.value.setCheckedKeys(state.treeData?.[0]?.children.map(i => i?.id));
+  defaultKeys.value = state.treeData?.[0]?.children.map(i => i?.id);
+  echartTreeRef.value.setCheckedKeys(defaultKeys.value);
   renderChart();
 });
 

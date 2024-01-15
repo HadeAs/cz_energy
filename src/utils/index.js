@@ -6,6 +6,7 @@
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
+import dayjs from 'dayjs';
 
 export * from "./cookies";
 
@@ -69,4 +70,19 @@ export const handleOpts = (opts) => {
   // };
   newOpts.yAxis[0].nameTextStyle.padding = [0, 0, 0, 30];
   return newOpts;
+}
+
+export const renderAxis = (type, label) => {
+  switch (type) {
+    case "hour":
+      return dayjs(label).format('YYYY-MM-DD HH');
+    case "day":
+      return dayjs(label).format('YYYY-MM-DD');
+    case "month":
+      return dayjs(label).format('YYYY-MM');
+    case "year":
+      return dayjs(label).format('YYYY');
+    default:
+      return dayjs(label).format('YYYY-MM-DD HH');
+  }
 }
