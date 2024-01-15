@@ -31,15 +31,15 @@
         autocomplete="false"
       />
     </el-form-item>
-    <el-form-item label="密码" required prop="passwordPlainText">
-      <el-input
-        placeholder="请输入"
-        v-model="state.detailForm.passwordPlainText"
-        type="password"
-        show-password
-        autocomplete="false"
-      />
-    </el-form-item>
+<!--    <el-form-item label="密码" required prop="passwordPlainText">-->
+<!--      <el-input-->
+<!--        placeholder="请输入"-->
+<!--        v-model="state.detailForm.passwordPlainText"-->
+<!--        type="password"-->
+<!--        show-password-->
+<!--        autocomplete="false"-->
+<!--      />-->
+<!--    </el-form-item>-->
     <el-form-item label="手机号码" required prop="phone">
       <el-input v-model="state.detailForm.phone" placeholder="手机号码">
         <template #prefix>
@@ -100,7 +100,7 @@ const init = {
 const rules = {
   roleId: { required: true, message: "请选择用户角色", trigger: "change" },
   userName: { required: true, message: "请输入用户名", trigger: "blur" },
-  passwordPlainText: { required: true, message: "请输入密码", trigger: "blur" },
+  // passwordPlainText: { required: true, message: "请输入密码", trigger: "blur" },
   phone: [
     { required: true, message: "请输入手机号", trigger: "blur" },
     {

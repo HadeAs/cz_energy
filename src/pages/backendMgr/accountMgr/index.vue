@@ -56,6 +56,12 @@
           @click="editRow(scope.row)"
           >编辑</a
         >
+        <a
+          v-auth="'account_edit'"
+          class="table-operator-btn"
+          @click="openResetPsd(scope.row)"
+        >重置密码</a
+        >
         <ProPopConfirm
           title="你确定要删除该账号嘛?"
           :icon="CircleCloseFilled"
@@ -73,6 +79,13 @@
     >
       <Detail ref="accountDetailRef" :initData="initDetailData" />
     </ProDrawer>
+    <ProDrawer
+      title="重置密码"
+      ref="psdDetailDrawerRef"
+      @confirm="confirmPsdDetail"
+    >
+      <PsdDetail ref="psdDetailRef" :initData="initDetailData" />
+    </ProDrawer>
   </MainContentContainer>
 </template>
 
@@ -82,12 +95,13 @@ import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import Detail from "./detail.vue";
+import PsdDetail from './resetPassword.vue';
 // import { COMMON_ROLE, LOCK_STATUS } from "@/constant";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import useTable from '@/hooks/useTable.js';
-import { deleteUserInfo, getList, updateUserInfo } from '@/api/backstageMng/userMng.js';
+import { deleteUserInfo, getList, resetPassword, updateUserInfo } from '@/api/backstageMng/userMng.js';
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
 import { crudService } from '@/api/backstageMng/utils.js';
@@ -96,6 +110,8 @@ const { globalState } = storeToRefs(appStore.global);
 
 const operateType = ref("");
 const detailDrawerRef = ref();
+const psdDetailDrawerRef = ref();
+const psdDetailRef = ref();
 const accountDetailRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref({});
@@ -131,6 +147,18 @@ const editRow = (data) => {
   detailDrawerTitle.value = "编辑账号信息";
   initDetailData.value = data;
   detailDrawerRef.value.open();
+};
+
+const openResetPsd = data => {
+  initDetailData.value = data;
+  psdDetailDrawerRef.value.open();
+}
+
+const confirmPsdDetail = async () => {
+  const res = await psdDetailRef.value.validate();
+  if (res) {
+    await crudService(resetPassword, res, getTableList);
+  }
 };
 
 /**

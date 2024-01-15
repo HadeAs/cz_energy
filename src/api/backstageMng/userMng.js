@@ -25,3 +25,7 @@ export const updateUserInfo = (params) => {
 export const deleteUserInfo = (params) => {
   return http.post('admin/user/delete', params, { ...COMMON_UPDATE_CONFIG })
 }
+
+export const resetPassword = (params) => {
+  return http.post('admin/user/reset-password', params, { ...COMMON_UPDATE_CONFIG })
+}
