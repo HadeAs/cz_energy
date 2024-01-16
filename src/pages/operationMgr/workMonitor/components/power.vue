@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:30:12
+ * @LastEditTime: 2024-01-16 14:37:40
  * @Description: 
 -->
 <template>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
@@ -109,6 +109,13 @@ const { treeData, checkKeys, tabChange, checkChange, searchChange } = useChart(
   {
     api: getTreeList,
     param: state.treeParam,
+  }
+);
+
+watch(
+  () => globalState.value.projectId,
+  (val) => {
+    searchChange({ projectId: val });
   }
 );
 

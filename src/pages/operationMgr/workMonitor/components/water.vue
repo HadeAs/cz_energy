@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:30:19
+ * @LastEditTime: 2024-01-16 14:38:17
  * @Description: 
 -->
 
@@ -30,15 +30,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive } from "vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import {
-  POWER_ECHART_OPT,
-  WATER_TREE_DATA,
-  UNIT_MAP,
-  TYPES_MAP,
-  WATER_X_MAP,
-} from "@/constant/workMonitor";
+import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import { handleOpts, formatXAxis } from "@/utils";
 import useChart from "@/hooks/useChart";
@@ -118,6 +112,13 @@ const { treeData, checkKeys, tabChange, checkChange, searchChange } = useChart(
   {
     api: getTreeList,
     param: state.treeParam,
+  }
+);
+
+watch(
+  () => globalState.value.projectId,
+  (val) => {
+    searchChange({ projectId: val });
   }
 );
 </script>
