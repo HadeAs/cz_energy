@@ -11,7 +11,7 @@
       class="search"
       buttonContent="导出"
       :form-info="searchFormCfg"
-      @button-click="onSearch"
+      @button-click="handleExport"
       @search-change="handleOnSearch"
       authKey="carbon_history_export"
     />
@@ -71,21 +71,21 @@ const handleOnSearch = () => {
   renderChart();
 }
 
-const onSearch = async () => {
-  const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
+const handleExport = async () => {
+  const checks = echartTreeRef.value.getCheckedNodes()?.filter((v) => !v.children);
+  const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
   const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
-  const res = await exportEnergyQsBatch({
+  const exportData = {
     type: searchType.value,
     projectId: state.searchFormData.projectId,
     startDate,
     endDate,
-    sysClassId: 1, // todo: 临时
-    // 直接单个数字
-    energyStatisticsId: energyStatisticsIds?.[0],
+    energyStatisticsId: data?.faId,
+  };
+  const res = await Promise.all(data?.childIds.map(i => exportEnergyQsBatch({ ...exportData, sysClassId: i })));
+  res.forEach((i, index) => {
+    exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
   });
-  exportWithExcel(res, new Date().getTime());
 };
 
 const randomArr = (count, num) => {

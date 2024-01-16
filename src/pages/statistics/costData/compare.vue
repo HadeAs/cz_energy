@@ -11,7 +11,7 @@
       class="search"
       buttonContent="导出"
       :form-info="searchFormCfg"
-      @button-click="onSearch"
+      @button-click="handleExport"
       authKey="cost_compare_export"
       @search-change="handleOnSearch"
     />
@@ -33,8 +33,8 @@
 import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import { exportWithExcel, handleOpts, renderAxis } from "@/utils";
-import { exportCostQsBatch, getCostSta, querySysClassSide } from '@/api/staMng/statistics.js';
+import { exportWithExcel, getSearchNode, handleOpts, renderAxis } from "@/utils";
+import { exportCostQsBatch, getCostSta } from '@/api/staMng/statistics.js';
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
 import { simServiceRequest } from '@/api/backstageMng/utils.js';
@@ -72,20 +72,21 @@ const handleOnSearch = () => {
   renderChart();
 }
 
-const onSearch = async () => {
+const handleExport = async () => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
+  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys.value;
   const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
-  const res = await exportCostQsBatch({
+  const exportData = {
     type: searchType.value,
     projectId: state.searchFormData.projectId,
     startDate,
     endDate,
-    // 直接单个数字
-    energyStatisticsId: energyStatisticsIds?.[0],
+  };
+  const res = await Promise.all(energyStatisticsIds.map(i => exportCostQsBatch({ ...exportData, energyStatisticsId: i })));
+  res.forEach((i, index) => {
+    exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
   });
-  exportWithExcel(res, new Date().getTime());
 };
 
 const randomArr = (count, num) => {
