@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-25 13:16:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 02:07:35
+ * @LastEditTime: 2024-01-16 12:21:39
  * @Description: 
 -->
 <template>
@@ -76,6 +76,6 @@ const onSubmit = () => {
   emits("button-click", dynamicFormData);
 };
 const handleChange = (item) => {
-  emits("search-change", item.prop);
+  emits("search-change", { prop: item.prop, value: item.value });
 };
 </script>

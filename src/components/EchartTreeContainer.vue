@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 19:59:38
+ * @LastEditTime: 2024-01-16 13:44:41
  * @Description: 
 -->
 <template>
@@ -131,7 +131,7 @@ const prop = defineProps({
 });
 defineExpose({
   getCheckedNodes: () => treeRef.value.getCheckedNodes(),
-  setCheckedKeys: keys => treeRef.value.setCheckedKeys(keys)
+  setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
 });
 const emits = defineEmits(["type-change", "tree-check-change"]);
 
@@ -172,9 +172,15 @@ const leaveTreeNode = () => {
   hoverNodeId.value = "";
 };
 
+const getCheckedChildren = () => {
+  const checkDatas = treeRef.value.getCheckedNodes();
+  return checkDatas.filter((item) => !item.children);
+};
+
 const treeCheckChangeHandle = (data, { checkedKeys }) => {
+  const checkDatas = getCheckedChildren();
   if (!prop.conflict) {
-    emits("tree-check-change");
+    emits("tree-check-change", checkDatas);
     return;
   }
   const { id } = data;
@@ -202,13 +208,14 @@ const treeCheckChangeHandle = (data, { checkedKeys }) => {
     if (!isEqual(newChildKeys, checkedKeys)) {
       nextTick(() => {
         treeRef.value.setCheckedKeys(newChildKeys);
-        emits("tree-check-change");
+        const datas = getCheckedChildren();
+        emits("tree-check-change", datas);
       });
     } else {
-      emits("tree-check-change");
+      emits("tree-check-change", checkDatas);
     }
   } else {
-    emits("tree-check-change");
+    emits("tree-check-change", checkDatas);
   }
 };
 
@@ -303,6 +310,12 @@ onMounted(() => {
     treeRef.value.setCheckedKeys(prop.defaultTreeCheckKeys);
   }
 });
+watch(
+  () => prop.defaultTreeCheckKeys,
+  (val) => {
+    treeRef.value.setCheckedKeys(val);
+  }
+);
 </script>
 <style lang="scss" scoped>
 .echart-tree-container {

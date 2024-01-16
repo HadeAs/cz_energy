@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 03:49:39
+ * @LastEditTime: 2024-01-16 14:30:12
  * @Description: 
 -->
 <template>
@@ -11,88 +11,80 @@
       class="search"
       buttonContent="导出"
       :form-info="searchFormCfg"
-      @button-click="onSearch"
-      @search-change="handleSearchChange"
+      @button-click="handleExport"
+      @search-change="searchChange"
       authKey="monitor_electric_export"
     />
     <EchartTreeContainer
-      ref="echartTreeRef"
+      :props="treeProps"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[11, 12, 13]"
-      :treeData="POWER_TREE_DATA"
-      @type-change="handleChangeTab"
-      @tree-check-change="initChart"
+      :defaultTreeCheckKeys="checkKeys"
+      :treeData="treeData"
+      @type-change="tabChange"
+      @tree-check-change="checkChange"
       style="height: calc(100vh - 203px)"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import {
-  POWER_ECHART_OPT,
-  POWER_TREE_DATA,
-  UNIT_MAP,
-  TYPES_MAP,
-} from "@/constant/workMonitor";
+import { ref, reactive } from "vue";
+import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import { handleOpts } from "@/utils";
+import { handleOpts, formatXAxis } from "@/utils";
+import useChart from "@/hooks/useChart";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import { getTreeList, queryTrend } from "@/api/operationMgr/workMonitor";
 
-const echartTreeRef = ref();
+const treeProps = {
+  label: "name",
+  children: "children",
+};
+const { globalState } = storeToRefs(appStore.global);
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 const state = reactive({
-  activeTab: 0,
+  searchParam: {
+    projectId: globalState.value.projectId,
+  },
+  treeParam: {
+    projectId: globalState.value.projectId,
+    type: 1,
+  },
 });
 
-const searchFormCfg = ref([
+const searchFormCfg = [
   {
     label: "时间范围",
     prop: "timeRange",
     type: "datetimerange",
     value: "",
   },
-]);
+];
 
-const onSearch = (data) => {
-  console.log(data);
-};
-
-const randomArr = (times, num) => {
-  return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));
-};
-
-const initChart = () => {
-  const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
+// 数据获取后更新echart视图
+const updateChart = (datas, checkDatas, currentType) => {
   const seriesData = [];
-  const legendData = [];
-  const unit = UNIT_MAP[state.activeTab];
   let unitLabel = "";
-  checkchilds.forEach((item) => {
-    legendData.push(item.label);
+  checkDatas.forEach((item, index) => {
+    const data = datas[index] || [];
     seriesData.push({
-      name: item.label,
+      name: item.name,
       type: "line",
       smooth: true,
       showSymbol: false,
-      data: randomArr(unit.num, 1000),
+      data: data.map((item) => item.data),
     });
-    if (item.unit) {
-      unitLabel = item.unit;
+    if (item.tag) {
+      unitLabel = item.tag;
     }
   });
-  chartOption.value.xAxis[0].data = new Array(unit.num).fill("").map((v, i) => {
-    if (state.activeTab === 0) {
-      return `${i}${unit.unit}`;
-    }
-    if ([1, 2].includes(state.activeTab)) {
-      return `${i + 1}${unit.unit}`;
-    }
-    return `${i + 2010}${unit.unit}`;
-  });
-  chartOption.value.legend.data = legendData;
+  chartOption.value.xAxis[0].data = datas[0].map((item) =>
+    formatXAxis(item.createTime, currentType)
+  );
+  chartOption.value.legend.data = checkDatas.map((item) => item.name);
   if (unitLabel) {
     chartOption.value.yAxis[0].name = `单位：${unitLabel}`;
   } else {
@@ -102,18 +94,25 @@ const initChart = () => {
   chartOption.value = { ...chartOption.value };
 };
 
-const handleSearchChange = (type) => {
-  initChart();
+// 预处理查询参数
+const handleParam = (item) => {
+  return { dataConfigId: item.id };
 };
 
-const handleChangeTab = (tab) => {
-  state.activeTab = TYPES_MAP[tab];
-  initChart();
-};
+const { treeData, checkKeys, tabChange, checkChange, searchChange } = useChart(
+  {
+    api: queryTrend,
+    param: state.searchParam,
+    handleParam,
+    updateChart,
+  },
+  {
+    api: getTreeList,
+    param: state.treeParam,
+  }
+);
 
-onMounted(() => {
-  initChart();
-});
+const handleExport = () => {};
 </script>
 <style lang="scss" scoped>
 .search {

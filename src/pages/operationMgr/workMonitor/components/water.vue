@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:48:14
+ * @LastEditTime: 2024-01-16 14:30:19
  * @Description: 
 -->
 
@@ -12,17 +12,18 @@
       class="search"
       buttonContent="导出"
       :form-info="searchFormCfg"
-      @button-click="onSearch"
+      @button-click="handleExport"
+      @search-change="searchChange"
       authKey="monitor_water_export"
     />
     <EchartTreeContainer
-      ref="echartTreeRef"
+      :props="treeProps"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[11, 12, 13]"
-      :treeData="WATER_TREE_DATA"
-      @type-change="handleChangeTab"
-      @tree-check-change="initChart"
+      :defaultTreeCheckKeys="checkKeys"
+      :treeData="treeData"
+      @type-change="tabChange"
+      @tree-check-change="checkChange"
       style="height: calc(100vh - 203px)"
     />
   </div>
@@ -39,12 +40,26 @@ import {
   WATER_X_MAP,
 } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import { handleOpts } from "@/utils";
+import { handleOpts, formatXAxis } from "@/utils";
+import useChart from "@/hooks/useChart";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import { getTreeList, queryTrend } from "@/api/operationMgr/workMonitor";
 
-const echartTreeRef = ref();
+const treeProps = {
+  label: "name",
+  children: "children",
+};
+const { globalState } = storeToRefs(appStore.global);
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 const state = reactive({
-  activeTab: 0,
+  searchParam: {
+    projectId: globalState.value.projectId,
+  },
+  treeParam: {
+    projectId: globalState.value.projectId,
+    type: 2,
+  },
 });
 
 const searchFormCfg = [
@@ -56,50 +71,55 @@ const searchFormCfg = [
   },
 ];
 
-const onSearch = (data) => {
-  console.log(data);
-};
+const handleExport = () => {};
 
-const randomArr = (times, num) => {
-  return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));
-};
-
-const initChart = () => {
+// 数据获取后更新echart视图
+const updateChart = (datas, checkDatas, currentType) => {
   const seriesData = [];
-  const unit = UNIT_MAP[state.activeTab];
-  const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
-  checkchilds.forEach((item, index) => {
+  let unitLabel = "";
+  checkDatas.forEach((item, index) => {
+    const data = datas[index] || [];
     seriesData.push({
-      name: WATER_X_MAP[index],
+      name: item.name,
       type: "line",
       smooth: true,
       showSymbol: false,
-      data: randomArr(unit.num, 1000),
+      data: data.map((item) => item.data),
     });
-  });
-  chartOption.value.yAxis[0].name = `单位：m³`;
-  chartOption.value.xAxis[0].data = new Array(unit.num).fill("").map((v, i) => {
-    if (state.activeTab === 0) {
-      return `${i}${unit.unit}`;
+    if (item.tag) {
+      unitLabel = item.tag;
     }
-    if ([1, 2].includes(state.activeTab)) {
-      return `${i + 1}${unit.unit}`;
-    }
-    return `${i + 2010}${unit.unit}`;
   });
+  chartOption.value.xAxis[0].data = datas[0].map((item) =>
+    formatXAxis(item.createTime, currentType)
+  );
+  chartOption.value.legend.data = checkDatas.map((item) => item.name);
+  if (unitLabel) {
+    chartOption.value.yAxis[0].name = `单位：${unitLabel}`;
+  } else {
+    chartOption.value.yAxis[0].name = "";
+  }
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };
 
-const handleChangeTab = (tab) => {
-  state.activeTab = TYPES_MAP[tab];
-  initChart(TYPES_MAP[tab]);
+// 预处理查询参数
+const handleParam = (item) => {
+  return { dataConfigId: item.id };
 };
 
-onMounted(() => {
-  initChart(0);
-});
+const { treeData, checkKeys, tabChange, checkChange, searchChange } = useChart(
+  {
+    api: queryTrend,
+    param: state.searchParam,
+    handleParam,
+    updateChart,
+  },
+  {
+    api: getTreeList,
+    param: state.treeParam,
+  }
+);
 </script>
 <style lang="scss" scoped>
 .search {

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:37:03
+ * @LastEditTime: 2024-01-16 14:15:01
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
@@ -86,3 +86,17 @@ export const renderAxis = (type, label) => {
       return dayjs(label).format('YYYY-MM-DD HH');
   }
 }
+
+export const formatXAxis = (value, type) => {
+  let format = "";
+  if (type === "hour") {
+    format = "HH:mm";
+  } else if (type === "day") {
+    format = "MM-DD";
+  } else if (type === "month") {
+    format = "YYYY-MM";
+  } else {
+    format = "YYYY";
+  }
+  return dayjs(value).format(format)
+};
