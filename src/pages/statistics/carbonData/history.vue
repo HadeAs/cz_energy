@@ -19,7 +19,6 @@
       ref="echartTreeRef"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[8, 9, 10, 11]"
       :treeData="state.treeData"
       @type-change="handleTypeChange"
       @tree-check-change="renderChart"
@@ -33,16 +32,16 @@ import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import { exportWithExcel, handleOpts, renderAxis } from "@/utils";
+import { exportWithExcel, getSearchNode, handleOpts, renderAxis, renderTreeData } from "@/utils";
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
 import { simServiceRequest } from '@/api/backstageMng/utils.js';
-import { exportCostQsBatch, querySysClassSide } from '@/api/staMng/statistics.js';
+import { querySysClassSide } from '@/api/staMng/statistics.js';
 import { exportEnergyQsBatch, getEnergyActual } from '@/api/staMng/energyData.js';
 
 const { globalState } = storeToRefs(appStore.global);
 
-const defaultKeys = ref([2, 3]);
+const defaultKeys = ref([]);
 const searchType = ref('hour');
 const searchDate = ref({})
 const xAxisCnt = ref(12);
@@ -132,7 +131,7 @@ const initChart = (res) => {
       type: "line",
       smooth: true,
       showSymbol: false,
-      data: (res?.[index] || []).map(i => i?.data),
+      data: (res?.[index] || [])?.map(i => i?.data),
     });
     if (item.unit) {
       unitLabel = item.unit;
@@ -143,45 +142,41 @@ const initChart = (res) => {
   } else {
     chartOption.value.yAxis[0].name = "";
   }
-  chartOption.value.xAxis[0].data = res?.[0].map(i => renderAxis(searchType.value, i?.createTime));
+  chartOption.value.xAxis[0].data = res?.[0]?.map(i => renderAxis(searchType.value, i?.createTime));
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };
 
 const renderChart = async () => {
-  const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys.value;
-  const res = await simServiceRequest(getEnergyActual, energyStatisticsIds, {
+  const checks = echartTreeRef.value.getCheckedNodes()?.filter((v) => !v.children);
+  const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
+  const res = await simServiceRequest(getEnergyActual, data?.childIds, {
     type: searchType.value,
+    energyStatisticsId: data?.faId,
     projectId: state.searchFormData.projectId,
-    sysClassId: 1, // todo: 临时
     ...searchDate.value,
   });
   initChart(res);
 };
 
-onMounted(async () => {
+const initData = async () => {
   const res = await querySysClassSide({ projectId: state.searchFormData.projectId });
-  state.treeData = res.map(i => ({
-    ...i,
-    id: i?.energyStatisticsId,
-    label: i?.energyStatisticsName,
-    children: i?.children.map(child=> ({
-      ...child,
-      label: child?.name,
-    }))}
-  ));
-  defaultKeys.value = state.treeData?.[0]?.children.map(i => i?.id);
-  echartTreeRef.value.setCheckedKeys(defaultKeys.value);
+  state.treeData = renderTreeData(res, ['energyStatisticsName', 'name'], 'energyStatisticsId');
+  defaultKeys.value = state.treeData?.[0]?.children;
+  echartTreeRef.value.setCheckedKeys(defaultKeys.value.map(i => i?.id));
   renderChart();
+}
+
+onMounted(async () => {
+  initData();
 });
 
 watch(
     () => globalState.value.projectId,
-    () => {
-      renderChart();
+    id => {
+      state.searchFormData.projectId = id;
+      initData();
     }
 );
 

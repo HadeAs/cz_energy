@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import gasImg from "@/assets/img/gas_price.jpg";
@@ -118,8 +118,6 @@ const selectRows = ref([]);
 const sysCategory = ref([]);
 const staData = ref({});
 
-const nameList = ['用电量', '用气量', '用水量']
-
 const state = reactive({
   searchFormData: {
     projectId: globalState.value.projectId,
@@ -131,7 +129,7 @@ const renderData = list => {
     return {
       ...i,
       key: String(index),
-      children: i?.children ? i?.children.map((child, ind) => ({ ...child, energyStatisticsName: child?.sysClassName, key: `${index}-${ind}` })) : i,
+      children: i?.children ? i?.children?.map((child, ind) => ({ ...child, energyStatisticsName: child?.sysClassName, key: `${index}-${ind}` })) : i,
     };
   });
 }
@@ -163,10 +161,6 @@ const handleSearch = () => {
   const param = { startDate: timeRange.value?.[0], endDate: timeRange.value?.[1] };
   reloadTable({ sysClassId: sysClassId.value, energyStatisticsName: projName.value, projectId: globalState.value.projectId, ...param });
 };
-
-// const pageChange = (currentPage, pageSize) => {
-//   console.log(currentPage, pageSize);
-// };
 
 const selectionChange = (data) => {
   selectRows.value = data;
@@ -209,6 +203,15 @@ onMounted(async () => {
     handleSearch();
   }
 });
+
+watch(
+    () => globalState.value.projectId,
+    id => {
+      state.searchFormData.projectId = id;
+      handleSearch();
+    }
+);
+
 </script>
 <style lang="scss" scoped>
 .detail-container {

@@ -13,7 +13,7 @@
     </div>
     <ProUpload
       list-type="picture-card"
-      :limit="5"
+      :limit="1"
       :file-list="panelImage"
       @change="handleProjectChange"
     />
@@ -25,7 +25,7 @@
     </div>
     <ProUpload
       list-type="picture-card"
-      :limit="5"
+      :limit="1"
       :file-list="EnergyFlowImage"
       @change="handleAirChange"
     />
@@ -37,20 +37,44 @@
     </div>
     <ProUpload
       list-type="picture-card"
-      :limit="5"
+      :limit="1"
       :file-list="AirQualityImage"
       @change="handleBuildChange"
     />
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import ProUpload from "@/components/ProUpload.vue";
 import { PictureFilled } from "@element-plus/icons-vue";
+import { fetchProImg } from '@/api/backstageMng/pmMng.js';
+import { getImageUrl } from '@/api/common.js';
+import { transformFileToUrl } from '@/utils/index.js';
+
+const oldRaw = {};
+
+const params = [
+  { fetchKey: 'airQualityImage', postKey: 'AirQualityImage' },
+  { fetchKey: 'energyFlowImage', postKey: 'EnergyFlowImage' },
+  { fetchKey: 'panelImage', postKey: 'panelImage' },
+];
 
 const panelImage = ref([]);
 const EnergyFlowImage = ref([]);
 const AirQualityImage = ref([]);
+
+const parseImage = async (url, key) => {
+  if (!url) {
+    return [];
+  }
+  const data = await getImageUrl(url);
+  Object.assign(oldRaw, {
+    [key]: data,
+  });
+  const imageUrl = transformFileToUrl(data);
+  const [fileName, fileSuffix] = url.split(".");
+  return [{ name: fileName, url: imageUrl }];
+};
 
 const handleAirChange = (fileList) => {
   EnergyFlowImage.value = fileList;
@@ -62,13 +86,43 @@ const handleProjectChange = (fileList) => {
   panelImage.value = fileList;
 };
 
-defineExpose({
-  getPictures: () => ({
-    panelImage: panelImage?.value?.map(item => item?.raw),
-    EnergyFlowImage: EnergyFlowImage?.value?.map(item => item?.raw),
-    AirQualityImage: AirQualityImage?.value?.map(item => item?.raw),
-  }),
+const props = defineProps({
+  initData: {
+    type: Object,
+  },
 });
+
+const renderFile = (imgData, key) => {
+  if (imgData?.raw) {
+    return imgData?.raw;
+  }
+  const oldFileData = oldRaw?.[key];
+  return new File([oldFileData], `${imgData?.name}.png`, {
+    type: oldFileData.type,
+  });
+}
+
+defineExpose({
+  getPictures: () => {
+    return {
+      panelImage: panelImage?.value?.map(img => renderFile(img, 'panelImage')),
+      EnergyFlowImage: EnergyFlowImage?.value?.map(img => renderFile(img, 'EnergyFlowImage')),
+      AirQualityImage: AirQualityImage?.value?.map(img => renderFile(img, 'AirQualityImage')),
+    }
+  },
+});
+
+onMounted(async () => {
+  if (props.initData) {
+    const res = await fetchProImg(props.initData);
+    if (res?.code === 200) {
+      const list = await Promise.all(params.map(({ fetchKey, postKey }) => parseImage(res?.data?.data?.[fetchKey], postKey)));
+      AirQualityImage.value = list?.[0] || [];
+      EnergyFlowImage.value = list?.[1] || [];
+      panelImage.value = list?.[2] || [];
+    }
+  }
+})
 </script>
 <style scoped lang="scss">
 .upload-container {

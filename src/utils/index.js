@@ -7,6 +7,7 @@
  */
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from 'dayjs';
+import uniqueId from "lodash/uniqueId";
 
 export * from "./cookies";
 
@@ -72,6 +73,29 @@ export const handleOpts = (opts) => {
   return newOpts;
 }
 
+export const getSearchNode = (nodeKeys = [], name) => {
+  return {
+    faId: nodeKeys?.[0]?.faId,
+    childIds: nodeKeys?.map(i => i?.orgId),
+  }
+}
+
+// 树形数据字段不一致，临时处理
+export const renderTreeData = (data = [], names = [], faKey) => {
+  return data.map((i, index) => ({
+    ...i,
+    id: String(index),
+    label: i?.[names?.[0]],
+    children: i?.children.map((child, ind) => ({
+      ...child,
+      id: `${index}-${ind}`,
+      orgId: child?.id,
+      faId: i?.[faKey],
+      label: child?.[names?.[1]],
+    }))}
+  ));
+};
+
 export const renderAxis = (type, label) => {
   switch (type) {
     case "hour":
@@ -85,7 +109,7 @@ export const renderAxis = (type, label) => {
     default:
       return dayjs(label).format('YYYY-MM-DD HH');
   }
-}
+};
 
 export const formatXAxis = (value, type) => {
   let format = "";

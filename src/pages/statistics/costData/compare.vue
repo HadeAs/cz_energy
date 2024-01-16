@@ -38,6 +38,7 @@ import { exportCostQsBatch, getCostSta, querySysClassSide } from '@/api/staMng/s
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
 import { simServiceRequest } from '@/api/backstageMng/utils.js';
+import { getEnergyList } from '@/api/common.js';
 
 const { globalState } = storeToRefs(appStore.global);
 
@@ -132,7 +133,7 @@ const initChart = res => {
       data: (res?.[index] || []).map(i => i?.data),
     });
   });
-  chartOption.value.xAxis[0].data = res?.[0].map(i => renderAxis(searchType.value, i?.createTime));
+  chartOption.value.xAxis[0].data = res?.[0]?.map(i => renderAxis(searchType.value, i?.createTime));
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
@@ -146,31 +147,31 @@ const renderChart = async () => {
     type: searchType.value,
     projectId: state.searchFormData.projectId,
     ...searchDate.value,
-  });
+  }, 'energyStatisticsId');
   initChart(res);
 };
 
-onMounted(async () => {
-  const res = await querySysClassSide({ projectId: state.searchFormData.projectId });
-  // todo: 临时处理 目前基础数据为二维数组
-  state.treeData = res.map(i => ({
-    ...i,
-    id: i?.energyStatisticsId,
-    label: i?.energyStatisticsName,
-    children: i?.children.map(child=> ({
-      ...child,
-      label: child?.name,
-    }))}
-  ));
+const initData = async () => {
+  const res = await getEnergyList();
+  state.treeData = [{
+    id: 'faId',
+    label: '总费用',
+    children: res?.data?.data?.map(i => ({ ...i, label: i?.name }))
+  }];
   defaultKeys.value = state.treeData?.[0]?.children.map(i => i?.id);
   echartTreeRef.value.setCheckedKeys(defaultKeys.value);
   renderChart();
+};
+
+onMounted(async () => {
+  initData();
 });
 
 watch(
     () => globalState.value.projectId,
-    () => {
-      renderChart();
+    id => {
+      state.searchFormData.projectId = id;
+      initData();
     }
 );
 
