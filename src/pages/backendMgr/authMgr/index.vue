@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 23:46:57
+ * @LastEditTime: 2024-01-17 22:45:08
  * @Description: 
 -->
 <template>
@@ -101,6 +101,7 @@ import {
   distributeRoleAuth,
 } from "@/api/backstageMng/authMng.js";
 import { crudService } from "@/api/backstageMng/utils.js";
+import appStore from "@/store";
 
 const selectRows = ref([]);
 const operateType = ref("");
@@ -128,6 +129,11 @@ const {
 } = useTable(getList, state.searchFormData, state.sortInfo, {}, 222);
 
 getTableList();
+
+const refresh = () => {
+  getTableList();
+  appStore.global.getRoleList();
+};
 
 const addRow = () => {
   operateType.value = "add";
@@ -157,7 +163,7 @@ const confirmDistribute = async () => {
       distributeRoleAuth,
       { id: state.currentData?.id, resourceIds: res },
       () => {
-        getTableList();
+        refresh();
         distributeDrawerRef.value.close();
       }
     );
@@ -172,7 +178,7 @@ const confirmDetail = async () => {
   const res = await roleDetailRef.value.validate();
   if (res) {
     await crudService(updateRoleInfo, res, () => {
-      getTableList();
+      refresh();
       detailDrawerRef.value.close();
     });
   }
@@ -188,7 +194,7 @@ const handleSearch = () => {
  * @return {Promise<void>}
  */
 const confirmDelete = async ({ id }) => {
-  await crudService(deleteRoleInfo, { id }, getTableList);
+  await crudService(deleteRoleInfo, { id }, refresh);
 };
 
 const selectionChange = (data) => {
@@ -210,6 +216,7 @@ const batchDelete = () => {
         type: "success",
         message: "删除成功",
       });
+      refresh();
     })
     .catch(() => {});
 };

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 23:46:22
+ * @LastEditTime: 2024-01-17 22:47:43
  * @Description: 
 -->
 <template>
@@ -165,6 +165,7 @@ const confirmPsdDetail = async () => {
   const res = await psdDetailRef.value.validate();
   if (res) {
     await crudService(resetPassword, res, getTableList);
+    psdDetailDrawerRef.value.close();
   }
 };
 

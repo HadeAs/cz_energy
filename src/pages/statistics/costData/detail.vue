@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:25:39
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-17 22:24:20
  * @Description: 
 -->
 <template>
@@ -39,7 +39,7 @@
     </div>
     <MainContentContainer style="height: calc(100vh - 219px)">
       <ProTable
-          row-key="key"
+        row-key="key"
         :multiple="true"
         :hasPagination="false"
         :column="column"
@@ -50,6 +50,7 @@
           <el-row align="middle" :gutter="12">
             <el-col :span="3">
               <el-button
+                :disabled="!selectRows.length"
                 v-auth="'cost_detail_batch_export'"
                 @click="batchExport"
                 >批量导出</el-button
@@ -61,12 +62,17 @@
                 type="datetimerange"
                 start-placeholder="开始时间"
                 end-placeholder="结束时间"
-                value-format="YYYY-MM-DD hh:mm:ss"
+                :value-format="COMMON_DATE_TIME_FORMAT"
                 @change="handleSearch"
               />
             </el-col>
             <el-col :span="4">
-              <el-select v-model="sysClassId" style="width:100%" @change="handleSearch" placeholder="全部所属系统分类">
+              <el-select
+                v-model="sysClassId"
+                style="width: 100%"
+                @change="handleSearch"
+                placeholder="全部所属系统分类"
+              >
                 <el-option
                   v-for="item in sysCategory"
                   :key="item.id"
@@ -101,11 +107,12 @@ import waterImg from "@/assets/img/water_price.jpg";
 import electricImg from "@/assets/img/electric_price.jpg";
 // import { ElMessage, ElMessageBox } from "element-plus";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import { exportInBatch, queryCostDetail } from '@/api/staMng/statistics.js';
-import { storeToRefs } from 'pinia';
-import appStore from '@/store/index.js';
-import { getSysClass } from '@/api/common.js';
-import { exportWithExcel } from '@/utils/index.js';
+import { exportInBatch, queryCostDetail } from "@/api/staMng/statistics.js";
+import { storeToRefs } from "pinia";
+import appStore from "@/store/index.js";
+import { getSysClass } from "@/api/common.js";
+import { exportWithExcel } from "@/utils/index.js";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 const { globalState } = storeToRefs(appStore.global);
 
@@ -124,42 +131,58 @@ const state = reactive({
   },
 });
 
-const renderData = list => {
+const renderData = (list) => {
   return list.map((i, index) => {
     return {
       ...i,
       key: String(index),
-      children: i?.children ? i?.children?.map((child, ind) => ({ ...child, energyStatisticsName: child?.sysClassName, key: `${index}-${ind}` })) : i,
+      children: i?.children
+        ? i?.children?.map((child, ind) => ({
+            ...child,
+            energyStatisticsName: child?.sysClassName,
+            key: `${index}-${ind}`,
+          }))
+        : i,
     };
   });
-}
+};
 
-const reloadTable = async params => {
+const reloadTable = async (params) => {
   const res = await queryCostDetail(params);
   datasource.value = renderData(res);
   const staBase = {};
-  res.forEach(i => {
-    if (i?.energyStatisticsName === '用电量') {
+  res.forEach((i) => {
+    if (i?.energyStatisticsName === "用电量") {
       staBase.electric = i?.totalCost;
     }
-    if (i?.energyStatisticsName === '用气量') {
+    if (i?.energyStatisticsName === "用气量") {
       staBase.gasBill = i?.totalCost;
     }
-    if (i?.energyStatisticsName === '用水量') {
+    if (i?.energyStatisticsName === "用水量") {
       staBase.water = i?.totalCost;
     }
-  })
+  });
   staData.value = {
     electric: staBase.electric.toFixed(2),
-    total: Object.values(staBase).reduce((last, next) => last + next, 0).toFixed(2),
+    total: Object.values(staBase)
+      .reduce((last, next) => last + next, 0)
+      .toFixed(2),
     gasBill: staBase.electric.toFixed(2),
     water: staBase.electric.toFixed(2),
-  }
+  };
 };
 
 const handleSearch = () => {
-  const param = { startDate: timeRange.value?.[0], endDate: timeRange.value?.[1] };
-  reloadTable({ sysClassId: sysClassId.value, energyStatisticsName: projName.value, projectId: globalState.value.projectId, ...param });
+  const param = {
+    startDate: timeRange.value?.[0],
+    endDate: timeRange.value?.[1],
+  };
+  reloadTable({
+    sysClassId: sysClassId.value,
+    energyStatisticsName: projName.value,
+    projectId: globalState.value.projectId,
+    ...param,
+  });
 };
 
 const selectionChange = (data) => {
@@ -167,8 +190,16 @@ const selectionChange = (data) => {
 };
 
 const batchExport = async () => {
-  const param = { startDate: timeRange.value?.[0], endDate: timeRange.value?.[1] };
-  const res = await exportInBatch({ sysClassId: sysClassId.value, energyStatisticsName: projName.value, projectId: globalState.value.projectId, ...param });
+  const param = {
+    startDate: timeRange.value?.[0],
+    endDate: timeRange.value?.[1],
+  };
+  const res = await exportInBatch({
+    sysClassId: sysClassId.value,
+    energyStatisticsName: projName.value,
+    projectId: globalState.value.projectId,
+    ...param,
+  });
   exportWithExcel(res, new Date().getTime());
 };
 
@@ -205,13 +236,12 @@ onMounted(async () => {
 });
 
 watch(
-    () => globalState.value.projectId,
-    id => {
-      state.searchFormData.projectId = id;
-      handleSearch();
-    }
+  () => globalState.value.projectId,
+  (id) => {
+    state.searchFormData.projectId = id;
+    handleSearch();
+  }
 );
-
 </script>
 <style lang="scss" scoped>
 .detail-container {
@@ -224,6 +254,7 @@ watch(
       display: flex;
       background-color: #ffffff;
       border-radius: 0px 50px 50px 0px;
+      overflow: hidden;
       &:not(:last-child) {
         margin-right: 10px;
       }

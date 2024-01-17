@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 23:48:24
+ * @LastEditTime: 2024-01-17 22:49:53
  * @Description: 
 -->
 <template>
@@ -168,48 +168,4 @@ const column = [
     },
   },
 ];
-
-onMounted(async () => {
-  loading.value = true;
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false;
-      resolve([
-        {
-          id: "1",
-          gatewayId: "192.168.2.1",
-          remark: "这是备注内容这是备注内容",
-          interface: "RS232",
-          gatewayName: "项目1网关",
-          gatewayVersion: "1.0",
-        },
-        {
-          id: "2",
-          gatewayId: "192.168.2.1",
-          remark: "这是备注内容",
-          interface: "RS232",
-          gatewayName: "项目1网关",
-          gatewayVersion: "1.0",
-        },
-        {
-          id: "3",
-          gatewayId: "192.168.2.1",
-          remark: "这是备注内容这是备注内容",
-          interface: "RS232",
-          gatewayName: "项目2网关",
-          gatewayVersion: "2.0",
-        },
-        {
-          id: "4",
-          gatewayId: "192.168.2.1",
-          remark: "这是备注内容",
-          interface: "RS232",
-          gatewayName: "项目2网关",
-          gatewayVersion: "2.0",
-        },
-      ]);
-    }, 1000);
-  });
-  datasource.value = res;
-});
 </script>
