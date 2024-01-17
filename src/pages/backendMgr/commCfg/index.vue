@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 18:48:27
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-16 23:48:24
  * @Description: 
 -->
 <template>
@@ -28,6 +28,7 @@
               placeholder="网关名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
+              v-auth="'comm_search'"
             />
           </el-col>
         </el-row>
@@ -68,9 +69,13 @@ import Detail from "./detail.vue";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import useTable from '@/hooks/useTable.js';
-import { getList, updateGateway, deleteGateway } from '@/api/backstageMng/gateway.js';
-import { crudService } from '@/api/backstageMng/utils.js';
+import useTable from "@/hooks/useTable.js";
+import {
+  getList,
+  updateGateway,
+  deleteGateway,
+} from "@/api/backstageMng/gateway.js";
+import { crudService } from "@/api/backstageMng/utils.js";
 
 const detailDrawerRef = ref();
 const commDetailRef = ref();
@@ -92,7 +97,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 241);
 
 getTableList();
 
@@ -114,16 +119,16 @@ const confirmDetail = async () => {
     await crudService(updateGateway, res, () => {
       getTableList();
       detailDrawerRef.value.close();
-    })
+    });
   }
 };
 
 const handleSearch = () => {
-  searchChange(state.searchFormData)
+  searchChange(state.searchFormData);
 };
 
 const confirmDelete = async ({ id }) => {
-  await crudService(deleteGateway, { id }, getTableList)
+  await crudService(deleteGateway, { id }, getTableList);
 };
 
 const column = [

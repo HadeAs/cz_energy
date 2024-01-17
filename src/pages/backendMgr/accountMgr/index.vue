@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 21:23:24
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-16 23:46:22
  * @Description: 
 -->
 <template>
@@ -29,9 +29,10 @@
               placeholder="选择项目"
               style="width: 100%"
               @change="(e) => handleSearch(e, 'projectId')"
+              v-auth="'account_search'"
             >
               <el-option
-                  v-for="item in globalState.projects"
+                v-for="item in globalState.projects"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -45,6 +46,7 @@
               placeholder="用户名/用户角色"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
+              v-auth="'account_search'"
             />
           </el-col>
         </el-row>
@@ -60,7 +62,7 @@
           v-auth="'account_edit'"
           class="table-operator-btn"
           @click="openResetPsd(scope.row)"
-        >重置密码</a
+          >重置密码</a
         >
         <ProPopConfirm
           title="你确定要删除该账号嘛?"
@@ -95,16 +97,21 @@ import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import Detail from "./detail.vue";
-import PsdDetail from './resetPassword.vue';
+import PsdDetail from "./resetPassword.vue";
 // import { COMMON_ROLE, LOCK_STATUS } from "@/constant";
 import ProPopConfirm from "@/components/ProPopConfirm.vue";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import useTable from '@/hooks/useTable.js';
-import { deleteUserInfo, getList, resetPassword, updateUserInfo } from '@/api/backstageMng/userMng.js';
-import { storeToRefs } from 'pinia';
-import appStore from '@/store/index.js';
-import { crudService } from '@/api/backstageMng/utils.js';
+import useTable from "@/hooks/useTable.js";
+import {
+  deleteUserInfo,
+  getList,
+  resetPassword,
+  updateUserInfo,
+} from "@/api/backstageMng/userMng.js";
+import { storeToRefs } from "pinia";
+import appStore from "@/store/index.js";
+import { crudService } from "@/api/backstageMng/utils.js";
 
 const { globalState } = storeToRefs(appStore.global);
 
@@ -131,7 +138,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 212);
 
 getTableList();
 
@@ -149,10 +156,10 @@ const editRow = (data) => {
   detailDrawerRef.value.open();
 };
 
-const openResetPsd = data => {
+const openResetPsd = (data) => {
   initDetailData.value = data;
   psdDetailDrawerRef.value.open();
-}
+};
 
 const confirmPsdDetail = async () => {
   const res = await psdDetailRef.value.validate();
@@ -184,7 +191,7 @@ const confirmDetail = async () => {
 const handleSearch = (value, type) => {
   searchChange({
     ...state.searchFormData,
-    ...(type === 'projectId' ? { projectId: value} : {}),
+    ...(type === "projectId" ? { projectId: value } : {}),
   });
 };
 
@@ -194,7 +201,7 @@ const handleSearch = (value, type) => {
  * @return {Promise<void>}
  */
 const confirmDelete = async ({ id }) => {
-  await crudService(deleteUserInfo, { id }, getTableList)
+  await crudService(deleteUserInfo, { id }, getTableList);
 };
 
 const column = [
@@ -229,7 +236,7 @@ const column = [
     render: (scope) => {
       return (
         <div className="text-overflow" title={scope.row.projects}>
-          <span>{scope.row?.projects?.map(i => i?.name)?.join(',')}</span>
+          <span>{scope.row?.projects?.map((i) => i?.name)?.join(",")}</span>
         </div>
       );
     },
@@ -252,17 +259,21 @@ const column = [
     render: (scope) => {
       const ifNormal = scope.row.status === "正常";
       return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <span
-            style={{ display: 'block', color: ifNormal ? "#00B050" : "#FA5555", fontSize: '6px', marginRight: '6px' }}
+            style={{
+              display: "block",
+              color: ifNormal ? "#00B050" : "#FA5555",
+              fontSize: "6px",
+              marginRight: "6px",
+            }}
           >
             ●
           </span>
-          <span style={{ display: 'block' }}>{scope.row.status}</span>
+          <span style={{ display: "block" }}>{scope.row.status}</span>
         </div>
       );
     },
   },
 ];
-
 </script>

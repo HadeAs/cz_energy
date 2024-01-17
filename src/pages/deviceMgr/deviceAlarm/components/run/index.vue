@@ -161,7 +161,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getRunList, state.searchFormData, state.sortInfo);
+} = useTable(getRunList, state.searchFormData, state.sortInfo, {}, 134);
 
 getTableList();
 

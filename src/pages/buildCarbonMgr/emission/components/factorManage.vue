@@ -14,7 +14,7 @@
       <template #toolbar>
         <el-row align="middle" :gutter="5">
           <el-col :span="6">
-            <el-button type="primary" @click="addRow" v-auth="'point_add'"
+            <el-button type="primary" @click="addRow" v-auth="''"
               >新增</el-button
             >
           </el-col>
@@ -52,10 +52,7 @@
         </el-row>
       </template>
       <template #operation="scope">
-        <a
-          class="table-operator-btn"
-          @click="editRow(scope.row)"
-          v-auth="'point_edit'"
+        <a class="table-operator-btn" @click="editRow(scope.row)" v-auth="''"
           >编辑</a
         >
         <ProPopConfirm
@@ -64,7 +61,7 @@
           iconColor="red"
           @confirm="deleteRow(scope.row)"
         >
-          <a class="table-operator-btn" v-auth="'point_delete'">删除</a>
+          <a class="table-operator-btn" v-auth="''">删除</a>
         </ProPopConfirm>
       </template>
     </ProTable>

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-12 14:17:53
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 02:02:42
+ * @LastEditTime: 2024-01-15 11:08:30
  * @Description: 
 -->
 <template>
@@ -13,6 +13,7 @@
       :form-info="searchFormCfg"
       @button-click="onSearch"
       authKey="monitor_electric_export"
+      @search-change="handleSearchChange"
     />
     <EchartTreeContainer
       ref="echartTreeRef"
@@ -58,7 +59,7 @@ const searchFormCfg = [
     label: "",
     prop: "select",
     type: "select",
-    value: "",
+    value: 0,
     options: [
       { value: 0, label: "国家推荐值" },
       { value: 1, label: "地方推荐值" },
@@ -169,6 +170,9 @@ const handleChangeTab = (tab) => {
 onMounted(() => {
   initChart();
 });
+const handleSearchChange = (type) => {
+  initChart();
+};
 </script>
 <style lang="scss" scoped>
 .search {

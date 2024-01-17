@@ -10,7 +10,7 @@
           type="datetimerange"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
-          value-format="YYYY-MM-DD hh:mm:ss"
+          :value-format="COMMON_DATE_TIME_FORMAT"
         />
       </el-col>
     </el-row>
@@ -32,6 +32,7 @@ import { ref, reactive, onMounted } from "vue";
 import Echart from "@/components/Echart.vue";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import { handleOpts } from "@/utils";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 const tabs = [
   {

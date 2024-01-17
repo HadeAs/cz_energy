@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 12:56:07
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 14:45:35
+ * @LastEditTime: 2024-01-17 15:59:25
  * @Description: 
 -->
 <template>
@@ -31,7 +31,7 @@
         v-model="state.detailForm.openTime"
         type="datetime"
         placeholder="请选择日期时间"
-        value-format="YYYY-MM-DD hh:mm:ss"
+        :value-format="COMMON_DATE_TIME_FORMAT"
       />
     </el-form-item>
   </el-form>
@@ -39,6 +39,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 const init = {
   name: "",

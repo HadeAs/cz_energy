@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 22:43:43
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 22:30:48
+ * @LastEditTime: 2024-01-17 15:47:01
  * @Description: 
 -->
 
@@ -37,7 +37,7 @@
       <el-form-item label="数据聚合" prop="function">
         <el-select v-model="state.form.function">
           <el-option
-            v-for="item in state.funcList"
+            v-for="item in COMMON_FUNCTION_LIST"
             :key="item.id"
             :label="item.name"
             :value="item.id"
@@ -106,6 +106,7 @@ import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import { getInfo } from "@/api/deviceMgr/pointMgr";
 import { getGatewayList, getUnitList, getEnergyList } from "@/api/common";
+import { COMMON_FUNCTION_LIST } from "@/constant";
 
 const { globalState } = storeToRefs(appStore.global);
 const initData = {
@@ -139,13 +140,6 @@ const state = reactive({
   gatewayList: [],
   variableList: [],
   unitList: [],
-  funcList: [
-    { id: "null", name: "无" },
-    { id: "sum", value: "求和" },
-    { id: "avg", value: "均值" },
-    { id: "max", value: "最大值" },
-    { id: "min", value: "最小值" },
-  ],
   energyList: [],
 });
 const init = async () => {

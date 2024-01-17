@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-06 18:37:04
+ * @LastEditTime: 2024-01-16 22:21:18
  * @Description: 
 -->
 <template>
@@ -12,6 +12,7 @@
         v-for="item in tabData"
         :label="item.label"
         :name="item.name"
+        v-auth="item.auth"
       >
         <el-scrollbar style="height: calc(100vh - 123px)">
           <component

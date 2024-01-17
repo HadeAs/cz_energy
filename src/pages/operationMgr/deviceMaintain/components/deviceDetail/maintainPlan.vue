@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:10:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 12:45:56
+ * @LastEditTime: 2024-01-16 22:40:28
  * @Description: 
 -->
 <template>
-  <BoxContainer title="保养计划">
+  <BoxContainer title="保养计划" v-auth="'maintain_device_plan_get'">
     <template #extra>
       <el-button
         type="primary"
@@ -34,7 +34,9 @@
             iconColor="red"
             @confirm="deleteRecord(item)"
           >
-            <el-button link type="danger">删除</el-button>
+            <el-button link type="danger" v-auth="'maintain_device_plan_delete'"
+              >删除</el-button
+            >
           </ProPopConfirm>
         </div>
       </el-descriptions-item>

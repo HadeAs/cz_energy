@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2023-12-20 17:02:24
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-16 22:23:18
  * @Description: 
 -->
 <template>
@@ -34,21 +34,25 @@ const tabData = [
     label: "单位管理",
     name: "unit",
     component: Unit,
+    auth: "platform_unit",
   },
   // {
   //   label: "变量管理",
   //   name: "variable",
   //   component: Variable,
+  //   auth: "platform_variable"
   // },
   {
     label: "建筑类型管理",
     name: "build",
     component: Build,
+    auth: "platform_build",
   },
   {
     label: "用能系统分类管理",
     name: "energy",
     component: Energy,
+    auth: "platform_energy",
   },
 ];
 </script>

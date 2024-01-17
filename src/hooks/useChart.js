@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-16 11:29:30
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:21:17
+ * @LastEditTime: 2024-01-16 19:50:08
  * @Description: 
  */
 import { reactive, toRefs, onMounted } from "vue";
@@ -96,7 +96,7 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
   //   return treeData;
   // }
 
-  const queryTree = async () => {
+  const queryTree = async (init = false) => {
     const { data } = await treeApi(treeParam);
     if (data?.data) {
       const treeData = data.data || [];
@@ -104,18 +104,22 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
       state.treeData = handleTreeData ? handleTreeData(treeData) : treeData;
       // 默认选中第一类节点下的所有子节点
       if (treeData.length) {
-        const datas = state.treeData[0].children || [];
-        if (datas.length) {
-          // 有子集
-          state.checkKeys = datas.map(item => item.id);
-          state.checkDatas = datas;
-        } else {
-          // 无子集
-          state.checkKeys = [state.treeData[0].id];
-          state.checkDatas = [state.treeData[0]];
+        if (init) {
+          const datas = state.treeData[0].children || [];
+          if (datas.length) {
+            // 有子集
+            state.checkKeys = datas.map(item => item.id);
+            state.checkDatas = datas;
+          } else {
+            // 无子集
+            state.checkKeys = [state.treeData[0].id];
+            state.checkDatas = [state.treeData[0]];
+          }
         }
       }
-      queryChart();
+      if (init) {
+        queryChart();
+      }
     }
   }
 
@@ -145,7 +149,7 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
   }
 
   onMounted(() => {
-    queryTree();
+    queryTree(true);
   })
 
   return {

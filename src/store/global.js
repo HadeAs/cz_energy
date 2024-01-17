@@ -2,12 +2,12 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 17:28:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 14:23:40
+ * @LastEditTime: 2024-01-16 22:43:27
  * @Description:
  */
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
-import { getRoles, getProjectList, getResourceList, getCurrentResource } from "@/api/common";
+import { getRoles, getProjectList, getCurrentResource, getResourceList } from "@/api/common";
 
 export const useGlobal = defineStore("global", () => {
   const globalState = reactive({
@@ -15,7 +15,8 @@ export const useGlobal = defineStore("global", () => {
     projectId: "",
     roleList: [],
     resourceList: [],
-    currentResourceList: []
+    authList: [],
+    authInit: false
   })
   const projectName = ref("");
   // 超级管理员角色
@@ -48,12 +49,21 @@ export const useGlobal = defineStore("global", () => {
     globalState.roleList = data.data;
   }
 
-  const getResources = async () => {
+  const getAllResource = async () => {
     const { data } = await getResourceList();
-    globalState.resourceList = data.data;
-    const { data: resourceData } = await getCurrentResource();
-    globalState.currentResourceList = resourceData?.data || []
+    globalState.resourceList = data?.data || [];
   }
 
-  return { globalState, projectName, userRole, roleAuth, setProjects, changeName, getProjectId, getRoleList, getProList, getResources };
+  const getResources = async () => {
+    const { data: resourceData } = await getCurrentResource();
+    globalState.authInit = true;
+    globalState.authList = (resourceData?.data || []).map(item => item.id);
+  }
+
+  const clear = () => {
+    globalState.authInit = false;
+    globalState.authList = [];
+  }
+
+  return { globalState, projectName, userRole, roleAuth, setProjects, changeName, getProjectId, getRoleList, getProList, getAllResource, getResources, clear };
 });

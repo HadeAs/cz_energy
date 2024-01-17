@@ -129,7 +129,7 @@ const init = async () => {
   // 获取角色列表
   await appStore.global.getRoleList();
   // 获取权限列表
-  await appStore.global.getResources();
+  await appStore.global.getAllResource();
   state.initSuccess = true;
 };
 init();

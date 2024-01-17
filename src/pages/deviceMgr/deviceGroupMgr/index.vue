@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 15:23:42
+ * @LastEditTime: 2024-01-17 15:49:19
  * @Description: 
 -->
 <template>
@@ -16,7 +16,7 @@
         v-show="defaultTab === 'run'"
         class="recycle-btn"
         @click="gotoRecycleBin"
-        v-auth="'group_recycle'"
+        v-auth="'group_work_recycle'"
         >回收站</el-button
       >
     </template>

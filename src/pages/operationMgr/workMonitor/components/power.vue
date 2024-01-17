@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:37:40
+ * @LastEditTime: 2024-01-17 12:21:14
  * @Description: 
 -->
 <template>
@@ -18,6 +18,7 @@
     <EchartTreeContainer
       :props="treeProps"
       :showSwitch="true"
+      :conflict="false"
       :chartOption="chartOption"
       :defaultTreeCheckKeys="checkKeys"
       :treeData="treeData"
@@ -37,7 +38,13 @@ import { handleOpts, formatXAxis } from "@/utils";
 import useChart from "@/hooks/useChart";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
-import { getTreeList, queryTrend } from "@/api/operationMgr/workMonitor";
+import {
+  getTreeList,
+  queryTrend,
+  queryData,
+  deleteDataInfo,
+} from "@/api/operationMgr/workMonitor";
+import { ElMessage } from "element-plus";
 
 const treeProps = {
   label: "name",
@@ -81,7 +88,7 @@ const updateChart = (datas, checkDatas, currentType) => {
       unitLabel = item.tag;
     }
   });
-  chartOption.value.xAxis[0].data = datas[0].map((item) =>
+  chartOption.value.xAxis[0].data = (datas[0] || []).map((item) =>
     formatXAxis(item.createTime, currentType)
   );
   chartOption.value.legend.data = checkDatas.map((item) => item.name);
@@ -99,18 +106,32 @@ const handleParam = (item) => {
   return { dataConfigId: item.id };
 };
 
-const { treeData, checkKeys, tabChange, checkChange, searchChange } = useChart(
-  {
-    api: queryTrend,
-    param: state.searchParam,
-    handleParam,
-    updateChart,
-  },
-  {
-    api: getTreeList,
-    param: state.treeParam,
-  }
-);
+const queryDatas = async () => {
+  const { data } = await queryData({ projectId: state.searchParam.projectId });
+};
+queryDatas();
+
+const { treeData, checkKeys, tabChange, checkChange, searchChange, queryTree } =
+  useChart(
+    {
+      api: queryTrend,
+      param: state.searchParam,
+      handleParam,
+      updateChart,
+    },
+    {
+      api: getTreeList,
+      param: state.treeParam,
+    }
+  );
+
+// const deleteNode = async ({ id }) => {
+//   const { code } = await deleteDataInfo(state.searchParam.projectId, { id });
+//   if (code === 200) {
+//     queryTree();
+//     ElMessage.success("删除成功");
+//   }
+// };
 
 watch(
   () => globalState.value.projectId,

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 15:05:49
+ * @LastEditTime: 2024-01-16 23:45:58
  * @Description: 
 -->
 <template>
@@ -37,6 +37,7 @@
               placeholder="项目名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
+              v-auth="'project_search'"
             />
           </el-col>
         </el-row>
@@ -137,7 +138,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 203);
 
 getTableList();
 

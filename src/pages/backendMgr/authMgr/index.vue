@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 14:25:07
+ * @LastEditTime: 2024-01-16 23:46:57
  * @Description: 
 -->
 <template>
@@ -37,6 +37,7 @@
               placeholder="角色名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
+              v-auth="'auth_search'"
             />
           </el-col>
         </el-row>
@@ -109,7 +110,6 @@ const roleDetailRef = ref();
 const roleDistributeRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
-const initDistributeData = ref([]);
 
 const state = reactive({
   searchFormData: { textQuery: "" },
@@ -125,7 +125,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 222);
 
 getTableList();
 
@@ -145,8 +145,6 @@ const editRow = (data) => {
 
 const distribute = (rowData) => {
   //模拟当前角色的权限点
-  const mock_auth = [11, 14, "carbon", "project_add", "systemlog_login_search"];
-  initDistributeData.value = mock_auth;
   state.currentData = rowData;
   initDetailData.value = rowData;
   distributeDrawerRef.value.open();
@@ -154,7 +152,6 @@ const distribute = (rowData) => {
 
 const confirmDistribute = async () => {
   const res = roleDistributeRef.value.getCheckResult();
-  console.log(state.currentData);
   if (res) {
     await crudService(
       distributeRoleAuth,

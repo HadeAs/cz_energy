@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:38:17
+ * @LastEditTime: 2024-01-17 15:45:15
  * @Description: 
 -->
 
@@ -19,6 +19,7 @@
     <EchartTreeContainer
       :props="treeProps"
       :showSwitch="true"
+      :conflict="false"
       :chartOption="chartOption"
       :defaultTreeCheckKeys="checkKeys"
       :treeData="treeData"
@@ -30,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";

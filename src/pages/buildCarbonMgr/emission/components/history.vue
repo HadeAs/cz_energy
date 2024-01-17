@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 18:20:33
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:51:38
+ * @LastEditTime: 2024-01-15 11:06:58
  * @Description: 
 -->
 <template>
@@ -12,6 +12,7 @@
       buttonContent="导出"
       :form-info="searchFormCfg"
       @button-click="onSearch"
+      @search-change="handleSearchChange"
       authKey="monitor_electric_export"
     />
     <EchartTreeContainer
@@ -95,6 +96,9 @@ const initChart = () => {
 
 const handleChangeTab = (tab) => {
   state.activeTab = TYPES_MAP[tab];
+  initChart();
+};
+const handleSearchChange = (type) => {
   initChart();
 };
 

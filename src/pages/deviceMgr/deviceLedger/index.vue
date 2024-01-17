@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 20:08:25
+ * @LastEditTime: 2024-01-16 23:52:40
  * @Description: 
 -->
 <template>
@@ -245,7 +245,7 @@ const {
   searchChange,
   getTableList,
   selectionChange,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 104);
 
 getTableList();
 

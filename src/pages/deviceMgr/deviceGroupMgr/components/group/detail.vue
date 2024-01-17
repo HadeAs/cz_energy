@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 21:40:27
+ * @LastEditTime: 2024-01-17 16:00:50
  * @Description: 
 -->
 <template>
@@ -77,7 +77,7 @@
       </el-form-item> -->
       <el-form-item label="启用时间" required prop="openTime">
         <el-date-picker
-          value-format="YYYY-MM-DD hh:mm:ss"
+          :value-format="COMMON_DATE_TIME_FORMAT"
           v-model="state.form.openTime"
           type="datetime"
           placeholder="请选择时间"
@@ -110,6 +110,7 @@ import { getInfo } from "@/api/deviceMgr/deviceGroup";
 import { getEquipmentModelList, getProjectManagerList } from "@/api/deviceMgr";
 import { getImageUrl } from "@/api/common";
 import { transformFileToUrl } from "@/utils";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 let oldRaw;
 const initData = {

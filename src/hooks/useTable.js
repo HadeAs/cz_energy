@@ -2,10 +2,12 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 12:09:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 13:37:07
+ * @LastEditTime: 2024-01-16 23:42:46
  * @Description: 
  */
 import { reactive, toRefs } from "vue";
+import appStore from "@/store";
+
 const SORT_MAP = {
   descending: "desc",
   ascending: "asc"
@@ -16,7 +18,7 @@ const PAGE_MAP = {
   total: "totalNum"
 }
 
-const useTable = (api, initSearchParam = {}, initSortParam = {}, initPageParam = {}) => {
+const useTable = (api, initSearchParam = {}, initSortParam = {}, initPageParam = {}, authKey) => {
   const state = reactive({
     loading: false,
     dataSource: [],
@@ -29,7 +31,7 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}, initPageParam =
     },
     searchParam: { ...initSearchParam },
     sortParam: { ...initSortParam },
-    selectRows: []
+    selectRows: [],
   });
 
   const updatePageInfo = (pageable) => {
@@ -39,7 +41,20 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}, initPageParam =
     }
   }
 
+  const handleAuth = () => {
+    if (!authKey) return true;
+    const roleAuth = appStore.global.globalState.authList;
+    if (roleAuth.length && !roleAuth.includes(authKey)) {
+      return false;
+    }
+    return true;
+  }
+
   const getTableList = async () => {
+    if (!handleAuth()) {
+      state.dataSource = [];
+      return;
+    }
     state.loading = true;
     if (state.selectRows.length) {
       state.selectRows = [];

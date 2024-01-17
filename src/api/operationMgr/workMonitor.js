@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-16 10:36:42
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 10:46:26
+ * @LastEditTime: 2024-01-16 19:56:10
  * @Description: 
  */
 import http from "../http";
@@ -25,10 +25,10 @@ export const getDataInfo = (params) => {
   return http.get(`${PORT}/data-config/find-one`, params);
 }
 
-export const updateDataInfo = (params) => {
+export const updateDataInfo = (projectId, params) => {
   return http.post(`${PORT}/data-config/save?projectId=${projectId}`, params, { ...COMMON_JSON_CONFIG });
 }
 
-export const deleteDataInfo = (params) => {
+export const deleteDataInfo = (projectId, params) => {
   return http.post(`${PORT}/data-config/delete?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
 }

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 23:38:13
+ * @LastEditTime: 2024-01-17 16:04:12
  * @Description: 
 -->
 <template>
@@ -23,6 +23,7 @@
               class="search-form"
               :inline="true"
               :model="state.searchFormData"
+              v-auth="'maintain_search'"
             >
               <el-form-item>
                 <el-select
@@ -253,7 +254,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 411);
 
 getTableList();
 

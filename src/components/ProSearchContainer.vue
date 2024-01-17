@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-25 13:16:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 12:21:39
+ * @LastEditTime: 2024-01-17 16:00:10
  * @Description: 
 -->
 <template>
@@ -12,6 +12,7 @@
         v-for="(domain, index) in dynamicFormData"
         :label="domain.label"
         :prop="domain.prop"
+        v-auth="domain.authKey"
       >
         <el-input
           v-if="domain.type === 'input'"
@@ -25,7 +26,7 @@
           type="datetimerange"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
-          value-format="YYYY-MM-DD hh:mm:ss"
+          :value-format="COMMON_DATE_TIME_FORMAT"
           v-bind="domain.config || {}"
           @change="handleChange(domain)"
         />
@@ -54,6 +55,7 @@
 <script setup>
 import { reactive } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 const props = defineProps({
   formInfo: {

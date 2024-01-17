@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 13:44:41
+ * @LastEditTime: 2024-01-16 20:06:58
  * @Description: 
 -->
 <template>
@@ -133,7 +133,7 @@ defineExpose({
   getCheckedNodes: () => treeRef.value.getCheckedNodes(),
   setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
 });
-const emits = defineEmits(["type-change", "tree-check-change"]);
+const emits = defineEmits(["type-change", "tree-check-change", "delete-node"]);
 
 const treeRef = ref();
 const varName = ref("");
@@ -161,7 +161,7 @@ watch(
 
 const filterNode = (value, data) => {
   if (!value) return true;
-  return data.label.includes(value);
+  return data[prop.props.label].toLowerCase().includes(value.toLowerCase());
 };
 
 const enterTreeNode = (id) => {
@@ -225,7 +225,10 @@ const openAddVarForm = () => {
   varForm.varName = "";
   const options = [];
   treeData.value.forEach((v) => {
-    options.push({ label: v.label, value: v.label });
+    options.push({
+      [prop.props.label]: v[prop.props.label],
+      value: v[prop.props.label],
+    });
   });
   varGroupOptions.value = options;
 };
@@ -244,10 +247,10 @@ const treeNodeAdd = () => {
   const checks = treeRef.value.getCheckedNodes();
   //模拟树增加节点
   treeData.value.forEach((v) => {
-    if (v.label === varForm.groupName) {
+    if (v[prop.props.label] === varForm.groupName) {
       v.children.push({
         id: uniqueId("var_tree_"),
-        label: varForm.varName,
+        [prop.props.label]: varForm.varName,
       });
       //如果当前父节点已经处于check状态，新增完子节点之后，记得去掉它的check状态！！！
       const idx = checks.findIndex((item) => item.id === v.id);
@@ -270,31 +273,23 @@ const confirmDelVar = (node, data) => {
   })
     .then(() => {
       treeNodeDel(node, data);
-      ElMessage({
-        type: "success",
-        message: "删除成功",
-      });
+      // ElMessage({
+      //   type: "success",
+      //   message: "删除成功",
+      // });
     })
     .catch(() => {});
 };
 
 const treeNodeDel = (node, data) => {
-  const checks = treeRef.value.getCheckedNodes();
+  emits("delete-node", data);
+  const checks = getCheckedChildren();
   const idx = checks.findIndex((v) => v.id === data.id);
   if (idx !== -1) {
     checks.splice(idx, 1);
-  }
-  //模拟树删除节点
-  const parent = node.parent;
-  const children = parent.data.children || parent.data;
-  const index = children.findIndex((d) => d.id === data.id);
-  children.splice(index, 1);
-  treeData.value = [...treeData.value];
-
-  nextTick(() => {
     treeRef.value.setCheckedNodes(checks);
-    treeCheckChangeHandle();
-  });
+    emits("tree-check-change", checks);
+  }
 };
 
 const handleTabChange = (val) => {
