@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 23:44:18
+ * @LastEditTime: 2024-01-18 09:55:29
  * @Description: 
 -->
 <template>
@@ -274,7 +274,7 @@ const addSubmit = async (param) => {
   const { code } = await addLive(state.searchFormData.projectId, param);
   if (code === 200) {
     addRef.value.close();
-    ElMessage.success("新增成功!");
+    // ElMessage.success("新增成功!");
     getTableList();
   }
 };
@@ -286,7 +286,7 @@ const handleSubmit = async (param) => {
   });
   if (code === 200) {
     handleRef.value.close();
-    ElMessage.success("处理成功!");
+    // ElMessage.success("处理成功!");
     getTableList();
   }
 };

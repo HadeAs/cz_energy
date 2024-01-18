@@ -79,6 +79,9 @@ class RequestHttp {
           return Promise.reject(data);
         }
         // 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
+        if (data.msg && !["get", "GET"].includes(config.method)) {
+          ElMessage.success(data.msg)
+        }
         return data;
       },
       async (error) => {

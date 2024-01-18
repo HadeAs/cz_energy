@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 16:04:12
+ * @LastEditTime: 2024-01-18 09:56:21
  * @Description: 
 -->
 <template>
@@ -304,7 +304,7 @@ const confirmAddVar = () => {
         endMaintainDate: state.formData.maintainDate[1] + " 00:00:00",
       });
       if (code === 200) {
-        ElMessage.success("设置保养时间成功");
+        // ElMessage.success("设置保养时间成功");
         getTableList();
         drawerRef.value.close();
       }

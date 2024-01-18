@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 23:43:25
+ * @LastEditTime: 2024-01-18 09:55:40
  * @Description: 
 -->
 <template>
@@ -320,7 +320,7 @@ const deleteRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success("删除成功");
+    // ElMessage.success("删除成功");
     getTableList();
   }
 };
@@ -328,7 +328,7 @@ const detailSubmit = async (param) => {
   const { code } = await updateInfo(state.searchFormData.projectId, param);
   if (code === 200) {
     detailRef.value.close();
-    ElMessage.success(`${state.title}成功`);
+    // ElMessage.success(`${state.title}成功`);
     getTableList();
   }
 };
@@ -339,7 +339,7 @@ const relateSubmit = async (data, id) => {
   });
   if (code === 200) {
     relateRef.value.close();
-    ElMessage.success("绑定采集点成功");
+    // ElMessage.success("绑定采集点成功");
     getTableList();
   }
 };

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 02:27:46
+ * @LastEditTime: 2024-01-18 09:59:00
  * @Description: 
 -->
 <template>
@@ -266,7 +266,7 @@ const confirmAddVar = () => {
       if (target) {
         target.time2 = dayjs(new Date()).format(COMMON_DATE_TIME_FORMAT);
       }
-      ElMessage.success("处理成功");
+      // ElMessage.success("处理成功");
       drawerRef.value.close();
     })
     .catch(() => {

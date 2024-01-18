@@ -154,7 +154,7 @@ const deleteRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success(`删除点位成功`);
+    // ElMessage.success(`删除点位成功`);
     getTableList();
   }
 };
@@ -162,7 +162,7 @@ const detailSubmit = async (param) => {
   const { projectId, ...rest } = param;
   const { code } = await updatePoint(projectId, rest);
   if (code === 200) {
-    ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
+    // ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
     detailRef.value.close();
     getTableList();
   }

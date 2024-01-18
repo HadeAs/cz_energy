@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 16:01:08
+ * @LastEditTime: 2024-01-18 09:56:24
  * @Description: 
 -->
 <template>
@@ -254,7 +254,7 @@ const confirmAddVar = () => {
       const formData = wrapObjWithFormData(param);
       const { code } = await addDeviceMaintainPlan(props.projectId, formData);
       if (code === 200) {
-        ElMessage.success("设备保养添加成功");
+        // ElMessage.success("设备保养添加成功");
         drawerRef.value.close();
         getTableList();
       }

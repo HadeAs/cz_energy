@@ -152,7 +152,7 @@ const getCaptcha = async () => {
         }
       }, 1000);
       const { data } = await getCode({ phone: state.msgForm.phone });
-      ElMessage.success("验证码发送成功");
+      // ElMessage.success("验证码发送成功");
     }
   });
 };

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:10:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 22:40:28
+ * @LastEditTime: 2024-01-18 09:56:33
  * @Description: 
 -->
 <template>
@@ -118,7 +118,7 @@ const deleteRecord = async (row) => {
     maintainPlanId: row.id,
   });
   if (code === 200) {
-    ElMessage.success("计划删除成功");
+    // ElMessage.success("计划删除成功");
     getList();
   }
 };
@@ -138,7 +138,7 @@ const confirmAddVar = () => {
         content: state.formData.content,
       });
       if (code === 200) {
-        ElMessage.success("计划添加成功");
+        // ElMessage.success("计划添加成功");
         getList();
         drawerRef.value.close();
       }

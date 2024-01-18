@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 23:52:40
+ * @LastEditTime: 2024-01-18 09:55:49
  * @Description: 
 -->
 <template>
@@ -327,7 +327,7 @@ const deleteRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success("删除成功");
+    // ElMessage.success("删除成功");
     getTableList();
   }
 };
@@ -337,9 +337,9 @@ const confirmDetail = async () => {
   if (res) {
     const { code } = await updateModel(state.searchFormData.projectId, res);
     if (code === 200) {
-      ElMessage.success(
-        `${state.operateType === "add" ? "新增" : "修改"}设备台账成功`
-      );
+      // ElMessage.success(
+      //   `${state.operateType === "add" ? "新增" : "修改"}设备台账成功`
+      // );
       detailDrawerRef.value.close();
       getTableList();
     }
@@ -380,7 +380,7 @@ const confirmParam = async () => {
       }
       paramDrawerRef.value.close();
       if (changeFlag) {
-        ElMessage.success("设备型号参数修改成功");
+        // ElMessage.success("设备型号参数修改成功");
         getTableList();
       }
     }
