@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:57:56
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 00:03:53
+ * @LastEditTime: 2024-01-19 12:53:17
  * @Description: 
  */
 export const colorArr = ['#29b7f4', '#7dc856', '#f9bf03', '#fa5555', '#6666ff']
@@ -34,6 +34,16 @@ export const CARBTON_TREE_DATA = [
       {
         parentId: 1,
         id: 15,
+        label: "水"
+      },
+      {
+        parentId: 1,
+        id: 16,
+        label: "冷媒"
+      },
+      {
+        parentId: 1,
+        id: 17,
         label: "其他"
       }
     ]
@@ -210,6 +220,7 @@ export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
   {
     id: 1,
     label: "碳排基准",
+    color: "rgba(197, 206, 223, 1)",
     children: [
       {
         id: 11,
@@ -228,14 +239,15 @@ export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
       },
       {
         id: 14,
-        label: "电网碳排因子降低",
+        label: "碳排放",
         color: "rgba(190, 175, 158, 1)"
       }
     ]
   },
   {
     id: 2,
-    label: "碳排放",
+    label: "电网碳排因子降低",
+    color: "rgba(255, 82, 0, 1)",
     children: [
       {
         id: 21,

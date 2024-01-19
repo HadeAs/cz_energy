@@ -2,14 +2,14 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 15:51:57
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:50:09
+ * @LastEditTime: 2024-01-19 11:46:48
  * @Description: 
 -->
 <template>
   <EchartTreeContainer
     ref="echartTreeRef"
     :chartOption="chartOption"
-    :defaultTreeCheckKeys="[13]"
+    :defaultTreeCheckKeys="[13, 14, 15]"
     :treeData="CARBTON_TREE_DATA"
     @tree-check-change="initChart"
     style="height: calc(100vh - 123px)"
@@ -27,7 +27,10 @@ const echartTreeRef = ref();
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
 const randomArr = (times, num) => {
-  return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));
+  const arr = new Array(times)
+    .fill("")
+    .map((v) => (Math.random() * num).toFixed(0));
+  return arr.sort();
 };
 
 const initChart = () => {
@@ -43,7 +46,7 @@ const initChart = () => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       data: randomArr(unit.num, 1000),
     });

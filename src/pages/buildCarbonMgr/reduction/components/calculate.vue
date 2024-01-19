@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 19:46:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 01:55:38
+ * @LastEditTime: 2024-01-19 13:30:06
  * @Description: 
 -->
 <template>
@@ -18,7 +18,7 @@
       ref="echartTreeRef"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[11, 12, 13]"
+      :defaultTreeCheckKeys="state.defaultCheck"
       :treeData="CARBTON_CALCULATE_TREE_DATA"
       @tree-check-change="initChart"
       @type-change="handleChangeTab"
@@ -34,12 +34,16 @@ import { CARBTON_CALCULATE_TREE_DATA } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import { handleOpts } from "@/utils";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
+const { query } = route;
 const echartTreeRef = ref();
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
 const state = reactive({
   activeTab: 0,
+  defaultCheck: query.id ? query.id.split(",") : [11, 12, 13],
 });
 
 const searchFormCfg = [
@@ -74,7 +78,7 @@ const initChart = () => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       data: randomArr(unit.num, 1000),
       areaStyle: {

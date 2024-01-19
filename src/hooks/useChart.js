@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-16 11:29:30
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 19:50:08
+ * @LastEditTime: 2024-01-19 11:58:24
  * @Description: 
  */
 import { reactive, toRefs, onMounted } from "vue";
@@ -11,7 +11,7 @@ import { COMMON_DATE_FORMAT } from "@/constant";
 
 
 const DEFAULT_SEARCH_CONFIG = {
-  type: "hour",
+  type: "day",
 };
 
 const getDefaultDate = (type) => {

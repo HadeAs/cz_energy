@@ -77,7 +77,7 @@ const updateChart = (datas, checkDatas, currentType) => {
     seriesData.push({
       name: item.name,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       data: data.map((item) => item.data),
     });

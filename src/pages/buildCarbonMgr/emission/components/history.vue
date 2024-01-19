@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-11 18:20:33
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 11:06:58
+ * @LastEditTime: 2024-01-19 11:47:28
  * @Description: 
 -->
 <template>
@@ -57,7 +57,10 @@ const onSearch = (data) => {
 };
 
 const randomArr = (times, num) => {
-  return new Array(times).fill("").map((v) => (Math.random() * num).toFixed(0));
+  const arr = new Array(times)
+    .fill("")
+    .map((v) => (Math.random() * num).toFixed(0));
+  return arr.sort();
 };
 
 const initChart = () => {
@@ -74,7 +77,7 @@ const initChart = () => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       data: randomArr(unit.num, 1000),
     });

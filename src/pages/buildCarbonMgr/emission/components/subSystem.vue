@@ -64,7 +64,7 @@ const initChart = () => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       data: randomArr(unit.num, 1000),
     });

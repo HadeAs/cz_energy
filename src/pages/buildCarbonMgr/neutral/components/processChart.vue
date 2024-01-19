@@ -114,7 +114,7 @@ const initChart = () => {
     seriesData.push({
       name: item.name,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       data: randomArr(targetTab.value.length, 1000),
       areaStyle: {

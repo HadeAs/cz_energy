@@ -32,22 +32,28 @@ import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import { exportWithExcel, getSearchNode, handleOpts, renderAxis, renderTreeData } from "@/utils";
-import { storeToRefs } from 'pinia';
-import appStore from '@/store/index.js';
-import { simServiceRequest } from '@/api/backstageMng/utils.js';
+import {
+  exportWithExcel,
+  getSearchNode,
+  handleOpts,
+  renderAxis,
+  renderTreeData,
+} from "@/utils";
+import { storeToRefs } from "pinia";
+import appStore from "@/store/index.js";
+import { simServiceRequest } from "@/api/backstageMng/utils.js";
 import {
   exportEnergyQsBatch,
   exportEquipmentQsBatch,
   getEqQsData,
-  getEquipmentSideBar
-} from '@/api/staMng/energyData.js';
+  getEquipmentSideBar,
+} from "@/api/staMng/energyData.js";
 
 const { globalState } = storeToRefs(appStore.global);
 
 const defaultKeys = ref([2, 3]);
-const searchType = ref('hour');
-const searchDate = ref({})
+const searchType = ref("hour");
+const searchDate = ref({});
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const echartTreeRef = ref();
@@ -70,15 +76,21 @@ const searchFormCfg = ref([
 ]);
 
 const handleOnSearch = () => {
-  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
+  const [startDate, endDate] = searchFormCfg.value.filter(
+    (i) => i?.prop === "timeRange"
+  )?.[0]?.value || [undefined, undefined];
   searchDate.value = { startDate, endDate };
   renderChart();
-}
+};
 
 const handleExport = async () => {
-  const checks = echartTreeRef.value.getCheckedNodes()?.filter((v) => !v.children);
+  const checks = echartTreeRef.value
+    .getCheckedNodes()
+    ?.filter((v) => !v.children);
   const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
-  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
+  const [startDate, endDate] = searchFormCfg.value.filter(
+    (i) => i?.prop === "timeRange"
+  )?.[0]?.value || [undefined, undefined];
   const exportData = {
     type: searchType.value,
     projectId: state.searchFormData.projectId,
@@ -87,7 +99,11 @@ const handleExport = async () => {
     sysClassId: data?.childIds?.[0],
     energyStatisticsId: data?.faId,
   };
-  const res = await Promise.all(data?.childIds.map(i => exportEquipmentQsBatch({ ...exportData, equipmentTypeId: i })));
+  const res = await Promise.all(
+    data?.childIds.map((i) =>
+      exportEquipmentQsBatch({ ...exportData, equipmentTypeId: i })
+    )
+  );
   res.forEach((i, index) => {
     exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
   });
@@ -133,49 +149,63 @@ const initChart = (res) => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
-      data: (res?.[index] || []).map(i => i?.data),
+      data: (res?.[index] || []).map((i) => i?.data),
     });
   });
-  chartOption.value.xAxis[0].data = res?.[0]?.map(i => renderAxis(searchType.value, i?.createTime));
+  chartOption.value.xAxis[0].data = res?.[0]?.map((i) =>
+    renderAxis(searchType.value, i?.createTime)
+  );
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };
 
 const renderChart = async () => {
-  const checks = echartTreeRef.value.getCheckedNodes()?.filter((v) => !v.children);
+  const checks = echartTreeRef.value
+    .getCheckedNodes()
+    ?.filter((v) => !v.children);
   const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
-  const res = await simServiceRequest(getEqQsData, data?.childIds, {
-    type: searchType.value,
-    projectId: state.searchFormData.projectId,
-    energyStatisticsId: data?.faId,
-    ...searchDate.value,
-  }, 'equipmentTypeId');
+  const res = await simServiceRequest(
+    getEqQsData,
+    data?.childIds,
+    {
+      type: searchType.value,
+      projectId: state.searchFormData.projectId,
+      energyStatisticsId: data?.faId,
+      ...searchDate.value,
+    },
+    "equipmentTypeId"
+  );
   initChart(res);
 };
 
 const initData = async () => {
-  const res = await getEquipmentSideBar({ projectId: state.searchFormData.projectId });
-  state.treeData = renderTreeData(res, ['energyStatisticsName', 'name'], 'energyStatisticsId');
+  const res = await getEquipmentSideBar({
+    projectId: state.searchFormData.projectId,
+  });
+  state.treeData = renderTreeData(
+    res,
+    ["energyStatisticsName", "name"],
+    "energyStatisticsId"
+  );
   defaultKeys.value = state.treeData?.[0]?.children;
-  echartTreeRef.value.setCheckedKeys(defaultKeys.value.map(i => i?.id));
+  echartTreeRef.value.setCheckedKeys(defaultKeys.value.map((i) => i?.id));
   renderChart();
-}
+};
 
 onMounted(async () => {
   initData();
 });
 
 watch(
-    () => globalState.value.projectId,
-    id => {
-      state.searchFormData.projectId = id;
-      initData();
-    }
+  () => globalState.value.projectId,
+  (id) => {
+    state.searchFormData.projectId = id;
+    initData();
+  }
 );
-
 </script>
 <style lang="scss" scoped>
 .search {

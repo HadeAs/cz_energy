@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 16:06:51
+ * @LastEditTime: 2024-01-19 12:05:03
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -939,4 +939,11 @@ export const COMMON_FUNCTION_LIST = [
   { id: "avg", name: "均值" },
   { id: "max", name: "最大值" },
   { id: "min", name: "最小值" },
+];
+
+export const COMMON_TIME_TYPE_LIST = [
+  // { id: "hour", name: "时能耗"},
+  { id: "day", name: "天能耗" },
+  { id: "month", name: "月能耗" },
+  { id: "year", name: "年能耗" }
 ]

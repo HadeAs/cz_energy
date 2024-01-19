@@ -919,7 +919,7 @@ export const LINE_OPT2 = {
     {
       name: "碳排基准",
       type: "line",
-      smooth: true,
+      smooth: false,
       data: [250, 318, 480, 674, 884, 925],
       lineStyle: {
         type: "dashed",
@@ -931,7 +931,7 @@ export const LINE_OPT2 = {
     {
       name: "BAU照常情景",
       type: "line",
-      smooth: true,
+      smooth: false,
       data: [250, 268, 310, 274, 202, 123],
       areaStyle: {
         opacity: 0.2,
@@ -940,7 +940,7 @@ export const LINE_OPT2 = {
     {
       name: "能源使用量减少",
       type: "line",
-      smooth: true,
+      smooth: false,
       data: [250, 352, 501, 554, 690, 700],
       areaStyle: {
         opacity: 0.2,
@@ -949,7 +949,7 @@ export const LINE_OPT2 = {
     {
       name: "电网碳排因子降低",
       type: "line",
-      smooth: true,
+      smooth: false,
       data: [250, 332, 451, 504, 650, 650],
       areaStyle: {
         opacity: 0.2,
@@ -958,7 +958,7 @@ export const LINE_OPT2 = {
     {
       name: "碳信用抵消",
       type: "line",
-      smooth: true,
+      smooth: false,
       data: [250, 310, 460, 650, 800, 900],
       areaStyle: {
         opacity: 0.2,

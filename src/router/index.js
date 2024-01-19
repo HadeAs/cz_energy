@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 18:40:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 22:48:20
+ * @LastEditTime: 2024-01-19 13:25:48
  * @Description:
  */
 import { createRouter, createWebHistory } from "vue-router";
@@ -170,7 +170,7 @@ const routesArray = [
           ),
       },
       {
-        path: "/carbonReduction",
+        path: "/carbonReduction/:id?",
         name: "carbonReduction",
         meta: { title: "碳减排", auth: "reduction" },
         component: () =>

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 20:06:58
+ * @LastEditTime: 2024-01-19 13:04:23
  * @Description: 
 -->
 <template>
@@ -10,8 +10,21 @@
     <div class="left">
       <div class="left-title">
         <span>数据对比</span>
-        <el-tabs
-          :style="{ visibility: showSwitch ? 'initial' : 'hidden' }"
+        <el-select
+          size="small"
+          v-show="showSwitch"
+          v-model="activeTab"
+          @change="handleTabChange"
+        >
+          <el-option
+            v-for="item in COMMON_TIME_TYPE_LIST"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+        <!-- <el-tabs
+          :style="{ visibility: showSwitch ? 'visible' : 'hidden' }"
           v-model="activeTab"
           @tab-change="handleTabChange"
         >
@@ -19,9 +32,9 @@
           <el-tab-pane label="天能耗" name="day"></el-tab-pane>
           <el-tab-pane label="月能耗" name="month"></el-tab-pane>
           <el-tab-pane label="年能耗" name="year"></el-tab-pane>
-        </el-tabs>
+        </el-tabs> -->
       </div>
-      <Echart :option="chartOption" />
+      <Echart :option="chartOption" @click="handleChartClick" />
     </div>
     <div class="right">
       <el-scrollbar>
@@ -92,6 +105,7 @@ import Echart from "@/components/Echart.vue";
 import { Search } from "@element-plus/icons-vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
+import { COMMON_TIME_TYPE_LIST } from "@/constant";
 
 const prop = defineProps({
   showSwitch: {
@@ -121,6 +135,10 @@ const prop = defineProps({
     type: Boolean,
     default: true,
   },
+  allowParent: {
+    type: Boolean,
+    default: false,
+  },
   props: {
     type: Object,
     default: () => ({
@@ -133,14 +151,19 @@ defineExpose({
   getCheckedNodes: () => treeRef.value.getCheckedNodes(),
   setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
 });
-const emits = defineEmits(["type-change", "tree-check-change", "delete-node"]);
+const emits = defineEmits([
+  "type-change",
+  "tree-check-change",
+  "delete-node",
+  "click-chart",
+]);
 
 const treeRef = ref();
 const varName = ref("");
 const drawerRef = ref();
 const formRef = ref();
 const hoverNodeId = ref("");
-const activeTab = ref("hour");
+const activeTab = ref("day");
 const treeData = ref(prop.treeData);
 const varGroupOptions = ref([]);
 const varForm = reactive({
@@ -174,7 +197,10 @@ const leaveTreeNode = () => {
 
 const getCheckedChildren = () => {
   const checkDatas = treeRef.value.getCheckedNodes();
-  return checkDatas.filter((item) => !item.children);
+  if (!prop.allowParent) {
+    return checkDatas.filter((item) => !item.children);
+  }
+  return checkDatas;
 };
 
 const treeCheckChangeHandle = (data, { checkedKeys }) => {
@@ -300,6 +326,10 @@ const handleTabChange = (val) => {
   });
 };
 
+const handleChartClick = (param) => {
+  emits("click-chart", param);
+};
+
 onMounted(() => {
   if (prop.defaultTreeCheckKeys.length) {
     treeRef.value.setCheckedKeys(prop.defaultTreeCheckKeys);
@@ -307,8 +337,10 @@ onMounted(() => {
 });
 watch(
   () => prop.defaultTreeCheckKeys,
-  (val) => {
-    treeRef.value.setCheckedKeys(val);
+  (val, oldVal) => {
+    if (!isEqual(val, oldVal)) {
+      treeRef.value.setCheckedKeys(val);
+    }
   }
 );
 </script>
@@ -323,11 +355,16 @@ watch(
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 20px 15px;
+    padding: 15px 20px 15px;
     span {
       font-size: 16px;
       font-weight: 700;
       color: #000;
+    }
+    :deep() {
+      .el-select {
+        width: 100px;
+      }
     }
   }
   .right-title {
