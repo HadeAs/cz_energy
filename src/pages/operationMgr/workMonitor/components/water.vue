@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:49:20
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 15:45:15
+ * @LastEditTime: 2024-01-19 19:45:04
  * @Description: 
 -->
 
@@ -11,6 +11,7 @@
     <ProSearchContainer
       class="search"
       buttonContent="导出"
+      :buttonConfig="buttonConfig()"
       :form-info="searchFormCfg"
       @button-click="handleExport"
       @search-change="searchChange"
@@ -66,7 +67,27 @@ const searchFormCfg = [
   },
 ];
 
-const handleExport = () => {};
+const handleExport = async () => {
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      const data = await exportData(globalState.value.projectId, {
+        dataConfigId: checkKeys.value[0],
+        ...searchParam.value,
+      });
+      if (data && !data.code) {
+        exportWithExcel(data, "用水监测");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
+    })
+    .catch(() => {});
+};
 
 // 数据获取后更新echart视图
 const updateChart = (datas, checkDatas, currentType) => {
@@ -115,6 +136,10 @@ const { treeData, checkKeys, tabChange, checkChange, searchChange } = useChart(
     param: state.treeParam,
   }
 );
+
+const buttonConfig = () => {
+  return { disabled: checkKeys.value.length !== 1 };
+};
 
 watch(
   () => globalState.value.projectId,

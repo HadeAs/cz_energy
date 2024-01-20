@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-07 13:04:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 11:10:36
+ * @LastEditTime: 2024-01-20 13:21:05
  * @Description: 
  */
 import http from "../http";
@@ -19,6 +19,10 @@ export const getInfo = (params) => {
 
 export const setInterval = (projectId, params) => {
   return http.post(`${PORT}/maintain/equipment-model/set-interval?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
+}
+
+export const getDeviceTypeInfo = (params) => {
+  return http.get(`${PORT}/maintain/equipment-model/detail`, params);
 }
 
 export const getDevicePlanList = (params) => {
@@ -47,4 +51,8 @@ export const addPlan = (projectId, params) => {
 
 export const setFiveYearPlan = (projectId, params) => {
   return http.post(`${PORT}/maintain/plan/set-five-year?projectId=${projectId}`, params, { ...COMMON_UPDATE_CONFIG });
+}
+
+export const uploadAttach = (projectId, params) => {
+  return http.post(`${PORT}/maintain/equipment-model/appendix/upload?projectId=${projectId}`, params, { ...COMMON_SUBMIT_CONFIG });
 }

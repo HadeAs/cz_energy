@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-18 09:59:00
+ * @LastEditTime: 2024-01-20 12:37:04
  * @Description: 
 -->
 <template>
@@ -17,83 +17,41 @@
     <MainContentContainer style="flex: 1">
       <ProTable
         :column="column"
+        :default-sort="state.sortInfo"
         :pageInfo="pageInfo"
-        :datasource="state.dataSource"
-        v-loading="state.loading"
+        :datasource="dataSource"
+        v-loading="loading"
         @page-change="pageChange"
+        @selection-change="selectionChange"
       >
         <template #operation="scope">
           <a
             class="table-operator-btn"
-            v-if="!scope.row.time2"
-            v-auth="'monitor_exception_deal'"
-            @click="handle(scope.row)"
-            >立即处理</a
+            :class="scope.row.status === '未处理' ? '' : 'disabled'"
+            @click="handleRow(scope.row)"
+            v-auth="'alarm_actual_deal'"
+            >{{ scope.row.status === "未处理" ? "立即处理" : "已处理成功" }}</a
           >
-          <span class="table-operator-btn disabled" v-else>已处理</span>
         </template>
       </ProTable>
     </MainContentContainer>
-    <ProDrawer title="立即处理" ref="drawerRef" @confirm="confirmAddVar">
-      <el-form
-        ref="formRef"
-        v-bind="COMMON_FORM_CONFIG"
-        :model="state.formData"
-        :rules="rules"
-      >
-        <el-form-item label="报警名称" prop="name">
-          <el-input v-model="state.formData.name" />
-        </el-form-item>
-        <!-- <el-form-item label="处理人" prop="user">
-          <el-input v-model="state.formData.user" />
-        </el-form-item> -->
-        <el-form-item label="处理详情" prop="desc">
-          <el-input
-            v-model="state.formData.desc"
-            type="textarea"
-            placeholder="请输入至少5个字符"
-          />
-        </el-form-item>
-      </el-form>
-    </ProDrawer>
+    <Handle ref="handleRef" :data="state.currentData" @submit="handleSubmit" />
   </div>
 </template>
 
 <script setup lang="jsx">
 import { reactive, ref } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import ProDrawer from "@/components/ProDrawer.vue";
-import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
-import { ElMessage } from "element-plus";
-import { COMMON_DATE_TIME_FORMAT } from "@/constant";
-import dayjs from "dayjs";
+import useTable from "@/hooks/useTable";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import { queryList } from "@/api/operationMgr/workMonitor";
+import { handleLive } from "@/api/deviceMgr/deviceAlarm";
+import Handle from "@/pages/deviceMgr/deviceAlarm/components/live/handle.vue";
+import { getDeviceAlarmProve } from "@/api/common";
+import { exportWithExcel } from "@/utils";
 
-const DEVICE_MAP = {
-  0: "空气源热泵",
-  1: "水泵",
-  2: "水箱",
-  3: "灯具",
-  4: "电梯",
-};
-const category_MAP = {
-  0: "空调系统",
-  1: "照明插座",
-  2: "动力系统",
-};
-const STATUS_MAP = {
-  0: "停用",
-  1: "启用",
-};
-
-const rules = {
-  name: { required: true, message: "请输入报警名称", trigger: "blur" },
-  // user: { required: true, message: "请输入处理人", trigger: "blur" },
-  desc: [
-    { required: true, message: "请输入至少5个字符", trigger: "blur" },
-    { min: 5, message: "请输入至少5个字符", trigger: "blur" },
-  ],
-};
-
+const { globalState } = storeToRefs(appStore.global);
 const searchFormCfg = [
   {
     label: "时间范围",
@@ -101,181 +59,172 @@ const searchFormCfg = [
     type: "datetimerange",
     value: "",
   },
-  { label: "报警设备", prop: "deviceName", type: "input", value: "" },
+  { label: "报警设备", prop: "textQuery", type: "input", value: "" },
 ];
 
-const onSearch = (data) => {
-  console.log(data);
-  const param = {};
-  data.forEach((item) => {
-    param[item.prop] = item.value;
-  });
-  if (param.timeRange) {
-    state.dataSource = [];
-  } else {
-    state.dataSource = state.initSource.filter((item) =>
-      item.name.includes(param.deviceName || "")
-    );
-  }
-};
-
-const drawerRef = ref();
-const formRef = ref();
+const handleRef = ref();
 const state = reactive({
-  formData: {
-    name: "",
-    // user: "",
-    desc: "",
+  searchFormData: {
+    projectId: globalState.value.projectId,
+    startDate: "",
+    endDate: "",
+    textQuery: "",
   },
-  initSource: [],
-  dataSource: [],
-  loading: true,
+  sortInfo: { prop: "addressTime", order: "descending" },
+  currentData: {},
 });
 
 const column = [
   {
-    prop: "name",
+    prop: "equipmentName",
     label: "报警设备名称",
-    width: 130,
+    width: 160,
+    sortable: "custom",
+    fixed: true,
     render: (scope) => {
       return (
-        <div className="text-overflow" title={scope.row.name}>
-          <span className="table-first-col">{scope.row.name}</span>
+        <div className="text-overflow" title={scope.row.equipmentName}>
+          <span className="table-first-col">{scope.row.equipmentName}</span>
         </div>
       );
     },
   },
   {
-    prop: "info",
+    prop: "content",
     label: "报警信息",
-    // width: 100,
+    width: 180,
   },
   {
-    prop: "deviceType",
-    label: "设备类型",
+    prop: "riskLevel",
+    label: "报警等级",
     // width: 100,
     render: (scope) => {
-      return DEVICE_MAP[scope.row.deviceType];
+      const riskLevel = scope.row.riskLevel;
+      let type = "success";
+      if (riskLevel === "一级") {
+        type = "danger";
+      } else if (riskLevel === "二级") {
+        type = "warning";
+      }
+      return (
+        <ElTag effect="dark" type={type}>
+          {riskLevel}
+        </ElTag>
+      );
     },
   },
   {
-    prop: "category",
-    label: "所属系统分类",
-    width: 110,
-    render: (scope) => {
-      return category_MAP[scope.row.deviceType];
-    },
-  },
-  {
-    prop: "time1",
+    prop: "createTime",
     label: "报警时间",
+    sortable: "custom",
+    width: 170,
+  },
+  {
+    prop: "userName",
+    label: "处理人",
+    width: 80,
+  },
+  {
+    prop: "addressTime",
+    label: "处理时间",
+    sortable: "custom",
     width: 170,
   },
   {
     prop: "status",
     label: "设备状态",
-    // width: 100,
+    width: 140,
+    showOverflowTooltip: false,
     render: (scope) => {
-      return STATUS_MAP[scope.row.deviceType];
+      const status = scope.row.status;
+      const appendix = scope.row.appendix;
+      const type = status === "未处理" ? "danger" : "success";
+      if (!appendix) {
+        return <ElTag type={type}>{status}</ElTag>;
+      }
+      return (
+        <div class="handle-process">
+          <ElTag type={type}>{status}</ElTag>
+          <ElButton
+            link
+            type="primary"
+            onClick={() => {
+              download(appendix);
+            }}
+          >
+            下载凭证
+          </ElButton>
+        </div>
+      );
     },
-  },
-  {
-    prop: "time2",
-    label: "处理时间",
-    width: 170,
   },
 ];
 
-const pageChange = (currentPage, pageSize) => {
-  console.log(currentPage, pageSize);
-};
+const {
+  dataSource,
+  loading,
+  pageInfo,
+  pageChange,
+  searchChange,
+  selectionChange,
+  getTableList,
+} = useTable(queryList, state.searchFormData, state.sortInfo);
 
-const pageInfo = reactive({
-  total: 100,
-  currentPage: 1,
-  pageSize: 10,
-  pageSizes: [10, 15, 20, 50],
-});
+getTableList();
 
-const getList = async () => {
-  const res = await new Promise((resolve) => {
-    setTimeout(() => {
-      state.loading = false;
-      resolve([
-        {
-          id: 0,
-          name: "空气源热泵1",
-          info: "用水异常",
-          deviceType: 0,
-          category: 1,
-          time1: "2023-12-20 18:09:45",
-          status: 0,
-          time2: null,
-        },
-        {
-          id: 1,
-          name: "空气源热泵2",
-          info: "空气源热泵维护",
-          deviceType: 0,
-          category: 1,
-          time1: "2023-12-20 18:09:45",
-          status: 1,
-          time2: null,
-        },
-        {
-          id: 2,
-          name: "冷却水泵1",
-          info: "水泵维护",
-          deviceType: 1,
-          category: 1,
-          time1: "2023-12-20 18:09:45",
-          status: 1,
-          time2: null,
-        },
-        {
-          id: 3,
-          name: "水箱",
-          info: "水箱维护",
-          deviceType: 1,
-          category: 1,
-          time1: "2018-03-03  15:20:40",
-          status: 0,
-          time2: "2018-03-03  15:20:40",
-        },
-      ]);
-    }, 600);
+const onSearch = (data) => {
+  const param = {};
+  data.forEach((item) => {
+    if (item.prop === "timeRange") {
+      param.startDate = item.value?.[0];
+      param.endDate = item.value?.[1];
+    } else {
+      param[item.prop] = item.value;
+    }
   });
-  state.initSource = [...res];
-  state.dataSource = res;
+  state.searchFormData = { ...state.searchFormData, ...param };
+  searchChange(state.searchFormData);
 };
-getList();
 
-const handle = (row) => {
-  state.formData.id = row.id;
-  state.formData.name = row.name;
-  state.formData.user = row.user;
-  state.formData.desc = row.desc;
-  drawerRef.value.open();
+const download = async (name) => {
+  const data = getDeviceAlarmProve(name);
+  if (data && !data.code) {
+    const [n, type] = name.split(".");
+    exportWithExcel(data, "报警处理凭证", type);
+    // ElMessage({
+    //   type: "success",
+    //   message: "下载成功",
+    // });
+  }
 };
-const confirmAddVar = () => {
-  formRef.value
-    .validate()
-    .then(() => {
-      const { id } = state.formData;
-      const target = state.dataSource.find((v) => v.id === id);
-      if (target) {
-        target.time2 = dayjs(new Date()).format(COMMON_DATE_TIME_FORMAT);
-      }
-      // ElMessage.success("处理成功");
-      drawerRef.value.close();
-    })
-    .catch(() => {
-      console.log("fail");
-    });
+
+const handleRow = (row) => {
+  if (row.status !== "已处理") {
+    state.currentData = { ...row };
+    handleRef.value.open();
+  }
+};
+const handleSubmit = async (param) => {
+  const params = {
+    alarmId: param.id,
+    result: param.result,
+  };
+  if (param.file) params.file = param.file;
+  const { code } = await handleLive(state.searchFormData.projectId, params);
+  if (code === 200) {
+    handleRef.value.close();
+    // ElMessage.success("处理成功!");
+    getTableList();
+  }
 };
 </script>
 <style lang="scss" scoped>
 .search {
   margin-bottom: 10px;
+}
+</style>
+<style lang="scss">
+.handle-process {
+  display: flex;
 }
 </style>

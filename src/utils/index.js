@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:15:01
+ * @LastEditTime: 2024-01-20 13:58:58
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
@@ -12,11 +12,11 @@ import uniqueId from "lodash/uniqueId";
 export * from "./cookies";
 
 // 导出文件制作下载链接
-export const exportWithExcel = (content, name) => {
+export const exportWithExcel = (content, name, type = "xls") => {
   const elink = document.createElement("a");
-  elink.download = `${name}.xls`;
+  elink.download = `${name}.${type}`;
   elink.style.display = "none";
-  const blob = new Blob([content], { type: "application/x-msdownload" });
+  const blob = new Blob([content], { type: type === "zip" ? "application/zip" : "application/x-msdownload" });
   elink.href = URL.createObjectURL(blob);
   document.body.appendChild(elink);
   elink.click();
@@ -92,7 +92,8 @@ export const renderTreeData = (data = [], names = [], faKey) => {
       orgId: child?.id,
       faId: i?.[faKey],
       label: child?.[names?.[1]],
-    }))}
+    }))
+  }
   ));
 };
 

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 10:24:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 22:25:50
+ * @LastEditTime: 2024-01-20 13:58:50
  * @Description: 
  */
 import http from './http';
@@ -45,6 +45,26 @@ export const getImageUrl = (url) => {
     baseURL: "/static",
     ...COMMON_SUBMIT_CONFIG,
     responseType: 'blob'
+  });
+}
+
+// 获取报警凭证
+export const getDeviceAlarmProve = (url) => {
+  return http.get(`alarm-handle-appendix/${url}`, null, {
+    baseURL: "/static",
+    ...COMMON_SUBMIT_CONFIG,
+    responseType: 'blob',
+    "response-content-type": "application/octet-stream"
+  });
+}
+
+// 获取保养附件
+export const getDevicePlanFile = (url) => {
+  return http.get(`maintain-appendix/${url}`, null, {
+    baseURL: "/static",
+    ...COMMON_SUBMIT_CONFIG,
+    responseType: 'blob',
+    "response-content-type": "application/octet-stream",
   });
 }
 

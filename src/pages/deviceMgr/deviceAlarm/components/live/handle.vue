@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-19 11:35:32
+ * @LastEditTime: 2024-01-19 20:38:04
  * @Description: 
 -->
 <template>
@@ -51,14 +51,14 @@ import ProUpload from "@/components/ProUpload.vue";
 const rules = {
   name: { required: true, message: "请输入报警名称", trigger: "change" },
   result: { required: true, message: "请输入处理详情", trigger: "change" },
-  file: [
-    {
-      type: "array",
-      required: true,
-      message: "请上传文件",
-      trigger: "change",
-    },
-  ],
+  // file: [
+  //   {
+  //     type: "array",
+  //     required: true,
+  //     message: "请上传文件",
+  //     trigger: "change",
+  //   },
+  // ],
 };
 const initData = {
   equipmentName: "",
@@ -78,12 +78,17 @@ const state = reactive({
 const confirmDetail = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
-      emits("submit", state.form);
+      const { file, ...rest } = state.form;
+      const param = { ...rest };
+      if (file.length) {
+        param.file = file[0].raw;
+      }
+      emits("submit", param);
     }
   });
 };
 
-const fileChange = (fileList) => {
+const fileChange = async (fileList) => {
   state.form.file = fileList;
 };
 

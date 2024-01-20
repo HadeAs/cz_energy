@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-17 12:04:30
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 15:42:46
+ * @LastEditTime: 2024-01-19 20:08:48
  * @Description: 
 -->
 <template>
@@ -45,7 +45,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="Config">
 import { ref, reactive, watch } from "vue";
 import { Platform } from "@element-plus/icons-vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
@@ -146,10 +146,10 @@ const handleSubmit = async (data) => {
   const { code } = await updateDataInfo(projectId, rest);
   if (code === 200) {
     queryDatas();
-    ElMessage({
-      type: "success",
-      message: `${rest.id ? "修改" : "添加"}数据项成功`,
-    });
+    // ElMessage({
+    //   type: "success",
+    //   message: `${rest.id ? "修改" : "添加"}数据项成功`,
+    // });
     detailRef.value.close();
   }
 };

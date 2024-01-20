@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 12:21:14
+ * @LastEditTime: 2024-01-19 19:43:27
  * @Description: 
 -->
 <template>
@@ -10,12 +10,14 @@
     <ProSearchContainer
       class="search"
       buttonContent="导出"
+      :buttonConfig="buttonConfig()"
       :form-info="searchFormCfg"
       @button-click="handleExport"
       @search-change="searchChange"
       authKey="monitor_electric_export"
     />
     <EchartTreeContainer
+      ref="treeRef"
       :props="treeProps"
       :showSwitch="true"
       :conflict="false"
@@ -41,15 +43,16 @@ import appStore from "@/store";
 import {
   getTreeList,
   queryTrend,
-  queryData,
-  deleteDataInfo,
+  exportData,
 } from "@/api/operationMgr/workMonitor";
 import { ElMessage } from "element-plus";
+import { exportWithExcel } from "@/utils";
 
 const treeProps = {
   label: "name",
   children: "children",
 };
+const treeRef = ref();
 const { globalState } = storeToRefs(appStore.global);
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 const state = reactive({
@@ -106,32 +109,29 @@ const handleParam = (item) => {
   return { dataConfigId: item.id };
 };
 
-const queryDatas = async () => {
-  const { data } = await queryData({ projectId: state.searchParam.projectId });
+const {
+  searchParam,
+  treeData,
+  checkKeys,
+  tabChange,
+  checkChange,
+  searchChange,
+} = useChart(
+  {
+    api: queryTrend,
+    param: state.searchParam,
+    handleParam,
+    updateChart,
+  },
+  {
+    api: getTreeList,
+    param: state.treeParam,
+  }
+);
+
+const buttonConfig = () => {
+  return { disabled: checkKeys.value.length !== 1 };
 };
-queryDatas();
-
-const { treeData, checkKeys, tabChange, checkChange, searchChange, queryTree } =
-  useChart(
-    {
-      api: queryTrend,
-      param: state.searchParam,
-      handleParam,
-      updateChart,
-    },
-    {
-      api: getTreeList,
-      param: state.treeParam,
-    }
-  );
-
-// const deleteNode = async ({ id }) => {
-//   const { code } = await deleteDataInfo(state.searchParam.projectId, { id });
-//   if (code === 200) {
-//     queryTree();
-//     ElMessage.success("删除成功");
-//   }
-// };
 
 watch(
   () => globalState.value.projectId,
@@ -140,7 +140,27 @@ watch(
   }
 );
 
-const handleExport = () => {};
+const handleExport = async () => {
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      const data = await exportData(globalState.value.projectId, {
+        dataConfigId: checkKeys.value[0],
+        ...searchParam.value,
+      });
+      if (data && !data.code) {
+        exportWithExcel(data, "配电监测");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
+    })
+    .catch(() => {});
+};
 </script>
 <style lang="scss" scoped>
 .search {

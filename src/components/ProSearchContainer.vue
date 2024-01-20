@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-25 13:16:28
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 16:00:10
+ * @LastEditTime: 2024-01-19 19:39:55
  * @Description: 
 -->
 <template>
@@ -45,9 +45,13 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button v-auth="authKey" type="primary" @click="onSubmit">{{
-          buttonContent
-        }}</el-button>
+        <el-button
+          v-auth="authKey"
+          type="primary"
+          @click="onSubmit"
+          v-bind="buttonConfig"
+          >{{ buttonContent }}</el-button
+        >
       </el-form-item>
     </el-form>
   </MainContentContainer>
@@ -65,6 +69,10 @@ const props = defineProps({
   buttonContent: {
     type: String,
     default: "搜索",
+  },
+  buttonConfig: {
+    type: Object,
+    default: {},
   },
   authKey: {
     type: String,

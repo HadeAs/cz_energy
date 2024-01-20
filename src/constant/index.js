@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-19 12:05:03
+ * @LastEditTime: 2024-01-20 13:10:50
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -899,13 +899,13 @@ export const AUTH_POINT_CONFIG = [
           },
           {
             key: "maintain_device_plan_get",
-            authKey: 412,
+            // authKey: 412,
             label: "获取某型号的最新保养计划",
             type: "component",
           },
           {
             key: "maintain_device_plan_delete",
-            authKey: 413,
+            // authKey: 413,
             label: "删除一个保养计划",
             type: "component",
           },

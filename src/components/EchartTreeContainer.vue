@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-19 13:04:23
+ * @LastEditTime: 2024-01-19 19:29:21
  * @Description: 
 -->
 <template>
@@ -146,10 +146,6 @@ const prop = defineProps({
       children: "children",
     }),
   },
-});
-defineExpose({
-  getCheckedNodes: () => treeRef.value.getCheckedNodes(),
-  setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
 });
 const emits = defineEmits([
   "type-change",
@@ -343,6 +339,10 @@ watch(
     }
   }
 );
+defineExpose({
+  getCheckedNodes: getCheckedChildren,
+  setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
+});
 </script>
 <style lang="scss" scoped>
 .echart-tree-container {
