@@ -133,6 +133,7 @@ const rules = {
   // region: { required: true, message: "请输入所在地区", trigger: "blur" },
   area: { required: true, message: "请输入建筑面积", trigger: "blur" },
   provinceId: { required: true, message: "请输选择所在省份", trigger: "blur" },
+  cityId: { required: true, message: "请输选择所在城市", trigger: "blur" },
   buildingTypeId: { required: true, message: "请选择建筑分类", trigger: "change" },
   sysClassIds: { required: true, message: "请选择运行系统", trigger: "change" },
   openTime: {
