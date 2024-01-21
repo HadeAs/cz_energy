@@ -7,7 +7,6 @@
  */
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from 'dayjs';
-import uniqueId from "lodash/uniqueId";
 
 export * from "./cookies";
 
@@ -100,7 +99,7 @@ export const renderTreeData = (data = [], names = [], faKey) => {
 export const renderAxis = (type, label) => {
   switch (type) {
     case "hour":
-      return dayjs(label).format('YYYY-MM-DD HH');
+      return dayjs(label).format('HH');
     case "day":
       return dayjs(label).format('YYYY-MM-DD');
     case "month":

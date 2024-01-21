@@ -194,13 +194,25 @@ const batchExport = async () => {
     startDate: timeRange.value?.[0],
     endDate: timeRange.value?.[1],
   };
-  const res = await exportInBatch({
-    sysClassId: sysClassId.value,
-    energyStatisticsName: projName.value,
-    projectId: globalState.value.projectId,
-    ...param,
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    const res = await exportInBatch({
+      sysClassId: sysClassId.value,
+      energyStatisticsName: projName.value,
+      projectId: globalState.value.projectId,
+      ...param,
+    });
+    if (res) {
+      exportWithExcel(res, '费用明细');
+      ElMessage({
+        type: "success",
+        message: "导出成功",
+      });
+    }
   });
-  exportWithExcel(res, new Date().getTime());
 };
 
 const column = [

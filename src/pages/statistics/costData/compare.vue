@@ -33,23 +33,19 @@
 import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import {
-  exportWithExcel,
-  getSearchNode,
-  handleOpts,
-  renderAxis,
-} from "@/utils";
-import { exportCostQsBatch, getCostSta } from "@/api/staMng/statistics.js";
-import { storeToRefs } from "pinia";
-import appStore from "@/store/index.js";
-import { simServiceRequest } from "@/api/backstageMng/utils.js";
-import { getEnergyList } from "@/api/common.js";
+import { exportWithExcel, handleOpts, renderAxis } from "@/utils";
+import { exportCostQsBatch, getCostSta } from '@/api/staMng/statistics.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+import { simServiceRequest } from '@/api/backstageMng/utils.js';
+import { getEnergyList } from '@/api/common.js';
+import { getDefaultDate } from '@/hooks/useChart.js';
 
 const { globalState } = storeToRefs(appStore.global);
 
 const defaultKeys = ref([2, 3]);
-const searchType = ref("hour");
-const searchDate = ref({});
+const searchType = ref('day');
+const searchDate = ref({})
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const echartTreeRef = ref();
@@ -82,26 +78,40 @@ const handleOnSearch = () => {
 const handleExport = async () => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length
-    ? checkchilds?.map((i) => i?.id)
-    : defaultKeys.value;
-  const [startDate, endDate] = searchFormCfg.value.filter(
-    (i) => i?.prop === "timeRange"
-  )?.[0]?.value || [undefined, undefined];
-  const exportData = {
-    type: searchType.value,
-    projectId: state.searchFormData.projectId,
-    startDate,
-    endDate,
-  };
-  const res = await Promise.all(
-    energyStatisticsIds.map((i) =>
-      exportCostQsBatch({ ...exportData, energyStatisticsId: i })
-    )
-  );
-  res.forEach((i, index) => {
-    exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
-  });
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    const energyStatisticsIds = checkchilds?.length
+        ? checkchilds?.map((i) => i?.id)
+        : defaultKeys.value;
+    const [startDate, endDate] = searchFormCfg.value.filter(
+        (i) => i?.prop === "timeRange"
+    )?.[0]?.value || [undefined, undefined];
+    const exportData = {
+      type: searchType.value,
+      projectId: state.searchFormData.projectId,
+      startDate,
+      endDate,
+    };
+    // const res = await Promise.all(
+    //     energyStatisticsIds.map((i) =>
+    //         exportCostQsBatch({ ...exportData, energyStatisticsId: i })
+    //     )
+    // );
+    // res.forEach((i, index) => {
+    //   exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
+    // });
+    const res = await exportCostQsBatch({ ...exportData, energyStatisticsId: energyStatisticsIds?.[0] });
+    if (res) {
+      exportWithExcel(res, "费用数据-费用对比");
+      ElMessage({
+        type: "success",
+        message: "导出成功",
+      });
+    }
+  })
 };
 
 const randomArr = (count, num) => {
@@ -110,6 +120,7 @@ const randomArr = (count, num) => {
 
 const handleTypeChange = (val) => {
   searchType.value = val;
+  searchDate.value = getDefaultDate(val);
   switch (val) {
     case "hour":
       xAxisCnt.value = 12;

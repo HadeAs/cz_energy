@@ -51,7 +51,7 @@ import {
 const { globalState } = storeToRefs(appStore.global);
 
 const defaultKeys = ref([]);
-const searchType = ref("hour");
+const searchType = ref("day");
 const searchDate = ref({});
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
@@ -86,25 +86,41 @@ const handleExport = async () => {
   const checks = echartTreeRef.value
     .getCheckedNodes()
     ?.filter((v) => !v.children);
-  const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
-  const [startDate, endDate] = searchFormCfg.value.filter(
-    (i) => i?.prop === "timeRange"
-  )?.[0]?.value || [undefined, undefined];
-  const exportData = {
-    type: searchType.value,
-    projectId: state.searchFormData.projectId,
-    startDate,
-    endDate,
-    energyStatisticsId: data?.faId,
-  };
-  const res = await Promise.all(
-    data?.childIds.map((i) =>
-      exportEnergyQsBatch({ ...exportData, sysClassId: i })
-    )
-  );
-  res.forEach((i, index) => {
-    exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
-  });
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
+      const [startDate, endDate] = searchFormCfg.value.filter(
+          (i) => i?.prop === "timeRange"
+      )?.[0]?.value || [undefined, undefined];
+      const exportData = {
+        type: searchType.value,
+        projectId: state.searchFormData.projectId,
+        startDate,
+        endDate,
+        energyStatisticsId: data?.faId,
+      };
+      // const res = await Promise.all(
+      //     data?.childIds.map((i) =>
+      //         exportEnergyQsBatch({ ...exportData, sysClassId: i })
+      //     )
+      // );
+      const res = await exportEnergyQsBatch({ ...exportData, sysClassId: data?.childIds?.[0] });
+      // res.forEach((i, index) => {
+      //   exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
+      // });
+      if (res) {
+        exportWithExcel(res, "能源数据-历史数据");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
+    })
+    .catch(() => {});
 };
 
 const randomArr = (count, num) => {

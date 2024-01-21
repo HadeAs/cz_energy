@@ -92,3 +92,13 @@ export const getCurrentResource = () => {
 export const getEnergyList = () => {
   return http.get(`${PORT}/energy-statistics/name-list`);
 }
+
+// 获取省份列表
+export const getProvinceList = () => {
+  return http.get(`common/provinces`);
+}
+
+// 获取省份列表
+export const getCityByProvinceId = (province) => {
+  return http.get(`common/cities`, province);
+}

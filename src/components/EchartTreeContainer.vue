@@ -40,9 +40,9 @@
       <el-scrollbar>
         <div class="right-title">
           <span class="select-var">选择变量</span>
-          <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">
-            +添加
-          </div>
+<!--          <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">-->
+<!--            +添加-->
+<!--          </div>-->
           <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
             <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="varForm">
               <el-form-item label="变量组" required prop="groupName">
@@ -84,12 +84,12 @@
               @mouseleave="leaveTreeNode()"
             >
               <span>{{ node.label }}</span>
-              <span
-                @click="confirmDelVar(node, data)"
-                v-if="hoverNodeId === data.id && allowDelVar"
-                class="del-btn"
-                >删除</span
-              >
+<!--              <span-->
+<!--                @click="confirmDelVar(node, data)"-->
+<!--                v-if="hoverNodeId === data.id && allowDelVar"-->
+<!--                class="del-btn"-->
+<!--                >删除</span-->
+<!--              >-->
             </div>
           </template>
         </el-tree>

@@ -23,12 +23,12 @@
             <el-button type="primary" v-auth="'auth_add'" @click="addRow"
               >新增</el-button
             >
-            <el-button
-              :disabled="!selectRows.length"
-              v-auth="'auth_batch_delete'"
-              @click="batchDelete"
-              >批量删除</el-button
-            >
+<!--            <el-button-->
+<!--              :disabled="!selectRows.length"-->
+<!--              v-auth="'auth_batch_delete'"-->
+<!--              @click="batchDelete"-->
+<!--              >批量删除</el-button-->
+<!--            >-->
           </el-col>
           <el-col :offset="16" :span="4">
             <el-input

@@ -14,7 +14,7 @@ const DEFAULT_SEARCH_CONFIG = {
   type: "day",
 };
 
-const getDefaultDate = (type) => {
+export const getDefaultDate = (type) => {
   let startDate;
   const now = dayjs();
   const endDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 23:59:59";

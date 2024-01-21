@@ -17,8 +17,18 @@
     <el-form-item label="项目名称" required prop="name">
       <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
-    <el-form-item label="所在地区" required prop="region">
-      <el-input placeholder="请输入" v-model="state.detailForm.region" />
+<!--    <el-form-item label="所在地区" required prop="region">-->
+<!--      <el-input placeholder="请输入" v-model="state.detailForm.region" />-->
+<!--    </el-form-item>-->
+    <el-form-item label="所在省份" required prop="provinceId">
+      <el-select v-model="state.detailForm.provinceId" placeholder="请选择" @change="handleOnChangeProvince">
+        <el-option v-for="item in state.provinceList" :key="item.id" :value="item.id" :label="item.name" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="所在城市" prop="cityId">
+      <el-select v-model="state.detailForm.cityId" placeholder="请选择">
+        <el-option v-for="item in state.cityList" :key="item.id" :value="item.id" :label="item.name" />
+      </el-select>
     </el-form-item>
     <el-form-item label="建筑面积(㎡)" required prop="area">
       <el-input placeholder="请输入" v-model="state.detailForm.area" />
@@ -95,13 +105,15 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
+// import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
 import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
-import { getBuildingType, getSysClass } from '@/api/common.js';
+import { getBuildingType, getCityByProvinceId, getProvinceList, getSysClass } from '@/api/common.js';
 
 const init = {
   name: "",
-  region: "",
+  // region: "",
+  provinceId: "",
+  cityId: "",
   area: "",
   buildingTypeId: "",
   sysClassIds: [],
@@ -118,8 +130,9 @@ const init = {
 };
 const rules = {
   name: { required: true, message: "请输入项目名称", trigger: "blur" },
-  region: { required: true, message: "请输入所在地区", trigger: "blur" },
+  // region: { required: true, message: "请输入所在地区", trigger: "blur" },
   area: { required: true, message: "请输入建筑面积", trigger: "blur" },
+  provinceId: { required: true, message: "请输选择所在省份", trigger: "blur" },
   buildingTypeId: { required: true, message: "请选择建筑分类", trigger: "change" },
   sysClassIds: { required: true, message: "请选择运行系统", trigger: "change" },
   openTime: {
@@ -190,7 +203,21 @@ const state = reactive({
   detailForm: init,
   buildingType: [],
   sysClass: [],
+  provinceList: [],
+  cityList: [],
 });
+
+const getCity = async parentId => {
+  const res = await getCityByProvinceId({ parentId })
+  if (res?.data?.data) {
+    state.cityList = res?.data?.data;
+  }
+}
+
+const handleOnChangeProvince = e => {
+  getCity(e);
+  state.detailForm = { ...state.detailForm, cityId: '' }
+}
 
 onMounted(async () => {
   getBuildingType().then(({ data }) => {
@@ -198,9 +225,14 @@ onMounted(async () => {
       state.buildingType = data?.data;
     }
   })
-  getSysClass().then(({ data }) => {
+  getSysClass().then(data => {
+    if (data) {
+      state.sysClass = data;
+    }
+  })
+  getProvinceList().then(({ data }) => {
     if (data?.data) {
-      state.sysClass = data?.data;
+      state.provinceList = data?.data;
     }
   })
   if (props.initData) {
@@ -209,6 +241,9 @@ onMounted(async () => {
       state.detailForm = { ...init, ...props.initData, ...data?.data,
         // isRemoted 查询返回 boolean， post 接口接收 字符串
       ...{ openTime: props.initData?.openTime, isRemoted: data?.data?.isRemoted ? '1' : '0' } };
+      if (data?.data?.provinceId) {
+        await getCity(data?.data?.provinceId)
+      }
     }
   }
 });
