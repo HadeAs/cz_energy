@@ -2,34 +2,16 @@
  * @Author: ymZhang
  * @Date: 2024-01-16 11:29:30
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-19 11:58:24
+ * @LastEditTime: 2024-01-22 15:22:30
  * @Description: 
  */
 import { reactive, toRefs, onMounted } from "vue";
-import dayjs from "dayjs";
-import { COMMON_DATE_FORMAT } from "@/constant";
+import { getDefaultDate } from "@/utils";
 
 
 const DEFAULT_SEARCH_CONFIG = {
   type: "day",
 };
-
-export const getDefaultDate = (type) => {
-  let startDate;
-  const now = dayjs();
-  const endDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 23:59:59";
-  if (type === "hour") {
-    // 默认查询当前一天的数据
-    startDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 00:00:00";
-  } else if (type === "day") {
-    // 默认查询近7天的数据
-    startDate = now.subtract(7, "day").format(COMMON_DATE_FORMAT) + " 00:00:00";
-  } else if (type === "month") {
-    // 默认查询最近12个月的数据
-    startDate = now.subtract(1, "year").startOf("year").format(COMMON_DATE_FORMAT) + " 00:00:00";
-  }
-  return { startDate, endDate };
-}
 
 const useChart = (chartConfig = {}, treeConfig = {}) => {
   const { api: chartApi, param: searchParam = {}, handleParam, updateChart } = chartConfig;

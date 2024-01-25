@@ -9,37 +9,13 @@
         <span>能源消耗量（kWh）</span>
         <span>是否重点用能</span>
       </li>
-      <li class="cs-table-info">
-        <span> 螺杆式水源热泵机组1</span>
-        <span>502,200</span>
-        <span
-          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
-        ></span>
-      </li>
-      <li class="cs-table-info">
-        <span>空气能热水机组1</span>
-        <span>125,475.4</span>
-        <span
-          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
-        ></span>
-      </li>
-      <li class="cs-table-info">
-        <span>空气能热水机组2</span>
-        <span>131,284.8</span>
-        <span
-          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
-        ></span>
-      </li>
-      <li class="cs-table-info">
-        <span>空气能热水机组3</span>
-        <span>103,731.2</span>
-        <span
-          ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
-        ></span>
-      </li>
-      <li class="cs-table-info">
-        <span>曳引驱动乘客电梯1</span>
-        <span>114,048</span>
+      <li
+        class="cs-table-info"
+        v-for="item in state.list"
+        :key="item.equipmentId"
+      >
+        <span> {{ item.equipmentName }}</span>
+        <span>{{ item.data.toLocaleString() }}</span>
         <span
           ><el-icon class="check-circle-outline"><CircleCheck /></el-icon
         ></span>
@@ -48,7 +24,31 @@
   </div>
 </template>
 <script setup name="List">
+import { reactive, watch } from "vue";
 import { CircleCheck } from "@element-plus/icons-vue";
+import { queryPowerRank } from "@/api/screen/mainb";
+const props = defineProps({
+  projectId: { type: Number },
+});
+
+const state = reactive({
+  tag: "kWh",
+  list: [],
+});
+const queryList = async () => {
+  const { data } = await queryPowerRank({ projectId: props.projectId });
+  if (data?.rankList) {
+    state.list = data.rankList;
+    state.tag = data.tag;
+  }
+};
+queryList();
+watch(
+  () => props.projectId,
+  () => {
+    queryList();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

@@ -231,6 +231,7 @@ init();
       cursor: pointer;
       display: flex;
       align-items: center;
+      outline: none;
       .user-name {
         margin-left: 10px;
         color: #000000;

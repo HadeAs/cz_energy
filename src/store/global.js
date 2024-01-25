@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 17:28:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-20 13:20:20
+ * @LastEditTime: 2024-01-22 14:33:00
  * @Description:
  */
 import { ref, reactive } from "vue";
@@ -16,7 +16,8 @@ export const useGlobal = defineStore("global", () => {
     roleList: [],
     resourceList: [],
     authList: [],
-    authInit: false
+    authInit: false,
+    mock: true
   })
   const projectName = ref("");
   // 超级管理员角色

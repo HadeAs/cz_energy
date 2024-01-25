@@ -1,8 +1,8 @@
 <!--
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-06 17:29:28
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-23 19:48:50
  * @Description: 
 -->
 <template>
@@ -16,7 +16,7 @@
         <span class="cs-left-text2"
           ><img src="@/assets/img/screen/weather1.png" />{{
             state.degree
-          }}℃</span
+          }}</span
         >
       </div>
       <div class="cs-right-header">
@@ -24,27 +24,46 @@
         <span class="cs-right-text2"
           ><img src="@/assets/img/screen/u1684.png" />{{ state.role }}</span
         >
-        <span class="cs-quit"><img src="@/assets/img/screen/u2156.png" /></span>
+        <span class="cs-quit">
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <img src="@/assets/img/screen/u2156.png" />
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="logout">退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          /></span
+        >
       </div>
     </div>
-    <div class="cs-main-content">
-      <router-view />
+    <div class="cs-main-content" v-if="state.initSuccess">
+      <router-view @refresh="handleRefresh" />
     </div>
   </div>
 </template>
-<script lang="ts" setup name="ScreenLayout">
+<script setup name="ScreenLayout">
 import { reactive, ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import IntervalTime from "./components/intervalTime.vue";
+import appStore from "@/store";
+import { getProjectInfo } from "@/api/screen/mainb";
+import { checkToken } from "@/api/login";
+import { storeToRefs } from "pinia";
 
+const { globalState } = storeToRefs(appStore.global);
 const router = useRouter();
+const route = useRoute();
 const pageContainer = ref();
 const scaleX = ref(1);
 const scaleY = ref(1);
 const state = reactive({
   city: "常州",
-  degree: 30,
+  degree: "30℃",
   role: "管理员",
+  initSuccess: false,
 });
 const getRate = () => {
   const ratioX = window.innerWidth / 1920;
@@ -52,12 +71,57 @@ const getRate = () => {
   scaleX.value = ratioX;
   scaleY.value = ratioY;
 };
+
+const logout = () => {
+  appStore.useUserStore.userLogout();
+  router.push({ path: "/login" });
+};
+
+const check = async () => {
+  const { code, data } = await checkToken();
+  if (code !== 200) {
+    ElMessageBox.alert("您的登陆已过期，请重新登录", "提示", {
+      confirmButtonText: "确认",
+      callback: () => {
+        appStore.useUserStore.clear();
+        router.push({ path: `/login?redirect=${route.path}` });
+      },
+    });
+    return false;
+  }
+  state.role = data.data.userName;
+};
+check();
 window.onresize = () => {
   getRate();
 };
+
 onMounted(() => {
   getRate();
 });
+
+const handleRefresh = (projectId) => {
+  query(projectId);
+};
+
+const query = async (projectId) => {
+  const { data } = await getProjectInfo({
+    projectId: projectId || globalState.value.projectId,
+  });
+  state.city = data.cityName;
+  state.degree = data.degree;
+};
+const init = async () => {
+  // 获取项目列表
+  await appStore.global.getProList();
+  // 获取角色列表
+  await appStore.global.getRoleList();
+  // 获取权限列表
+  await appStore.global.getAllResource();
+  state.initSuccess = true;
+  query();
+};
+init();
 const handleClick = () => {
   const path = router.resolve({
     name: "projectMgr",

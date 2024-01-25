@@ -2,12 +2,13 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-20 13:58:58
+ * @LastEditTime: 2024-01-22 15:22:07
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from 'dayjs';
-
+import appStore from "@/store";
+import { COMMON_DATE_FORMAT } from "@/constant";
 export * from "./cookies";
 
 // 导出文件制作下载链接
@@ -124,3 +125,24 @@ export const formatXAxis = (value, type) => {
   }
   return dayjs(value).format(format)
 };
+
+export const getDefaultDate = (type) => {
+  let startDate;
+  const now = dayjs();
+  const endDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 23:59:59";
+  if (type === "hour") {
+    // 默认查询当前一天的数据
+    startDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 00:00:00";
+  } else if (type === "day") {
+    // 默认查询近7天的数据
+    startDate = now.subtract(7, "day").format(COMMON_DATE_FORMAT) + " 00:00:00";
+  } else if (type === "month") {
+    // 默认查询最近12个月的数据
+    startDate = now.subtract(1, "year").startOf("year").format(COMMON_DATE_FORMAT) + " 00:00:00";
+  }
+  return { startDate, endDate };
+}
+
+export const judgeIfMock = () => {
+  return appStore.global.globalState.mock;
+}

@@ -16,79 +16,70 @@
 
     <ul class="cs-right-wrap1">
       <li
-        v-for="(item, index) in state[state.activeTab]"
+        v-for="(item, index) in state.list"
         :key="index"
         class="cs-table-info"
       >
         <div>
           <span
             class="label label-info light label-sm"
-            :class="item.status === 0 ? 'label-info' : 'label-success'"
-            >{{ item.tag }}</span
+            :class="item.status === '未处理' ? 'label-info' : 'label-success'"
+            >{{ item.status }}</span
           >
         </div>
         <div>
           <span class="spot"></span>
-          <span class="text-overflow">{{ item.content }}</span>
+          <span class="text-overflow" :title="item.content">{{
+            item.content
+          }}</span>
         </div>
-        <div>{{ item.date }}</div>
+        <div>{{ item.createTime.split(" ")[1] }}</div>
       </li>
     </ul>
   </div>
 </template>
 <script setup>
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
+import { queryAlarm } from "@/api/screen/mainb";
+
+const props = defineProps({
+  projectId: { type: Number },
+});
+
 const tabs = [
-  { id: "all", name: "全部" },
-  { id: "tag1", name: "设备故障" },
-  { id: "tag2", name: "耗电量超标" },
-  { id: "tag3", name: "能耗超标" },
+  { id: "", name: "全部" },
+  { id: 1, name: "一级" },
+  { id: 2, name: "二级" },
+  { id: 3, name: "三级" },
 ];
 
-const values = [
-  {
-    tag: "待处理",
-    status: 0,
-    content: "编号1006压力传感器6公斤故障",
-    date: "18:54:45",
-  },
-  {
-    tag: "待处理",
-    status: 0,
-    content: "编号1156空气热泵机组1设备故障",
-    date: "16:10:12",
-  },
-  {
-    tag: "待处理",
-    status: 0,
-    content: "编号1021水箱温度升高 报警",
-    date: "12:08:33",
-  },
-  {
-    tag: "已处理",
-    status: 1,
-    content: "编号1014液位传感器故障处理",
-    date: "10:08:33",
-  },
-  {
-    tag: "已处理",
-    status: 1,
-    content: "编号1157空气源热泵机组2 清洗处理完成",
-    date: "09:14:45",
-  },
-];
 const state = reactive({
-  activeTab: "all",
-  all: values,
-  tag1: [values[0], values[1]],
-  tag2: [values[0], values[1], values[2]],
-  tag3: [values[3], values[4]],
+  activeTab: "",
+  list: [],
 });
+
+const queryList = async () => {
+  const { data } = await queryAlarm({
+    projectId: props.projectId,
+    level: state.activeTab,
+  });
+  if (data?.data) {
+    state.list = data.data;
+  }
+};
+queryList();
 const handleChangeTab = (value) => {
   if (state.activeTab !== value) {
     state.activeTab = value;
+    queryList();
   }
 };
+watch(
+  () => props.projectId,
+  () => {
+    queryList();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-22 23:12:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-23 20:00:55
+ * @LastEditTime: 2024-01-23 19:27:47
  * @Description: 
 -->
 <template>
@@ -10,9 +10,10 @@
   <span class="cs-right-text">{{ state.currentDate }}</span>
   <span class="cs-right-text">{{ state.currentWeek }}</span>
 </template>
-<script lang="ts" setup name="IntervalTime">
+<script setup name="IntervalTime">
 import { reactive, onUnmounted } from "vue";
 import dayjs from "dayjs";
+import { COMMON_DATE_FORMAT } from "@/constant";
 let interval;
 
 const weeks = ["天", "一", "二", "三", "四", "五", "六"];
@@ -24,7 +25,7 @@ const state = reactive({
 
 const getDate = () => {
   const date = dayjs(new Date());
-  state.currentDate = `${date["$y"]}-${date["$M"] + 1}-${date["$D"]}`
+  state.currentDate = date.format(COMMON_DATE_FORMAT);
 };
 
 const getWeek = () => {
@@ -36,7 +37,7 @@ const getTime = () => {
   const h = dayjs().hour();
   const m = dayjs().minute();
   const s = dayjs().second();
-  const arr = [h, m, s].map((item: any) =>
+  const arr = [h, m, s].map((item) =>
     String(item).length < 2 ? `0${item}` : item
   );
   state.currentTime = arr.join(":");
@@ -58,7 +59,7 @@ init();
 </script>
 <style lang="scss" scoped>
 .cs-right-text {
-  color: #A9C5E7;
+  color: #a9c5e7;
   margin-right: 10px;
 }
 </style>
