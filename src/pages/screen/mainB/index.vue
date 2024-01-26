@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-23 19:24:47
+ * @LastEditTime: 2024-01-26 12:57:05
  * @Description: 
 -->
 <template>
@@ -43,6 +43,7 @@ const state = reactive({
 });
 const handleSearch = (projectId) => {
   state.projectId = projectId;
+  appStore.global.changeName(projectId);
   emits("refresh", projectId);
 };
 // emits("refresh", state.projectId);

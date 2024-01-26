@@ -1,7 +1,7 @@
 <template>
   <div class="cs-left-wrapper">
-    <Summary />
-    <Rank />
+    <Summary :project-id="state.projectId" />
+    <Rank :project-id="state.projectId" />
     <Trend />
   </div>
   <div class="cs-center-wrapper">
@@ -14,8 +14,25 @@
     <Rate />
   </div>
 </template>
-<script lang="ts" setup name="MainA">
-import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./components";
+<script setup name="MainA">
+import { reactive } from "vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import {
+  Summary,
+  Rank,
+  Trend,
+  Map,
+  OverView,
+  Process,
+  Action,
+  Rate,
+} from "./components";
+
+const { globalState } = storeToRefs(appStore.global);
+const state = reactive({
+  projectId: globalState.value.projectId,
+});
 </script>
 <style lang="scss" scoped>
 .cs-left-wrapper {
@@ -57,13 +74,23 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   color: #7a7787;
 }
 
-.cs-right-wrapper .cs-right-wrap1 .cs-info-wrap .cs-info-box .cs-main-text .cs-num-text {
+.cs-right-wrapper
+  .cs-right-wrap1
+  .cs-info-wrap
+  .cs-info-box
+  .cs-main-text
+  .cs-num-text {
   color: #fff;
   font-size: 20px;
   font-weight: bold;
 }
 
-.cs-right-wrapper .cs-right-wrap1 .cs-info-wrap .cs-info-box .cs-main-text .cs-unit-text {
+.cs-right-wrapper
+  .cs-right-wrap1
+  .cs-info-wrap
+  .cs-info-box
+  .cs-main-text
+  .cs-unit-text {
   color: #acabb4;
 }
 
@@ -122,7 +149,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   display: inline-block;
   width: 70px;
   text-align: center;
-  color: #ACABB4;
+  color: #acabb4;
 }
 
 .cs-right-wrapper .cs-right-wrap3 .cs-info-wrap.color1 {
@@ -185,7 +212,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
 }
 
 .cs-right-wrapper .cs-right-wrap5 .cs-left-info .cs-info-text {
-  color: #ACABB4;
+  color: #acabb4;
   position: absolute;
   left: 12px;
   top: 62px;
@@ -206,7 +233,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
 }
 
 .cs-right-wrapper .cs-right-wrap5 .cs-left-info .cs-info-detail {
-  color: #ACABB4;
+  color: #acabb4;
   font-weight: bold;
   position: absolute;
   left: 108px;
@@ -223,7 +250,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   margin-top: 8px;
 }
 
-.cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box>img {
+.cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box > img {
   width: 25px;
   height: 21px;
 }
@@ -231,7 +258,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
 .cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-text {
   display: inline-block;
   width: 100px;
-  color: #7A7886;
+  color: #7a7886;
 }
 
 .cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-num {
@@ -247,7 +274,12 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   font-weight: bold;
 }
 
-.cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-num .cs-unit {
+.cs-right-wrapper
+  .cs-right-wrap5
+  .cs-right-info
+  .cs-info-box
+  .cs-info-num
+  .cs-unit {
   color: #fff;
   font-size: 14px;
   font-weight: normal;

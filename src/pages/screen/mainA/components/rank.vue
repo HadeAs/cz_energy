@@ -19,14 +19,14 @@
         </ul>
         <ul class="cs-btn-group margin-left-large-4">
           <li
-            :class="state.active2 === 0 ? 'active' : ''"
-            @click="handleClick('active2', 0)"
+            :class="state.active2 === 'month' ? 'active' : ''"
+            @click="handleClick('active2', 'month')"
           >
             月
           </li>
           <li
-            :class="state.active2 === 1 ? 'active' : ''"
-            @click="handleClick('active2', 1)"
+            :class="state.active2 === 'year' ? 'active' : ''"
+            @click="handleClick('active2', 'year')"
           >
             年
           </li>
@@ -63,10 +63,14 @@
 </template>
 <script setup name="Rank">
 import { reactive } from "vue";
+import { queryCarbonRank, queryCarbonTotal } from "@/api/screen/maina";
+const props = defineProps({
+  projectId: { type: Number },
+});
 const values = ["90%", "80%", "60%", "40%", "30%"];
 const state = reactive({
   active1: 0,
-  active2: 0,
+  active2: "month",
   rankData: [
     {
       name: "常州天辉锂电池制造",
@@ -95,17 +99,57 @@ const state = reactive({
     },
   ],
 });
+
+const updateData = (data) => {
+  let total = 0;
+  data.forEach((item) => {
+    total += item.data;
+  });
+  state.rankData = data.map((item) => {
+    return {
+      id: item.projectId,
+      name: item.projectName,
+      value: item.data.toFixed(2),
+      percent: `${(item.data / total) * 100}%`,
+    };
+  });
+};
+
+const querySummary = async () => {
+  const { data } = await queryCarbonRank({
+    projectId: props.projectId,
+    type: state.active2,
+  });
+  if (data?.data) {
+    updateData(data.data);
+  }
+};
+
+const querySummary2 = async () => {
+  const { data } = await queryCarbonTotal({
+    projectId: props.projectId,
+    type: state.active2,
+  });
+  if (data?.data) {
+    updateData(data.data);
+  }
+};
+
+const query = () => {
+  if (state.active1 === 0) {
+    querySummary();
+  } else {
+    querySummary2();
+  }
+};
+const init = () => {
+  querySummary();
+};
+init();
 const handleClick = (name, value) => {
   if (state[name] !== value) {
     state[name] = value;
-    const percent = values.sort(function () {
-      return Math.random() - 0.5;
-    });
-    state.rankData = state.rankData.map((item, index) => ({
-      ...item,
-      value: item.value + Math.floor(Math.random() * 70),
-      percent: percent[index],
-    }));
+    query();
   }
 };
 </script>

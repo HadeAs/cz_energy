@@ -2,11 +2,10 @@
  * @Author: ymZhang
  * @Date: 2024-01-22 10:24:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-23 19:13:03
+ * @LastEditTime: 2024-01-26 12:37:41
  * @Description: 
  */
 import http from '@/api/http.js';
-import { COMMON_JSON_CONFIG, COMMON_SUBMIT_CONFIG, COMMON_UPDATE_CONFIG } from '@/api/index.js';
 
 const PORT = "web";
 export const querySummary = (params) => {
