@@ -101,13 +101,29 @@
         <el-input placeholder="请输入" v-model="state.detailForm.summerWinnerTag" />
       </el-form-item>
     </div>
+    <el-form-item label="用能人数" required prop="energyPersonNum">
+      <el-input placeholder="请输入" v-model="state.detailForm.energyPersonNum" />
+    </el-form-item>
+    <el-form-item label="默认碳排放标准" required prop="carbonStandardId">
+      <el-select v-model="state.detailForm.carbonStandardId" placeholder="选择排放标准">
+        <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+    </el-form-item>
   </el-form>
 </template>
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 // import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
 import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
-import { getBuildingType, getCityByProvinceId, getProvinceList, getSysClass } from '@/api/common.js';
+import {
+  getBuildingType,
+  getCarbonStandardList,
+  getCityByProvinceId,
+  getProvinceList,
+  getSysClass
+} from '@/api/common.js';
+
+const staList = ref([]);
 
 const init = {
   name: "",
@@ -127,6 +143,8 @@ const init = {
   temperatureSettingTag: "",
   startStopTag: "",
   summerWinnerTag: "",
+  carbonStandardId: "",
+  energyPersonNum: "",
 };
 const rules = {
   name: { required: true, message: "请输入项目名称", trigger: "blur" },
@@ -136,6 +154,8 @@ const rules = {
   cityId: { required: true, message: "请输选择所在城市", trigger: "blur" },
   buildingTypeId: { required: true, message: "请选择建筑分类", trigger: "change" },
   sysClassIds: { required: true, message: "请选择运行系统", trigger: "change" },
+  energyPersonNum: { required: true, message: "请输入用能人数", trigger: "blur" },
+  carbonStandardId: { required: true, message: "请选择碳排放标准", trigger: "change" },
   openTime: {
     type: "date",
     required: true,
@@ -221,6 +241,11 @@ const handleOnChangeProvince = e => {
 }
 
 onMounted(async () => {
+  getCarbonStandardList().then(({ data }) => {
+    if (data?.data) {
+      staList.value = data.data;
+    }
+  })
   getBuildingType().then(({ data }) => {
     if (data?.data) {
       state.buildingType = data?.data;

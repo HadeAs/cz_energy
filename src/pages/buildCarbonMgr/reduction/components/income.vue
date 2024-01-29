@@ -1,133 +1,133 @@
 <template>
   <MainContentContainer class="income-container">
-    <div class="tool-bar">
-      <div class="title">减碳投资收益（年）</div>
-      <div class="right-title">
-        <el-select
-          v-model="state.searchValue"
-          placeholder="选择项目"
-          @change="handleSearchChange"
-        >
-          <el-option
-            v-for="item in opts"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
-      </div>
-    </div>
-    <el-table
-      :data="state.tableData"
+    <Rate :searchData="state.searchFormData" />
+    <ProTable
+      multiple
+      :hasPagination="false"
       :span-method="objectSpanMethod"
-      stripe
-      row-key="id"
+      :column="columns"
+      :datasource="dataSource"
     >
-      <el-table-column prop="name" label="" width="150" align="center">
-        <template #default="scope">
-          <div className="text-overflow" :title="scope.row.name">
-            <span className="table-first-col">{{ scope.row.name }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="project" label="项目" />
-      <el-table-column prop="unitPrice" label="投资单价" />
-      <el-table-column prop="num" label="数量" />
-      <el-table-column prop="total" label="总投资费用(万元)" width="150" />
-      <el-table-column prop="reduction" label="减碳量" />
-      <el-table-column prop="carbonUnit" label="碳单价" />
-      <el-table-column prop="energySave" label="节能(直接)收益" width="150" />
-      <el-table-column prop="carbonSave" label="减碳收益" />
-    </el-table>
+      <template #toolbar>
+        <el-form
+          :inline="true"
+          class="search-form"
+          :model="state.searchFormData"
+        >
+          <el-form-item>
+            <el-form-item label="时间间隔" style="margin-bottom: 0">
+              <el-select v-model="state.searchFormData.duration" @change="e => handleSearchChange(e, 'duration')" placeholder="选择排放标准">
+                <el-option v-for="item in tabs" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-form-item>
+          <el-form-item>
+            <el-form-item label="排放标准" style="margin-bottom: 0">
+              <el-select v-model="state.searchFormData.standardId" @change="e => handleSearchChange(e, 'standardId')" placeholder="选择排放标准">
+                <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
+            </el-form-item>
+          </el-form-item>
+        </el-form>
+      </template>
+      <template #operation="scope">
+        <a class="table-operator-btn" @click="configRow(scope.row)" v-auth="''">配置</a>
+      </template>
+    </ProTable>
+    <ProDrawer title="费用配置" ref="priceDrawerRef" @confirm="confirmPrice">
+      <PriceConfig ref="priceConfigRef" :initData="state.initDetailData" />
+    </ProDrawer>
   </MainContentContainer>
 </template>
-<script setup name="InCome">
-import { reactive } from "vue";
+<script lang="jsx" setup name="InCome">
+import { onMounted, reactive, ref, watch } from "vue";
+import useTable from '@/hooks/useTable.js';
+import { configReduce, getList } from '@/api/buildCarbon/reduce.js';
+import { getCarbonStandardList } from '@/api/common.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+import PriceConfig from './reduceConfig.vue';
+import Rate from './rate.vue';
 
-const TEST_DATA = [
+const tabs = [
+  { label: "近一年", value: 1 },
+  { label: "近三年", value: 2 },
+  { label: "近五年", value: 5 },
+];
+
+const { globalState } = storeToRefs(appStore.global);
+
+const columns = [
   {
-    id: 0,
-    name: "可再生能源",
-    project: "光伏发电",
-    unitPrice: "5.6",
-    num: 12,
-    total: "100",
-    reduction: "0.695",
-    carbonUnit: "0.695",
-    energySave: "0.695",
-    carbonSave: "0.695",
+    prop: "groupName",
+    label: "碳减排组",
+    render: (scope) => {
+      return (
+        <div className="text-overflow" title={scope.row.groupName}>
+          <span className="table-first-col">{scope.row.groupName}</span>
+        </div>
+      );
+    },
   },
   {
-    id: 1,
-    name: "可再生能源",
-    project: "光热",
-    unitPrice: "5.62",
-    num: 15,
-    total: "100",
-    reduction: "0.156",
-    carbonUnit: "0.156",
-    energySave: "0.156",
-    carbonSave: "0.156",
+    prop: "name",
+    label: "碳减排变量名",
   },
   {
-    id: 2,
-    name: "可再生能源",
-    project: "风力发电",
-    unitPrice: "1.23",
-    num: 45,
-    total: "100",
-    reduction: "0.24",
-    carbonUnit: "0.24",
-    energySave: "0.24",
-    carbonSave: "0.24",
+    prop: "investCost",
+    label: "投资单价(万元)",
   },
   {
-    id: 3,
-    name: "节能改造",
-    project: "围护结构",
-    unitPrice: "2.36",
-    num: 56,
-    total: "100",
-    reduction: "0.36",
-    carbonUnit: "0.36",
-    energySave: "0.36",
-    carbonSave: "0.36",
+    prop: "investAmount",
+    label: "数量",
   },
   {
-    id: 4,
-    name: "节能改造",
-    project: "空调系统",
-    unitPrice: "10.2",
-    num: 58,
-    total: "100",
-    reduction: "0.24",
-    carbonUnit: "0.24",
-    energySave: "0.24",
-    carbonSave: "0.24",
+    prop: "investTotal",
+    label: "总投资费用(万元)",
   },
   {
-    id: 5,
-    name: "节能改造",
-    project: "照明系统",
-    unitPrice: "2.3",
-    num: 20,
-    total: "100",
-    reduction: "0.36",
-    carbonUnit: "0.36",
-    energySave: "0.36",
-    carbonSave: "0.36",
+    prop: "carbonReduceAmount",
+    label: "减碳量(t)",
+  },
+  {
+    prop: "carbonCost",
+    label: "碳单价(万元/t)",
+  },
+  {
+    prop: "energySaveProfit",
+    label: "节能收益(万元)",
+  },
+  {
+    prop: "carbonReduceProfit",
+    label: "减碳收益(万元)",
   },
 ];
-const opts = [
-  { id: 0, name: "国家推荐值" },
-  { id: 1, name: "地方推荐值" },
-];
+
+const priceDrawerRef = ref();
+const priceConfigRef = ref();
+const staList = ref([]);
+
 const state = reactive({
-  tableData: TEST_DATA,
+  searchFormData: {
+    projectId: globalState.value.projectId,
+    standardId: 1,
+    duration: 1,
+  },
+  initDetailData: {},
+  tableData: [],
   searchValue: 0,
 });
+
+
+const {
+  dataSource,
+  loading,
+  searchChange,
+  getTableList,
+} = useTable(getList, state.searchFormData);
+
 const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
-  if (columnIndex === 0) {
+  if (columnIndex === 1) {
     if (rowIndex % 3 === 0) {
       return {
         rowspan: 3,
@@ -141,9 +141,62 @@ const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
     }
   }
 };
-const handleSearchChange = () => {};
+
+const configRow = (row) => {
+  state.initDetailData = row;
+  priceDrawerRef.value.open();
+};
+
+const confirmPrice = async () => {
+  const res = await priceConfigRef.value.validate();
+  const configRes = await configReduce({ ...res, projectId: globalState.value.projectId });
+  if (configRes?.code === 200) {
+    searchChange(state.searchFormData);
+    priceDrawerRef.value.close();
+  }
+}
+
+const handleSearchChange = (value, type) => {
+  if (type === 'standardId') {
+    state.searchFormData.standardId = value;
+  }
+  if (type === 'duration') {
+    state.searchFormData.duration = value;
+  }
+  searchChange(state.searchFormData);
+}
+
+onMounted(async () => {
+  const staRes = await getCarbonStandardList();
+  if (staRes?.data?.data) {
+    state.searchFormData.standardId = staRes?.data?.data?.[0]?.id;
+    staList.value = staRes?.data?.data || [];
+  }
+  searchChange(state.searchFormData);
+})
+
+watch(
+  () => globalState.value.projectId,
+  (id) => {
+    state.searchFormData.projectId = id;
+    searchChange(state.searchFormData);
+  }
+);
+
 </script>
 <style lang="scss" scoped>
+.search-form {
+  text-align: right;
+  :deep() {
+    .el-form-item {
+      margin-right: 15px;
+      margin-bottom: 0;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
 .income-container {
   :deep() {
     .el-table tbody tr td:first-child:not(.el-table-column--selection) .cell {

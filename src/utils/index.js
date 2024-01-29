@@ -80,6 +80,22 @@ export const getSearchNode = (nodeKeys = [], name) => {
   }
 }
 
+export const toFixedNum = (target, count) => {
+  return target ? target.toFixed(count) : target;
+}
+
+export const getUnit = (type) => {
+  switch (type) {
+    case 'summary':
+      return 'tCO₂';
+    case 'perPerson':
+      return 'kgCO₂';
+    case 'intensity':
+      return 'kgCO₂/（m·a）';
+    default: return 'tCO₂';
+  }
+}
+
 // 树形数据字段不一致，临时处理
 export const renderTreeData = (data = [], names = [], faKey) => {
   return data.map((i, index) => ({
@@ -97,18 +113,27 @@ export const renderTreeData = (data = [], names = [], faKey) => {
   ));
 };
 
+export const timeRender = {
+  hour: 'HH',
+  day: 'YYYY-MM-DD',
+  month: 'YYYY-MM',
+  year: 'YYYY',
+  hourYear: 'YYYY-MM-DD HH',
+  common: 'YYYY-MM-DD HH:mm:ss'
+}
+
 export const renderAxis = (type, label) => {
   switch (type) {
     case "hour":
-      return dayjs(label).format('HH');
+      return dayjs(label).format(timeRender.hour);
     case "day":
-      return dayjs(label).format('YYYY-MM-DD');
+      return dayjs(label).format(timeRender.day);
     case "month":
-      return dayjs(label).format('YYYY-MM');
+      return dayjs(label).format(timeRender.month);
     case "year":
-      return dayjs(label).format('YYYY');
+      return dayjs(label).format(timeRender.year);
     default:
-      return dayjs(label).format('YYYY-MM-DD HH');
+      return dayjs(label).format(timeRender.hourYear);
   }
 };
 

@@ -102,3 +102,18 @@ export const getProvinceList = () => {
 export const getCityByProvinceId = (province) => {
   return http.get(`common/cities`, province);
 }
+
+// 获取系统中碳排放因子列表
+export const getCarbonTpyList = (params) => {
+  return http.get(`common/carbon-statistics/name-list`, params);
+}
+
+// 获取系统中碳排放标准列表
+export const getCarbonStandardList = (params) => {
+  return http.get(`common/carbon-standard/name-list`, params, COMMON_SUBMIT_CONFIG);
+}
+
+// 获取系统中碳排放标准列表
+export const getCarbonReduceList = (params) => {
+  return http.get(`common/carbon-reduce-statistics/name-list`, params, COMMON_SUBMIT_CONFIG);
+}

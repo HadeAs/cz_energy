@@ -74,6 +74,26 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="碳排放因子" prop="carbonStatisticsId">
+        <el-select v-model="state.form.carbonStatisticsId">
+          <el-option
+            v-for="item in state.tpyList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="碳减排变量" prop="carbonReduceStatisticsId">
+        <el-select v-model="state.form.carbonReduceStatisticsId">
+          <el-option
+            v-for="item in state.reduceList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="通讯站号" required prop="commNum">
         <el-input-number v-model="state.form.commNum" :min="0" />
       </el-form-item>
@@ -105,7 +125,7 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import { getInfo } from "@/api/deviceMgr/pointMgr";
-import { getGatewayList, getUnitList, getEnergyList } from "@/api/common";
+import { getGatewayList, getUnitList, getEnergyList, getCarbonTpyList, getCarbonReduceList } from "@/api/common";
 import { COMMON_FUNCTION_LIST } from "@/constant";
 
 const { globalState } = storeToRefs(appStore.global);
@@ -141,14 +161,20 @@ const state = reactive({
   variableList: [],
   unitList: [],
   energyList: [],
+  tpyList: [],
+  reduceList: [],
 });
 const init = async () => {
   const { data: gatewayData } = await getGatewayList();
   const { data: unitData } = await getUnitList();
   const { data: energyData } = await getEnergyList();
+  const { data: tpy } = await getCarbonTpyList();
+  const { data: reduce } = await getCarbonReduceList();
   state.gatewayList = gatewayData.data;
   state.unitList = unitData.data;
   state.energyList = energyData.data;
+  state.tpyList = tpy.data;
+  state.reduceList = reduce.data;
   state.initFlag = true;
 };
 

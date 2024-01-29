@@ -151,21 +151,21 @@ export const CARBTON_CALCULATE_TREE_DATA = [
     label: "碳减排量",
     children: [
       {
-        id: 11,
+        id: 'jz',
         label: "碳排基准",
         color: "#e1e1e1",
         borderColor: "#3b3b3b",
         borderType: "dashed"
       },
       {
-        id: 12,
+        id: 'zl',
         label: "碳减排总量",
         color: "#e4d8c4",
         borderColor: "#f7ac56",
         borderType: "solid"
       },
       {
-        id: 13,
+        id: 'sj',
         label: "实际碳排放量",
         color: "#d9c7cb",
         borderColor: "#8c62ef",
@@ -173,47 +173,6 @@ export const CARBTON_CALCULATE_TREE_DATA = [
       },
     ]
   },
-  {
-    id: 2,
-    label: "碳减排举措类别",
-    children: [
-      {
-        id: 21,
-        label: "光伏发电",
-        color: "#e1e1e1",
-        borderColor: "#3b3b3b",
-        borderType: "dashed"
-      },
-      {
-        id: 22,
-        label: "光热",
-        color: "#e4d8c4",
-        borderColor: "#f7ac56",
-        borderType: "solid"
-      },
-      {
-        id: 23,
-        label: "风力发电",
-        color: "#d9c7cb",
-        borderColor: "#8c62ef",
-        borderType: "solid"
-      },
-      {
-        id: 24,
-        label: "节能改造",
-        color: "#e1e1e1",
-        borderColor: "#3b3b3b",
-        borderType: "dashed"
-      },
-      {
-        id: 25,
-        label: "植树造林",
-        color: "#e4d8c4",
-        borderColor: "#8c62ef",
-        borderType: "solid"
-      }
-    ]
-  }
 ];
 
 export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
@@ -311,3 +270,18 @@ export const COMMON_SERIES_DATA = [
     data: []
   }
 ]
+
+export const DATA_TYPE = [
+  {
+    key: 'summary',
+    name: '碳排放量',
+  },
+  {
+    key: 'perPerson',
+    name: '人均碳排放量',
+  },
+  {
+    key: 'intensity',
+    name: '碳排放强度',
+  }
+];

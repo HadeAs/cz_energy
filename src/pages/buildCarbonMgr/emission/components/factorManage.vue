@@ -12,95 +12,61 @@
       @sort-change="sortChange"
     >
       <template #toolbar>
-        <el-row align="middle" :gutter="5">
-          <el-col :span="6">
-            <el-button type="primary" @click="addRow" v-auth="''"
-              >新增</el-button
-            >
-          </el-col>
-          <el-col :span="18">
-            <el-form
-              class="search-form"
-              :inline="true"
-              :model="state.searchFormData"
-            >
-              <el-form-item>
-                <el-select
-                  v-model="state.searchFormData.projectId"
-                  placeholder="选择项目"
-                  @change="handleSearchChange"
-                >
-                  <el-option
-                    v-for="item in globalState.projects"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-input
-                  v-model="state.searchFormData.textQuery"
-                  placeholder="项目名称"
-                  :suffix-icon="Search"
-                  clearable
-                  @change="handleSearchChange"
-                />
-              </el-form-item>
-            </el-form>
-          </el-col>
-        </el-row>
+        <el-form
+          class="search-form"
+          :inline="true"
+          :model="state.searchFormData"
+        >
+          <el-form-item>
+            <el-form-item label="排放标准" style="margin-bottom: 0">
+              <el-select v-model="state.searchFormData.standardId" @change="handleSearchChange" placeholder="选择排放标准">
+                <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
+              </el-select>
+            </el-form-item>
+          </el-form-item>
+        </el-form>
       </template>
       <template #operation="scope">
-        <a class="table-operator-btn" @click="editRow(scope.row)" v-auth="''"
-          >编辑</a
-        >
-        <ProPopConfirm
-          title="你确定要删除该内容吗?"
-          :icon="CircleCloseFilled"
-          iconColor="red"
-          @confirm="deleteRow(scope.row)"
-        >
-          <a class="table-operator-btn" v-auth="''">删除</a>
-        </ProPopConfirm>
+        <a class="table-operator-btn" @click="editRow(scope.row)" v-auth="''">配置</a>
       </template>
     </ProTable>
     <Detail
       ref="detailRef"
       :title="state.title"
       :data="state.currentData"
+      :staList="staList"
       @submit="detailSubmit"
     />
   </MainContentContainer>
 </template>
-<script lang="jsx" setup name="PointMgr">
-import { reactive, ref } from "vue";
+<script lang="jsx" setup name="factorMng">
+import { reactive, ref, onMounted, watch } from "vue";
 import Detail from "./detail.vue";
-import { Search, CircleCloseFilled } from "@element-plus/icons-vue";
+// import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
-import { getList, updatePoint, deletePoint } from "@/api/deviceMgr/pointMgr";
-import { ElMessage } from "element-plus";
+import { configCarbon, getList } from '@/api/buildCarbon/emission.js';
+import { getCarbonStandardList } from '@/api/common.js';
 
 const { globalState } = storeToRefs(appStore.global);
+
+const staList = ref([]);
 const detailRef = ref();
 const state = reactive({
   searchFormData: {
-    name: "",
     projectId: globalState.value.projectId,
-    textQuery: "",
   },
   sortInfo: { prop: "id", order: "descending" },
   currentData: {},
   title: "",
+  carbonTpyList: [],
 });
 
 const column = [
   {
     prop: "name",
     label: "碳排放因子",
-    width: 200,
     fixed: true,
     sortable: "custom",
     render: (scope) => {
@@ -112,12 +78,11 @@ const column = [
     },
   },
   {
-    prop: "unit",
+    prop: "tag",
     label: "符号",
-    width: 110,
   },
   {
-    prop: "label",
+    prop: "value",
     label: "值",
   },
 ];
@@ -133,9 +98,8 @@ const {
   getTableList,
 } = useTable(getList, state.searchFormData, state.sortInfo);
 
-getTableList();
-
-const handleSearchChange = () => {
+const handleSearchChange = e => {
+  state.searchFormData.standardId = e;
   searchChange(state.searchFormData);
 };
 
@@ -149,24 +113,44 @@ const editRow = (row) => {
   state.title = "编辑";
   detailRef.value.open();
 };
-const deleteRow = async (row) => {
-  const { code } = await deletePoint(state.searchFormData.projectId, {
-    id: row.id,
-  });
-  if (code === 200) {
-    // ElMessage.success(`删除点位成功`);
-    getTableList();
-  }
-};
+// const deleteRow = async (row) => {
+//   const { code } = await deletePoint(state.searchFormData.projectId, {
+//     id: row.id,
+//   });
+//   if (code === 200) {
+//     // ElMessage.success(`删除点位成功`);
+//     getTableList();
+//   }
+// };
 const detailSubmit = async (param) => {
-  const { projectId, ...rest } = param;
-  const { code } = await updatePoint(projectId, rest);
+  const { code } = await configCarbon({
+    projectId: state.searchFormData.projectId,
+    carbonStatisticsId: state.currentData.id,
+    ...param,
+  });
   if (code === 200) {
     // ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
     detailRef.value.close();
-    getTableList();
+    searchChange(state.searchFormData);
   }
 };
+onMounted(async () => {
+  const staRes = await getCarbonStandardList();
+  if (staRes?.data?.data) {
+    state.searchFormData.standardId = staRes?.data?.data?.[0]?.id;
+    staList.value = staRes?.data?.data || [];
+  }
+  searchChange(state.searchFormData);
+})
+
+watch(
+  () => globalState.value.projectId,
+  (id) => {
+    state.searchFormData.projectId = id;
+    searchChange(state.searchFormData);
+  }
+);
+
 </script>
 <style lang="scss" scoped>
 .search-form {

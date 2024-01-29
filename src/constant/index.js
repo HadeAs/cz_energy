@@ -11,6 +11,8 @@ export const SHOW_PROJ_CHANGE_PATH = [
   "workMonitor",
   "/deviceMaintain",
   "/workMonitor",
+  "/carbonEmission",
+  "/carbonReduction"
 ];
 export const MENU_DATA = [
   {
@@ -107,15 +109,15 @@ export const MENU_DATA = [
     icon: "aidicon aidicon-dropbox",
     children: [
       {
-        name: "碳排放",
+        name: "碳排放统计",
         path: "/carbonEmission",
       },
       {
-        name: "碳减排",
+        name: "碳减排计算与评价",
         path: "/carbonReduction",
       },
       {
-        name: "碳中和",
+        name: "双碳进程",
         path: "/carbonNeutral",
       },
     ],
@@ -939,6 +941,7 @@ export const COMMON_FUNCTION_LIST = [
   { id: "avg", name: "均值" },
   { id: "max", name: "最大值" },
   { id: "min", name: "最小值" },
+  { id: "diff", name: "极差" },
 ];
 
 export const COMMON_TIME_TYPE_LIST = [

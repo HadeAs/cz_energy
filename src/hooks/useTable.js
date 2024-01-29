@@ -69,13 +69,17 @@ const useTable = (api, initSearchParam = {}, initSortParam = {}, initPageParam =
       param.sortOrder = SORT_MAP[state.sortParam.order];
     }
     const { data } = await api(param);
-    const { content = [], pageNum, pageSize, totalNum } = data.data;
-    state.dataSource = content;
-    updatePageInfo({
-      total: totalNum,
-      currentPage: pageNum,
-      pageSize
-    });
+    if (data.data && Array.isArray(data.data)) {
+      state.dataSource = data.data;
+    } else {
+      const { content = [], pageNum, pageSize, totalNum } = data.data;
+      state.dataSource = content;
+      updatePageInfo({
+        total: totalNum,
+        currentPage: pageNum,
+        pageSize
+      });
+    }
     state.loading = false;
   }
 
