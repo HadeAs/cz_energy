@@ -85,6 +85,25 @@ const column = [
     prop: "value",
     label: "值",
   },
+  {
+    prop: "yearList",
+    label: "年份",
+    render: (scope) => {
+      return (
+        <div className="text-overflow" title={scope.row.yearList}>
+          <span className="table-first-col">
+            {scope.row?.yearList?.map(({ year, value }) => {
+              return (
+                <ElTag class="param-tag" effect="dark" style="margin-left: 4px">
+                  {year}-{value}
+                </ElTag>
+              );
+            })}
+          </span>
+        </div>
+      );
+    },
+  },
 ];
 
 const {

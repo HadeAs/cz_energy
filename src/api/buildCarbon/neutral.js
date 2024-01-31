@@ -15,7 +15,6 @@ export const getConfig = (params) => {
 
 // 查询变化前后电网碳排因子
 export const getCarbonFactor = (params) => {
-  if (!params?.standardId) return { data: { data: [] } };
   return http.get(`web/carbon-nt/carbon-factor-query`, { ...params });
 }
 

@@ -12,6 +12,9 @@
       <el-form-item label="值" required prop="value">
         <el-input placeholder="请输入值" v-model="state.form.value" />
       </el-form-item>
+      <el-form-item label="年份" required prop="year">
+        <el-date-picker type="year" placeholder="请选择年份" v-model="state.form.year" />
+      </el-form-item>
     </el-form>
   </ProDrawer>
 </template>
@@ -21,6 +24,7 @@ import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
+import { renderAxis } from '@/utils/index.js';
 
 const { globalState } = storeToRefs(appStore.global);
 const initData = {
@@ -28,6 +32,7 @@ const initData = {
   name: "",
   tag: "",
   type: "",
+  year: "",
 };
 const emits = defineEmits(["submit"]);
 const props = defineProps({
@@ -45,7 +50,7 @@ const state = reactive({
 const confirmDetail = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
-      emits("submit", state.form);
+      emits("submit", { ...state.form, year: Number(renderAxis('year', state.form.year)) });
     }
   });
 };
