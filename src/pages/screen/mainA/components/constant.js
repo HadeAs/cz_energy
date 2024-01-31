@@ -235,10 +235,6 @@ export const LINE_OPT = {
   ],
   color: ["#459bda"],
 };
-
-export const mapPointData = [
-  { value: ["119.63", "32.02"], name: "武家嘴办公楼" },
-];
 export const mapData = [
   { value: 4, name: "徐州市" },
   { value: 6, name: "南京市" },
@@ -255,159 +251,161 @@ export const mapData = [
   { value: 32, name: "无锡市" },
 ];
 
-export const MAP_OPT = {
-  geo: {
-    map: "jsMap",
-    show: true,
-    roam: false,
-    aspectScale: 1, //长宽比
-    layoutCenter: ["48%", "55%"],
-    layoutSize: "100%",
-    itemStyle: {
-      areaColor: "#1f4366",
-      borderColor: "#1f4366",
-      borderWidth: 0,
-      opacity: 0.8,
-      shadowColor: "#1f4366",
-      shadowBlur: 10,
-    },
-    emphasis: {
+export const MAP_OPT = (mapPointData) => {
+  return {
+    geo: {
+      map: "jsMap",
+      show: true,
+      roam: false,
+      aspectScale: 1, //长宽比
+      layoutCenter: ["48%", "55%"],
+      layoutSize: "100%",
       itemStyle: {
         areaColor: "#1f4366",
-      },
-    },
-  },
-  tooltip: {
-    show: false,
-  },
-  series: [
-    {
-      type: "map",
-      map: "jsMap",
-      geoIndex: 1,
-      aspectScale: 1, //长宽比
-      layoutCenter: ["50%", "53%"],
-      layoutSize: "100%",
-      showLegendSymbol: false, // 存在legend时显示
-      tooltip: {
-        show: false,
-      },
-      label: {
-        show: true,
-        color: "#fff",
+        borderColor: "#1f4366",
+        borderWidth: 0,
+        opacity: 0.8,
+        shadowColor: "#1f4366",
+        shadowBlur: 10,
       },
       emphasis: {
+        itemStyle: {
+          areaColor: "#1f4366",
+        },
+      },
+    },
+    tooltip: {
+      show: false,
+    },
+    series: [
+      {
+        type: "map",
+        map: "jsMap",
+        geoIndex: 1,
+        aspectScale: 1, //长宽比
+        layoutCenter: ["50%", "53%"],
+        layoutSize: "100%",
+        showLegendSymbol: false, // 存在legend时显示
+        tooltip: {
+          show: false,
+        },
+        label: {
+          show: true,
+          color: "#fff",
+        },
+        emphasis: {
+          label: {
+            show: false,
+          },
+          itemStyle: {
+            areaColor: "#112e40",
+          },
+        },
+        roam: false,
+        itemStyle: {
+          areaColor: "#1C4E8B",
+          borderColor: "#02d4fb",
+          borderWidth: 2,
+          shadowColor: "#50f1ff",
+          shadowBlur: 6,
+        },
+        markPoint: {
+          symbol: "circle",
+          symbolSize: 100,
+          // symbolOffset: [18, 20],
+          itemStyle: {
+            color: "#00FFF6",
+            shadowColor: "#00FFF6",
+            shadowBlur: 10,
+          },
+        },
+        data: mapData,
+      },
+      {
+        type: "scatter",
+        coordinateSystem: "geo",
+        tooltip: {
+          show: false,
+        },
+        label: {
+          show: true,
+          formatter: function (params) {
+            const name = params.name;
+            return name;
+          },
+          position: "insideTopLeft",
+          color: "#fff",
+          fontWeight: "800",
+          fontSize: 14,
+          lineHeight: 20,
+          offset: [0, 12],
+        },
+        emphasis: {
+          label: {
+            show: true,
+          },
+        },
+        itemStyle: {
+          color: "#00FFF6",
+        },
+        symbol: "image://src/assets/img/screen/mainA/u59.png",
+        symbolSize: [140, 80],
+        symbolOffset: [20, 0],
+        z: 999,
+        data: mapPointData,
+      },
+      {
+        type: "scatter",
+        coordinateSystem: "geo",
+        tooltip: {
+          show: false,
+        },
         label: {
           show: false,
         },
-        itemStyle: {
-          areaColor: "#112e40",
+        emphasis: {
+          label: {
+            show: false,
+          },
+          itemStyle: {
+            color: "#FFCC00",
+            shadowColor: "#FFCC00",
+            shadowBlur: 15,
+          },
         },
-      },
-      roam: false,
-      itemStyle: {
-        areaColor: "#1C4E8B",
-        borderColor: "#02d4fb",
-        borderWidth: 2,
-        shadowColor: "#50f1ff",
-        shadowBlur: 6,
-      },
-      markPoint: {
-        symbol: "circle",
-        symbolSize: 100,
-        // symbolOffset: [18, 20],
         itemStyle: {
           color: "#00FFF6",
           shadowColor: "#00FFF6",
           shadowBlur: 10,
         },
+        symbol: "circle",
+        symbolSize: 10,
+        symbolOffset: [18, 20],
+        z: 1000,
+        data: mapPointData,
       },
-      data: mapData,
-    },
-    {
-      type: "scatter",
-      coordinateSystem: "geo",
-      tooltip: {
-        show: false,
-      },
-      label: {
-        show: true,
-        formatter: function (params) {
-          const name = params.name;
-          return name;
-        },
-        position: "insideTopLeft",
-        color: "#fff",
-        fontWeight: "800",
-        fontSize: 14,
-        lineHeight: 20,
-        offset: [0, 12],
-      },
-      emphasis: {
-        label: {
-          show: true,
-        },
-      },
-      itemStyle: {
-        color: "#00FFF6",
-      },
-      symbol: "image://src/assets/img/screen/mainA/u59.png",
-      symbolSize: [100, 80],
-      symbolOffset: [20, 0],
-      z: 999,
-      data: mapPointData,
-    },
-    {
-      type: "scatter",
-      coordinateSystem: "geo",
-      tooltip: {
-        show: false,
-      },
-      label: {
-        show: false,
-      },
-      emphasis: {
-        label: {
-          show: false,
-        },
-        itemStyle: {
-          color: "#FFCC00",
-          shadowColor: "#FFCC00",
-          shadowBlur: 15,
-        },
-      },
-      itemStyle: {
-        color: "#00FFF6",
-        shadowColor: "#00FFF6",
-        shadowBlur: 10,
-      },
-      symbol: "circle",
-      symbolSize: 10,
-      symbolOffset: [18, 20],
-      z: 1000,
-      data: mapPointData,
-    },
-  ],
-  visualMap: {
-    type: "piecewise",
-    show: false,
-    realtime: false,
-    calculable: true,
-    inRange: {
-      color: ["#87cae7", "#519ed3", "#87cae7", "#4179b1", "#1f6dc4", "#1f4366"],
-    },
-    splitList: [
-      { start: 1, end: 10 },
-      { start: 11, end: 15 },
-      { start: 16, end: 20 },
-      { start: 21, end: 25 },
-      { start: 26, end: 30 },
-      { start: 31, end: 40 },
     ],
-    outOfRange: {
-      color: ["#0470DD"],
+    visualMap: {
+      type: "piecewise",
+      show: false,
+      realtime: false,
+      calculable: true,
+      inRange: {
+        color: ["#87cae7", "#519ed3", "#87cae7", "#4179b1", "#1f6dc4", "#1f4366"],
+      },
+      splitList: [
+        { start: 1, end: 10 },
+        { start: 11, end: 15 },
+        { start: 16, end: 20 },
+        { start: 21, end: 25 },
+        { start: 26, end: 30 },
+        { start: 31, end: 40 },
+      ],
+      outOfRange: {
+        color: ["#0470DD"],
+      },
     },
-  },
+  }
 };
 
 export const mapPointData2 = [
@@ -592,7 +590,7 @@ export const COLUM_OPT = (
 ) => {
   return {
     tooltip: {
-      show: false,
+      show: true,
       trigger: "axis",
       axisPointer: {
         // 坐标轴指示器，坐标轴触发有效
@@ -640,8 +638,9 @@ export const COLUM_OPT = (
           "碳排基准",
           "能源使用\n减少",
           "绿色能源",
-          "碳汇(植树等",
+          "碳汇(植树等)",
           "碳排放",
+          // "电网碳排放因子降低",
           "碳信用抵消\n(碳交易)",
           "绿店购买\n抵消",
           "净排放",
@@ -775,69 +774,69 @@ export const COLUM_OPT = (
           },
         ],
       },
-      {
-        name: 'test',
-        type: 'line',
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        showSymbol: false,
-        data: [956.3, 956.3]
-      },
-      {
-        name: 'test1',
-        type: 'line',
-        showSymbol: false,
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        data: ['-', 806.3, 806.3]
-      },
-      {
-        name: 'test2',
-        type: 'line',
-        showSymbol: false,
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        data: ['-', '-', 656.3, 656.3]
-      },
-      {
-        name: 'test3',
-        type: 'line',
-        showSymbol: false,
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        data: ['-', '-', '-', 506.3, 506.3]
-      },
-      {
-        name: 'test4',
-        type: 'line',
-        showSymbol: false,
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        data: ['-', '-', '-', '-', 506.3, 506.3]
-      },
-      {
-        name: 'test5',
-        type: 'line',
-        showSymbol: false,
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        data: ['-', '-', '-', '-', '-', 406.3, 406.3]
-      },
-      {
-        name: 'test6',
-        type: 'line',
-        showSymbol: false,
-        lineStyle: {
-          color: "#6c6a77"
-        },
-        data: ['-', '-', '-', '-', '-', '-', 306.3, 306.3]
-      },
+      // {
+      //   name: 'test',
+      //   type: 'line',
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   showSymbol: false,
+      //   data: [956.3, 956.3]
+      // },
+      // {
+      //   name: 'test1',
+      //   type: 'line',
+      //   showSymbol: false,
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   data: ['-', 806.3, 806.3]
+      // },
+      // {
+      //   name: 'test2',
+      //   type: 'line',
+      //   showSymbol: false,
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   data: ['-', '-', 656.3, 656.3]
+      // },
+      // {
+      //   name: 'test3',
+      //   type: 'line',
+      //   showSymbol: false,
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   data: ['-', '-', '-', 506.3, 506.3]
+      // },
+      // {
+      //   name: 'test4',
+      //   type: 'line',
+      //   showSymbol: false,
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   data: ['-', '-', '-', '-', 506.3, 506.3]
+      // },
+      // {
+      //   name: 'test5',
+      //   type: 'line',
+      //   showSymbol: false,
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   data: ['-', '-', '-', '-', '-', 406.3, 406.3]
+      // },
+      // {
+      //   name: 'test6',
+      //   type: 'line',
+      //   showSymbol: false,
+      //   lineStyle: {
+      //     color: "#6c6a77"
+      //   },
+      //   data: ['-', '-', '-', '-', '-', '-', 306.3, 306.3]
+      // },
     ],
   };
 };
@@ -965,5 +964,5 @@ export const LINE_OPT2 = {
       },
     },
   ],
-  color: ["#fff", "#6633FF", "#FF9900", "#49A9EE", "#31CE8F"],
+  color: ["#fff", "#6633FF", "#FF9900", "#49A9EE", "#31CE8F", "#f73234", "#5c5c5c"],
 };

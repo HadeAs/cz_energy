@@ -109,7 +109,7 @@ const queryData = async (type) => {
   });
   if (data?.list && !judgeIfMock()) {
     const legendData = data.list.map((item) => item.sysClassName);
-    const xData = (data.list[0].dataList || []).map((item) =>
+    const xData = (data.list[0]?.dataList || []).map((item) =>
       formatXAxis(item.createTime, type)
     );
     const seriesData = data.list.map((item) => {

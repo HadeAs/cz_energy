@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-22 15:22:07
+ * @LastEditTime: 2024-01-31 13:06:38
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
@@ -145,6 +145,8 @@ export const formatXAxis = (value, type) => {
     format = "MM-DD";
   } else if (type === "month") {
     format = "YYYY-MM";
+  } else if (type === "monthOnly") {
+    format = "MM";
   } else {
     format = "YYYY";
   }
@@ -170,4 +172,13 @@ export const getDefaultDate = (type) => {
 
 export const judgeIfMock = () => {
   return appStore.global.globalState.mock;
+}
+
+export const handleResources = (treeData = []) => {
+  const resources = [];
+  treeData.forEach(item => {
+    const { children = [] } = item;
+    resources.push(...(children.map(v => v.id)))
+  });
+  return resources;
 }

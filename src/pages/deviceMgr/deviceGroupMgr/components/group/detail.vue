@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 16:00:50
+ * @LastEditTime: 2024-01-30 11:39:27
  * @Description: 
 -->
 <template>
@@ -89,6 +89,12 @@
           <el-radio-button :label="false">停用</el-radio-button>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="是否重点用能" required prop="mainEnergy">
+        <el-radio-group v-model="state.form.mainEnergy">
+          <el-radio-button :label="1">是</el-radio-button>
+          <el-radio-button :label="0">否</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="上传设备图片" prop="image">
         <ProUpload
           ref="imageRef"
@@ -124,6 +130,7 @@ const initData = {
   // classify: "",
   openTime: "",
   status: true,
+  mainEnergy: false,
   image: [],
 };
 const rules = {
@@ -191,6 +198,7 @@ const getDetail = async (param) => {
     state.form.status = data.data.status || false;
     state.form.managerId = data.data.managerId;
     state.form.equipmentModelId = data.data.equipmentModelId;
+    state.form.mainEnergy = data.data.mainEnergy;
     if (data.data.image) {
       const images = await parseImage(data.data.image);
       state.form.image = images;

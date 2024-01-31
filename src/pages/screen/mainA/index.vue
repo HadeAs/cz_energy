@@ -2,20 +2,26 @@
   <div class="cs-left-wrapper">
     <Summary :project-id="state.projectId" />
     <Rank :project-id="state.projectId" />
-    <Trend />
+    <Trend :project-id="state.projectId" />
   </div>
   <div class="cs-center-wrapper">
-    <Map />
-    <OverView />
+    <Map
+      :project-id="state.projectId"
+      :project-list="globalState.projects"
+      :bim-url="state.bim"
+      :location="state.location"
+      :change="appStore.global.changeName"
+    />
+    <OverView :config="state.config" />
   </div>
   <div class="cs-right-wrapper">
-    <Process />
-    <Action />
-    <Rate />
+    <Process :project-id="state.projectId" />
+    <Action :project-id="state.projectId" />
+    <Rate :project-id="state.projectId" />
   </div>
 </template>
 <script setup name="MainA">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import {
@@ -28,11 +34,63 @@ import {
   Action,
   Rate,
 } from "./components";
+import { getImageUrl } from "@/api/common";
+import { transformFileToUrl } from "@/utils";
+import bimImage from "@/assets/img/screen/mainA/bim.png";
+import { queryOverview } from "@/api/screen/maina";
 
 const { globalState } = storeToRefs(appStore.global);
 const state = reactive({
   projectId: globalState.value.projectId,
+  bim: bimImage,
+  location: { longitude: "", latitude: "" },
+  config: {
+    area: "20000",
+    projectName: "武家嘴办公楼",
+    buildingTypeName: "办公建筑",
+    openYear: "2015",
+    airConditionerForm: "分机盘管+新风系统",
+    solarCapacity: "186",
+    groundHeatArea: "15000",
+    solarHeatCollectArea: "1190",
+    extWallWarmForm: "外保温，保温装饰板",
+  },
 });
+
+const getBim = async (config) => {
+  const { panelImage, ...rest } = config;
+  state.location = { ...rest };
+  if (panelImage) {
+    const data = await getImageUrl(panelImage);
+    state.bim = transformFileToUrl(data);
+  }
+};
+
+const query = async () => {
+  const { data } = await queryOverview({ projectId: state.projectId });
+  if (data) {
+    state.config = {
+      ...data,
+      area: (data.area || 0).toFixed(0),
+      solarCapacity: (data.solarCapacity || 0).toFixed(0),
+      solarHeatCollectArea: (data.solarHeatCollectArea || 0).toFixed(0),
+    };
+    getBim({
+      panelImage: data.panelImage,
+      longitude: data.longitude,
+      latitude: data.latitude,
+    });
+  }
+};
+query();
+
+watch(
+  () => globalState.value.projectId,
+  (val) => {
+    state.projectId = val;
+    query();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .cs-left-wrapper {
