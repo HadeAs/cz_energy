@@ -7,14 +7,22 @@
 -->
 <template>
   <div>
-    <ProSearchContainer
-      class="search"
-      buttonContent="导出"
-      :form-info="searchFormCfg"
-      @button-click="onSearch"
-      authKey="monitor_electric_export"
-      @search-change="handleSearchChange"
-    />
+    <div style="background-color: white;padding: 6px 12px">
+      <el-form :inline="true" :model="state.searchFormData" class="demo-form-inline">
+        <el-form-item label="数据类型" style="margin-bottom: 0">
+          <el-date-picker
+            type="year"
+            v-model="state.searchFormData.date"
+            @change="e => handleChange(e, 'date')"
+          />
+        </el-form-item>
+        <el-form-item label="排放标准" style="margin-bottom: 0">
+          <el-select v-model="state.searchFormData.standardId" @change="e => handleChange(e, 'standardId')" placeholder="选择排放标准">
+            <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </div>
     <EchartTreeContainer
       ref="echartTreeRef"
       :showSwitch="true"
@@ -40,50 +48,35 @@ import {
   COMMON_SERIES_DATA,
 } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import { handleOpts } from "@/utils";
+// import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts, timeRender } from "@/utils";
 import { useRouter } from "vue-router";
+import { getList } from '@/api/buildCarbon/neutral.js';
+import dayjs from 'dayjs';
+import { getCarbonStandardList } from '@/api/common.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
 
 const router = useRouter();
 const echartTreeRef = ref();
+const staList = ref([]);
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
+const { globalState } = storeToRefs(appStore.global);
+
+// const
+
 const state = reactive({
+  treeData: [],
+  searchFormData: {
+    projectId: globalState.value.projectId,
+    type: "day",
+    standardId: 1,
+    date: dayjs().format(timeRender.year),
+  },
   activeTab: 0,
 });
 
-const searchFormCfg = [
-  {
-    label: "时间范围",
-    prop: "timeRange",
-    type: "datetimerange",
-    value: "",
-  },
-  {
-    label: "",
-    prop: "select",
-    type: "select",
-    value: 0,
-    options: [
-      { value: 0, label: "国家推荐值" },
-      { value: 1, label: "地方推荐值" },
-    ],
-  },
-];
-
-const onSearch = (data) => {
-  console.log(data);
-};
-
-const randomArr = (times, num) => {
-  const item = COMMON_SERIES_DATA[0].data;
-  const arr = new Array(times).fill("").map((v, index) => {
-    if (index === 0) return item[index];
-    const diff = num - item[index];
-    return Math.ceil(Math.random() * (diff - 1)) + 1;
-  });
-  return arr;
-};
 const basicTop = [
   [850.3, 100, 100, 100, 150, 400.3, 100, 100, 200.3],
   [956.3, 150, 150, 150, 506.3, 100, 100, 100, 206.3],
@@ -97,7 +90,7 @@ const basicBottom = [
   [0, 1650, 1300, 1050, 0, 550, 350, 0, 150],
 ];
 
-const initChart = () => {
+const initChart = (list) => {
   const checks = echartTreeRef.value.getCheckedNodes();
   // const checkchilds = [totalMap, ...checks.filter((v) => !v.children)];
   const seriesData = cloneDeep(COMMON_SERIES_DATA);
@@ -105,8 +98,11 @@ const initChart = () => {
   const lineData = [];
   // if (!checks.length) return;
   const num = state.activeTab % 4;
+  console.log(`num`, num);
   const basicTop_copy = [...basicTop[num]];
   const basicBottom_copy = [...basicBottom[num]];
+  console.log(`list`, list);
+  console.log(`list`, basicTop_copy, basicBottom_copy);
   checks.forEach((item, index) => {
     legendData.push(item.label);
     seriesData[0].data.push(basicBottom_copy[index]);
@@ -188,8 +184,15 @@ const handleClick = (param) => {
   }
 };
 
-onMounted(() => {
-  initChart();
+onMounted(async () => {
+  await getCarbonStandardList().then(staRes => {
+    staList.value = staRes?.data?.data || [];
+    state.searchFormData.standardId = staRes?.data?.data?.[0]?.id;
+  })
+  const { standardId, date, projectId } = state.searchFormData;
+  const res = await getList({ standardId, year: date, projectId });
+  console.log(`res?.data?.data`, res?.data);
+  initChart(res?.data);
 });
 const handleSearchChange = (type) => {
   initChart();

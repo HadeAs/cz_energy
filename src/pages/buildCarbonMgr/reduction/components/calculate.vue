@@ -170,7 +170,6 @@ watch(
   () => globalState.value.projectId,
   async (id) => {
     state.searchFormData.projectId = id;
-    console.log(`1111`);
     await loadSideBar();
     await loadData();
   }

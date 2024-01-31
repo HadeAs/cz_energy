@@ -12,7 +12,8 @@ export const SHOW_PROJ_CHANGE_PATH = [
   "/deviceMaintain",
   "/workMonitor",
   "/carbonEmission",
-  "/carbonReduction"
+  "/carbonReduction",
+  "/carbonNeutral"
 ];
 export const MENU_DATA = [
   {

@@ -10,13 +10,13 @@
     <MainContentContainer class="left">
       <span class="count-down-title">{{ countdownTitle }}倒计时</span>
       <div class="count-down-value">
-        <span v-for="item in String(countdownValue).split('')" :key="item">
+        <span v-for="item in String(countdownValue || 0).split('')" :key="item">
           <label>{{ item }}</label>
         </span>
       </div>
     </MainContentContainer>
     <MainContentContainer class="right">
-      <div class="center-container-inner">
+      <div class="center-container-inner" @click="handleConfigKh">
         <div
           class="param-container"
           v-for="(item, index) in params"
@@ -51,9 +51,22 @@
       </div>
     </MainContentContainer>
   </div>
+  <ProDrawer title="配置碳达峰、中和目标" ref="khDrawerRef" @confirm="confirmLcb">
+    <KhConfig ref="khConfigRef" />
+  </ProDrawer>
 </template>
 <script setup name="CenterContainer">
+import { ref } from 'vue';
 import MainContentContainer from "@/components/MainContentContainer.vue";
+import KhConfig from './khConfig.vue';
+import { postNtTarget } from '@/api/buildCarbon/neutral.js';
+
+const khDrawerRef = ref();
+const khConfigRef = ref();
+
+const emits = defineEmits([
+  "reload",
+]);
 
 const props = defineProps({
   countdownTitle: { type: String },
@@ -61,6 +74,22 @@ const props = defineProps({
   params: { type: Array, default: [] },
   process: { type: Number, default: 0 },
 });
+
+const handleConfigKh = () => {
+  khDrawerRef.value.open();
+}
+
+const confirmLcb = async () => {
+  const res = await khConfigRef.value.validate();
+  if (res) {
+    const postRes = await postNtTarget(res)
+    if (postRes && postRes?.code === 200) {
+      emits("reload", {});
+      khDrawerRef.value.close();
+    }
+  }
+};
+
 </script>
 <style lang="scss" scoped>
 .center-container {
