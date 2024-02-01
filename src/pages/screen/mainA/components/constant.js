@@ -1,3 +1,4 @@
+export const TAG_IMAGE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAAAsCAYAAADRqm7CAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjk4RjBCQUUyNEIwOTExRUVBRjUxODQ2MkI4ODI5MEY3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjk4RjBCQUUzNEIwOTExRUVBRjUxODQ2MkI4ODI5MEY3Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6OThGMEJBRTA0QjA5MTFFRUFGNTE4NDYyQjg4MjkwRjciIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6OThGMEJBRTE0QjA5MTFFRUFGNTE4NDYyQjg4MjkwRjciLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4MkgW6AAAClUlEQVR42uyZz08TQRTHX9ttqRETSkhAggQRT1QT4tEEwsUL1GCInvwL4N/Ro3rxIFEIphflhyZ4E0RIGw9gQKTUloBAMFEpdXnPvDbtUqHUmV2WmW/y7Tb74+3sJzP73sx6zs9+7wGAR+h6UFNJ9KAHQaS660NFEHaSCYiNPofs3u8zT8FsaAKzu2fDsPaEnbVViL0kCHtKdAdPKgEmQJ1RuHM78RXiBCGTUW585EFsr65gT3gBf/YzSr4o/oLYWlmGeHREWQh5EPHoMELYB5XlpR/VIeRBaGkQGoQGoUFoEBqEBqFBVDD79Pk0CK9hQDjSrzYIr+GHdoRQ29JaPA1XDUL4dj+EmluKZ5+qQbjWdxdqmpoPvSzXzYuXlIDg8wfg+p17hyCg0rR4G8E/j9F1ir4uUugBT++aKSRatBEu4CZMGcmGxsciSdgVmkZN82Qgqj9u/fPYj47QVdzIHmcJbMNCpRdjG8WAOG4YojvR5yz7zTJ7SuF5pa75iZ5CZ0XTFZ01qIGf0Dcl9YYPMiDISp9p9Df0ZcFxv3BscAsI0iyDCAqK94tjgttA0EfT9+hbguK9YxiuA0H6jG5HX/nPOEvoRdn5WHaJ/Qbdhq6q8Hr6Ej1pR1UlG8Qup7tILl1zWiyZykscm+AYrgdBmkHfQLeWAcOaJaZtm4zZcA966BEutoI8TILHmM4dLhOYa0CQ1tHjZQDIeVJmzeAkCGAQae4RR5nOeW37OoWN98rydN+wPHiAXcXHnsgqo08LCNIy+lXBwwcsQMa4boCzDoI0hN4sMSRo3zOnVmecAEFF0gMeBn42/X/IpbkyIEjzPAxyIKhwmgMHJXph5iSqRj/lAuu+XRXkaQRB6uJe+RYc1oEAAwD0+aWlAIXMsQAAAABJRU5ErkJggg==";
 export const PIE_OPT = {
   tooltip: {
     trigger: "item",
@@ -338,7 +339,7 @@ export const MAP_OPT = (mapPointData) => {
           fontWeight: "800",
           fontSize: 14,
           lineHeight: 20,
-          offset: [0, 12],
+          offset: [0, 3],
         },
         emphasis: {
           label: {
@@ -348,9 +349,9 @@ export const MAP_OPT = (mapPointData) => {
         itemStyle: {
           color: "#00FFF6",
         },
-        symbol: "image://src/assets/img/screen/mainA/u59.png",
-        symbolSize: [140, 80],
-        symbolOffset: [20, 0],
+        symbol: TAG_IMAGE,
+        symbolSize: [135, 35],
+        symbolOffset: [20, -10],
         z: 999,
         data: mapPointData,
       },
