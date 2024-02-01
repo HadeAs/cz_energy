@@ -177,49 +177,49 @@ export const CARBTON_CALCULATE_TREE_DATA = [
 
 export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
   {
-    id: 1,
+    id: 'carbonBase',
     label: "碳排基准",
     color: "rgba(197, 206, 223, 1)",
     children: [
       {
-        id: 11,
+        id: 'energyReduce',
         label: "能源使用减少",
         color: "rgba(33, 109, 245, 1)"
       },
       {
-        id: 12,
+        id: 'greenEnergy',
         label: "绿色能源",
         color: "rgba(0, 161, 171, 1)"
       },
       {
-        id: 13,
+        id: 'carbonSink',
         label: "碳汇(植树等）",
         color: "rgba(10, 209, 100, 1)"
       },
       {
-        id: 14,
+        id: 'carbonSummary',
         label: "碳排放",
         color: "rgba(190, 175, 158, 1)"
       }
     ]
   },
   {
-    id: 2,
+    id: 'powerCarbonReduce',
     label: "电网碳排因子降低",
     color: "rgba(255, 82, 0, 1)",
     children: [
       {
-        id: 21,
+        id: 'carbonCreditAmount',
         label: "碳信用抵消(碳交易)",
         color: "rgba(228, 163, 3, 1)"
       },
       {
-        id: 22,
+        id: 'greenPowerAmount',
         label: "绿电购买抵消",
         color: "rgba(148, 125, 99, 1)"
       },
       {
-        id: 23,
+        id: 'netCarbonSummary',
         label: "净排放",
         color: "rgba(255, 136, 115, 1)"
       }
