@@ -109,6 +109,28 @@
         <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
     </el-form-item>
+
+    <el-form-item label="智能网关" required prop="gatewayId">
+      <el-select v-model="state.detailForm.gatewayId" placeholder="选择智能网关">
+        <el-option v-for="item in state.gateWayList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="空调形式" required prop="airConditionerForm">
+      <el-input placeholder="请输入" v-model="state.detailForm.airConditionerForm" />
+    </el-form-item>
+    <el-form-item label="外墙保温形式" required prop="extWallWarmForm">
+      <el-input placeholder="请输入" v-model="state.detailForm.extWallWarmForm" />
+    </el-form-item>
+    <el-form-item label="太阳能光伏装机容量" required prop="solarCapacity">
+      <el-input-number placeholder="请输入" v-model="state.detailForm.solarCapacity" />
+    </el-form-item>
+    <el-form-item label="地源热泵应用面积" required prop="groundHeatArea">
+      <el-input-number placeholder="请输入" v-model="state.detailForm.groundHeatArea" />
+    </el-form-item>
+    <el-form-item label="太阳能热水集热面积" required prop="solarHeatCollectArea">
+      <el-input-number placeholder="请输入" v-model="state.detailForm.solarHeatCollectArea" />
+    </el-form-item>
   </el-form>
 </template>
 <script setup>
@@ -118,7 +140,7 @@ import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
 import {
   getBuildingType,
   getCarbonStandardList,
-  getCityByProvinceId,
+  getCityByProvinceId, getGatewayList,
   getProvinceList,
   getSysClass
 } from '@/api/common.js';
@@ -145,6 +167,12 @@ const init = {
   summerWinnerTag: "",
   carbonStandardId: "",
   energyPersonNum: "",
+  gatewayId: "",
+  airConditionerForm: "", // 空调形式
+  extWallWarmForm: "", // 外墙保温形式
+  solarCapacity: 0,  // 太阳能光伏装机容量(kw)
+  groundHeatArea: 0,  // 地源热泵应用面积(m2)
+  solarHeatCollectArea: 0, // 太阳能热水集热面积
 };
 const rules = {
   name: { required: true, message: "请输入项目名称", trigger: "blur" },
@@ -156,6 +184,12 @@ const rules = {
   sysClassIds: { required: true, message: "请选择运行系统", trigger: "change" },
   energyPersonNum: { required: true, message: "请输入用能人数", trigger: "blur" },
   carbonStandardId: { required: true, message: "请选择碳排放标准", trigger: "change" },
+  gatewayId: { required: true, message: "请输选择网关", trigger: "blur" },
+  airConditionerForm: { required: true, message: "请输入空调形式", trigger: "blur" },
+  extWallWarmForm: { required: true, message: "请输入外墙保温形式", trigger: "change" },
+  solarCapacity: { required: true, message: "请输入太阳能光伏装机容量", trigger: "change" },
+  groundHeatArea: { required: true, message: "请输入地源热泵应用面积", trigger: "blur" },
+  solarHeatCollectArea: { required: true, message: "请输入太阳能热水集热面积", trigger: "change" },
   openTime: {
     type: "date",
     required: true,
@@ -226,6 +260,7 @@ const state = reactive({
   sysClass: [],
   provinceList: [],
   cityList: [],
+  gateWayList: [],
 });
 
 const getCity = async parentId => {
@@ -261,6 +296,12 @@ onMounted(async () => {
       state.provinceList = data?.data;
     }
   })
+  getGatewayList().then(res => {
+    console.log(`res`, res);
+    if (res?.code === 200) {
+      state.gateWayList = res?.data?.data;
+    }
+  });
   if (props.initData) {
     const { data } = await fetchOneProject(props.initData);
     if (data?.data) {
