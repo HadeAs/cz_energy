@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-19 19:43:27
+ * @LastEditTime: 2024-02-01 21:49:29
  * @Description: 
 -->
 <template>
@@ -136,7 +136,7 @@ const buttonConfig = () => {
 watch(
   () => globalState.value.projectId,
   (val) => {
-    searchChange({ projectId: val });
+    searchChange({ prop: "projectId", value: val });
   }
 );
 
