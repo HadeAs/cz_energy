@@ -64,6 +64,7 @@ import { getRewardData } from '@/api/buildCarbon/reduce.js';
 // import { getCarbonStandardList } from '@/api/common.js';
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
+import { toFixedNum } from '@/utils';
 // import Income from "./income.vue";
 
 const { globalState } = storeToRefs(appStore.global);
@@ -78,7 +79,7 @@ const testData = (data) => [
     id: 0,
     title: "年均投资回报率",
     unit: "%",
-    value: data?.annualRewardRate,
+    value: toFixedNum((data?.annualRewardRate * 100), 2),
     width: "35%",
     img: u18834,
     children: [

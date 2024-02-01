@@ -60,7 +60,10 @@ import { ref } from 'vue';
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import KhConfig from './khConfig.vue';
 import { postNtTarget } from '@/api/buildCarbon/neutral.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
 
+const { globalState } = storeToRefs(appStore.global);
 const khDrawerRef = ref();
 const khConfigRef = ref();
 
@@ -82,7 +85,7 @@ const handleConfigKh = () => {
 const confirmLcb = async () => {
   const res = await khConfigRef.value.validate();
   if (res) {
-    const postRes = await postNtTarget(res)
+    const postRes = await postNtTarget({ ...res, projectId: globalState.value.projectId, })
     if (postRes && postRes?.code === 200) {
       emits("reload", {});
       khDrawerRef.value.close();

@@ -166,6 +166,7 @@ const initChart = (res) => {
   chartOption.value.xAxis[0].data = res?.[0]?.map((i) =>
     renderAxis(searchType.value, i?.createTime)
   );
+  chartOption.value.yAxis[0].name = "单位：元";
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };

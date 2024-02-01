@@ -97,7 +97,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { ref, reactive, onMounted, watch } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import ProTable from "@/components/ProTable.vue";
@@ -147,6 +147,10 @@ const renderData = (list) => {
   });
 };
 
+const costData = (cost = 0) => {
+  return (cost / 1000).toFixed(2)
+}
+
 const reloadTable = async (params) => {
   const res = await queryCostDetail(params);
   datasource.value = renderData(res);
@@ -163,12 +167,10 @@ const reloadTable = async (params) => {
     }
   });
   staData.value = {
-    electric: staBase.electric.toFixed(2),
-    total: Object.values(staBase)
-      .reduce((last, next) => last + next, 0)
-      .toFixed(2),
-    gasBill: staBase.electric.toFixed(2),
-    water: staBase.electric.toFixed(2),
+    electric: costData(staBase.electric),
+    total: costData(Object.values(staBase).reduce((last, next) => last + next, 0)),
+    gasBill: costData(staBase.gasBill),
+    water: costData(staBase.water),
   };
 };
 
@@ -178,7 +180,7 @@ const handleSearch = () => {
     endDate: timeRange.value?.[1],
   };
   reloadTable({
-    sysClassId: sysClassId.value,
+    sysClassId: sysClassId.value === 'all' ? '' : sysClassId.value,
     energyStatisticsName: projName.value,
     projectId: globalState.value.projectId,
     ...param,
@@ -231,17 +233,31 @@ const column = [
   {
     prop: "totalEnergyAmount",
     label: "用能总量",
+    render: (scope) => {
+      return (
+        <div title={scope.row.totalEnergyAmount}>
+          <span>{scope?.row?.totalEnergyAmount?.toFixed(2)}</span>
+        </div>
+      );
+    },
   },
   {
     prop: "totalCost",
     label: "费用总计(元)",
+    render: (scope) => {
+      return (
+        <div title={scope.row.totalCost}>
+          <span>{scope?.row?.totalCost?.toFixed(2)}</span>
+        </div>
+      );
+    },
   },
 ];
 
 onMounted(async () => {
   const res = await getSysClass();
   if (res) {
-    sysCategory.value = res;
+    sysCategory.value = [...res, { id: 'all', name: '全部' }];
     sysClassId.value = res?.[0]?.id;
     handleSearch();
   }

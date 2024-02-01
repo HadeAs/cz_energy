@@ -17,7 +17,7 @@
             <div>{{ item.content }}</div>
           </template>
           <template #description>
-            <div style="display: flex;align-items: center;">
+            <div style="display: flex;align-items: center;justify-content: center;">
               <div>{{ item.year }}</div>
               <el-icon style="margin-left: 6px;cursor: pointer;" @click="() => deleteLcb(item)"><Delete /></el-icon>
             </div>

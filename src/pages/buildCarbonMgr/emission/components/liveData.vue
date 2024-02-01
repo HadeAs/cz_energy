@@ -51,7 +51,7 @@ const state = reactive({
     projectId: globalState.value.projectId,
     dataType: 'summary',
     standardId: '',
-    type: "day",
+    type: "hour",
     startDate: dayjs().subtract(1, "day").format(timeRender.common),
     endDate: dayjs().format(timeRender.common),
   },
