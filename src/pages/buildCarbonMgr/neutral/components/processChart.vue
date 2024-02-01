@@ -38,7 +38,7 @@ const emits = defineEmits([
 
 const dataMaps = [
   {
-    name: "目标趋势预测",
+    name: "实际趋势预测",
     value: "target",
     lineColor: "#191b1a",
     lineType: "dashed",
@@ -98,7 +98,7 @@ const confirmTarget = async () => {
 }
 
 const initChart = ({ targetNetCarbonList, realNetCarbonList }) => {
-  const dashData = getDashData(targetNetCarbonList);
+  const dashData = getDashData(realNetCarbonList);
   const chartData = [dashData, targetNetCarbonList, realNetCarbonList];
   const seriesData = [];
   const legendData = [];
@@ -113,12 +113,13 @@ const initChart = ({ targetNetCarbonList, realNetCarbonList }) => {
       areaStyle: {
         color: item.bgColor,
       },
-      lineStyle: {
-        color: item.lineColor,
-        type: index === 0 ? "dashed" : "solid",
-      },
+      // lineStyle: {
+      //   color: item.lineColor,
+      //   type: index === 0 ? "dashed" : "solid",
+      // },
     });
   });
+  chartOption.value.color = ["#191b1a", "#fed135", "#916aff", '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272'];
   chartOption.value.yAxis[0].name = "单位：tCO₂";
   chartOption.value.xAxis[0].data = targetNetCarbonList.map(i => renderAxis('year', i?.createTime));
   chartOption.value.legend = {
