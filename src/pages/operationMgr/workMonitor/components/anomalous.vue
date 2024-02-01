@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:52:10
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-20 12:37:04
+ * @LastEditTime: 2024-02-01 21:50:48
  * @Description: 
 -->
 <template>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="jsx">
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import useTable from "@/hooks/useTable";
 import { storeToRefs } from "pinia";
@@ -217,6 +217,13 @@ const handleSubmit = async (param) => {
     getTableList();
   }
 };
+watch(
+  () => globalState.value.projectId,
+  (val) => {
+    state.searchFormData.projectId = val;
+    searchChange(state.searchFormData);
+  }
+);
 </script>
 <style lang="scss" scoped>
 .search {
