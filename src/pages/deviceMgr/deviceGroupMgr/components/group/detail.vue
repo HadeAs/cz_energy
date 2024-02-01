@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-30 11:39:27
+ * @LastEditTime: 2024-01-31 14:20:54
  * @Description: 
 -->
 <template>
@@ -25,6 +25,9 @@
       </el-form-item>
       <el-form-item label="设备名称" required prop="name">
         <el-input placeholder="请输入设备名称" v-model="state.form.name" />
+      </el-form-item>
+      <el-form-item label="MQTT标识符" required prop="mqttId">
+        <el-input placeholder="请输入MQTT标识符" v-model="state.form.mqttId" />
       </el-form-item>
       <el-form-item label="资产编号" required prop="propertyNum">
         <el-input
@@ -122,6 +125,7 @@ let oldRaw;
 const initData = {
   projectId: "",
   name: "",
+  mqttId: "",
   propertyNum: "",
   equipmentModelId: "",
   location: "",
@@ -130,7 +134,7 @@ const initData = {
   // classify: "",
   openTime: "",
   status: true,
-  mainEnergy: false,
+  mainEnergy: 0,
   image: [],
 };
 const rules = {
@@ -198,6 +202,7 @@ const getDetail = async (param) => {
     state.form.status = data.data.status || false;
     state.form.managerId = data.data.managerId;
     state.form.equipmentModelId = data.data.equipmentModelId;
+    state.form.mqttId = data.data.mqttId;
     state.form.mainEnergy = data.data.mainEnergy;
     if (data.data.image) {
       const images = await parseImage(data.data.image);

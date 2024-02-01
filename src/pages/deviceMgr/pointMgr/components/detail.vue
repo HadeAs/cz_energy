@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 22:43:43
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-17 15:47:01
+ * @LastEditTime: 2024-01-31 14:23:09
  * @Description: 
 -->
 
@@ -54,7 +54,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="智能网关" required prop="gatewayId">
+      <!-- <el-form-item label="智能网关" required prop="gatewayId">
         <el-select v-model="state.form.gatewayId">
           <el-option
             v-for="item in state.gatewayList"
@@ -63,8 +63,8 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="点位模板" required prop="templateId">
+      </el-form-item> -->
+      <el-form-item label="点位模板" prop="templateId">
         <el-select v-model="state.form.templateId">
           <el-option
             v-for="item in state.unitList"
@@ -94,9 +94,9 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="通讯站号" required prop="commNum">
+      <!-- <el-form-item label="通讯站号" required prop="commNum">
         <el-input-number v-model="state.form.commNum" :min="0" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="检测周期(分钟)" required prop="period">
         <el-input-number v-model="state.form.period" :min="0" :max="9999" />
       </el-form-item>
@@ -125,7 +125,13 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import { getInfo } from "@/api/deviceMgr/pointMgr";
-import { getGatewayList, getUnitList, getEnergyList, getCarbonTpyList, getCarbonReduceList } from "@/api/common";
+import {
+  getGatewayList,
+  getUnitList,
+  getEnergyList,
+  getCarbonTpyList,
+  getCarbonReduceList,
+} from "@/api/common";
 import { COMMON_FUNCTION_LIST } from "@/constant";
 
 const { globalState } = storeToRefs(appStore.global);
@@ -137,9 +143,9 @@ const initData = {
   maxThreshold: null,
   minThreshold: null,
   energyStatisticsId: "",
-  gatewayId: "",
+  // gatewayId: "",
   templateId: "",
-  commNum: null,
+  // commNum: null,
   period: 60,
   number: null,
   status: true,
@@ -184,7 +190,7 @@ const getDetail = async (param) => {
   state.form.number = data.data.number;
   state.form.tag = data.data.tag;
   state.form.type = data.data.type;
-  state.form.gatewayId = data.data.gatewayId;
+  // state.form.gatewayId = data.data.gatewayId;
   state.form.templateId = data.data.templateId;
   state.form.energyStatisticsId = data.data.energyStatisticsId;
   state.form.function = data.data.function;

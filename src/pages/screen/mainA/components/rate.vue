@@ -48,7 +48,7 @@
   </div>
 </template>
 <script setup name="Rate">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import UnitSelect from "./unitSelect.vue";
 import { queryYearRate, queryAllRate } from "@/api/screen/maina";
 
@@ -72,21 +72,22 @@ const queryRateForYear = async () => {
     projectId: props.projectId,
     year: state.year,
   });
-  if (data?.data) {
-    state.yearConfig.annualCarbonReduce =
-      data.data.annualCarbonReduce.toFixed(2);
-    state.yearConfig.predictYear = data.data.predictYear;
-    state.yearConfig.annualProfit = data.data.annualProfit.toFixed(2);
-    state.yearConfig.annualRewardRate = (
-      data.data.annualRewardRate * 100
-    ).toFixed(0);
+  if (data) {
+    state.yearConfig.annualCarbonReduce = (
+      data.annualCarbonReduce || 0
+    ).toFixed(2);
+    state.yearConfig.predictYear = data.predictYear;
+    state.yearConfig.annualProfit = (data.annualProfit || 0).toFixed(2);
+    state.yearConfig.annualRewardRate = (data.annualRewardRate * 100).toFixed(
+      0
+    );
   }
 };
 
 const queryRateFoAll = async () => {
   const { data } = await queryAllRate({ projectId: props.projectId });
-  if (data?.data) {
-    state.totalProfit = data.data.totalProfit.toFixed(2);
+  if (data) {
+    state.totalProfit = (data.totalProfit || 0).toFixed(2);
   }
 };
 
@@ -95,6 +96,13 @@ const init = () => {
   queryRateForYear();
 };
 init();
+
+watch(
+  () => props.projectId,
+  () => {
+    init();
+  }
+);
 
 const handleChange = (val) => {
   state.year = val;
@@ -185,13 +193,12 @@ const handleChange = (val) => {
 
   .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-num {
     display: inline-flex;
-    width: 65px;
+    width: 73px;
     height: 24px;
     background: url(@/assets/img/screen/mainA/u4214.png);
     background-size: 100% 100%;
     line-height: 24px;
     padding-left: 5px;
-    padding-right: 5px;
     color: #00f9ff;
     font-size: 16px;
     font-weight: bold;

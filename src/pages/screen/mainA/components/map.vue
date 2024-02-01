@@ -119,13 +119,13 @@ watch(
 );
 
 const handleClick = (param) => {
-  const point = getPoint();
-  const names = point.map((item) => item.name);
-  if (names.includes(param.name)) {
-    registerMap("czMap", districtInfo);
-    option.value = MAP_OPT2;
-    state.district = true;
-  }
+  // const point = getPoint();
+  // const names = point.map((item) => item.name);
+  // if (names.includes(param.name)) {
+  //   registerMap("czMap", districtInfo);
+  //   option.value = MAP_OPT2;
+  //   state.district = true;
+  // }
 };
 const backToCity = () => {
   initArea();

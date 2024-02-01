@@ -24,7 +24,10 @@
         v-for="item in state.summaryTypeList"
         :key="item.energyStatisticsId"
       >
-        <div class="cs-info-title text-overflow">
+        <div
+          class="cs-info-title text-overflow"
+          :title="item.energyStatisticsName"
+        >
           <img :src="item.icon" />{{ item.energyStatisticsName }}
         </div>
         <div class="text-overflow">

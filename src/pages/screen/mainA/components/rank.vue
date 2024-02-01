@@ -39,7 +39,7 @@
         <li
           class="cs-rank-wrap"
           v-for="(item, index) in state.rankData"
-          :key="item.value"
+          :key="item.id"
         >
           <div class="cs-rank-num" :class="'num' + Number(index + 1)">
             {{ index + 1 }}
@@ -62,12 +62,11 @@
   </div>
 </template>
 <script setup name="Rank">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { queryCarbonRank, queryCarbonTotal } from "@/api/screen/maina";
 const props = defineProps({
   projectId: { type: Number },
 });
-const values = ["90%", "80%", "60%", "40%", "30%"];
 const state = reactive({
   active1: 0,
   active2: "month",
@@ -109,8 +108,8 @@ const updateData = (data) => {
     return {
       id: item.projectId,
       name: item.projectName,
-      value: item.data.toFixed(2),
-      percent: `${(item.data / total) * 100}%`,
+      value: (item.data || 0).toFixed(2),
+      percent: total !== 0 ? `${(item.data / total) * 100}%` : "0%",
     };
   });
 };
@@ -152,6 +151,12 @@ const handleClick = (name, value) => {
     query();
   }
 };
+watch(
+  () => props.projectId,
+  () => {
+    query();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

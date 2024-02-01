@@ -44,7 +44,7 @@ import u4063 from "@/assets/img/screen/mainA/u4063.png";
 import u4066 from "@/assets/img/screen/mainA/u4066.png";
 import u4072 from "@/assets/img/screen/mainA/u4072.png";
 import u4069 from "@/assets/img/screen/mainA/u4069.png";
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import Echart from "@/components/Echart.vue";
 import { PIE_OPT } from "./constant";
 import {
@@ -130,7 +130,7 @@ const initPie = () => {
     }
   );
   option.value.series[0].label.formatter = [
-    `{a|${sum.toFixed(2).toLocaleString()}}`,
+    `{a|${(sum || 0).toFixed(2).toLocaleString()}}`,
     "{b|本月碳排量}",
   ].join("\n");
 };
@@ -164,6 +164,12 @@ const init = () => {
   querySummary2();
 };
 init();
+watch(
+  () => props.projectId,
+  () => {
+    init();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

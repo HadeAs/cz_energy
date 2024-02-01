@@ -2,12 +2,13 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-19 17:28:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-22 14:33:00
+ * @LastEditTime: 2024-01-31 13:32:01
  * @Description:
  */
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
 import { getRoles, getProjectList, getCurrentResource, getResourceList } from "@/api/common";
+import { handleResources } from "@/utils";
 
 export const useGlobal = defineStore("global", () => {
   const globalState = reactive({
@@ -17,7 +18,7 @@ export const useGlobal = defineStore("global", () => {
     resourceList: [],
     authList: [],
     authInit: false,
-    mock: true
+    mock: false
   })
   const projectName = ref("");
   // 超级管理员角色
@@ -58,7 +59,7 @@ export const useGlobal = defineStore("global", () => {
   const getResources = async () => {
     const { data: resourceData } = await getCurrentResource();
     globalState.authInit = true;
-    globalState.authList = (resourceData?.data || []).map(item => item.id);
+    globalState.authList = handleResources(resourceData?.data);
   }
 
   const clear = () => {

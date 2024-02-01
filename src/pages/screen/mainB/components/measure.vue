@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 12:10:31
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-22 14:35:00
+ * @LastEditTime: 2024-01-31 13:44:18
  * @Description: 
 -->
 <template>
@@ -53,8 +53,8 @@ const query = async () => {
     state.chartData = data.list.map((item) => ({
       ...item,
       name: item.sysClassName,
-      value: item.totalAmount,
-      rate: `${item.ratio}%`,
+      value: (item.totalAmount || 0).toFixed(0),
+      rate: `${(item.ratio * 100).toFixed(0)}%`,
     }));
     option.value = MEASURE_OPT(state.chartData);
   }

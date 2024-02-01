@@ -13,7 +13,8 @@ export const MEASURE_OPT = (chartData) => {
       icon: 'circle',
       // data: ['空调', '动力', '照明插座', '特殊'],
       formatter: function (name) {
-        let value, rate
+        let value = 0;
+        let rate = "0%";
         chartData.forEach((v) => {
           if (v.name === name) {
             value = v.value

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-22 23:12:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-30 12:19:16
+ * @LastEditTime: 2024-01-30 23:23:13
  * @Description: 
 -->
 <template>
@@ -21,7 +21,7 @@
   </div>
 </template>
 <script setup name="Trend">
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import Echart from "@/components/Echart.vue";
 import UnitSelect from "./unitSelect.vue";
 import { LINE_OPT } from "./constant";
@@ -55,6 +55,12 @@ const handleChange = (val) => {
   state.year = val;
   query();
 };
+watch(
+  () => props.projectId,
+  () => {
+    query();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {
