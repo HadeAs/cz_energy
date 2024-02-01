@@ -64,7 +64,6 @@ import { getRewardData } from '@/api/buildCarbon/reduce.js';
 // import { getCarbonStandardList } from '@/api/common.js';
 import { storeToRefs } from 'pinia';
 import appStore from '@/store/index.js';
-import { toFixedNum } from '@/utils/index.js';
 // import Income from "./income.vue";
 
 const { globalState } = storeToRefs(appStore.global);
@@ -79,7 +78,7 @@ const testData = (data) => [
     id: 0,
     title: "年均投资回报率",
     unit: "%",
-    value: toFixedNum(data?.annualEnergyProfit, 4),
+    value: data?.annualRewardRate,
     width: "35%",
     img: u18834,
     children: [
@@ -87,12 +86,12 @@ const testData = (data) => [
         data: [
           {
             title: "年均减碳收益",
-            value: toFixedNum(data?.annualCarbonProfit, 4),
+            value: data?.annualCarbonProfit,
             img: u18811,
           },
           {
             title: "年均节能收益",
-            value: toFixedNum(data?.annualEnergyProfit, 4),
+            value: data?.annualEnergyProfit,
             img: u18815,
           },
         ],
@@ -101,12 +100,12 @@ const testData = (data) => [
         data: [
           {
             title: "累计减碳收益",
-            value: toFixedNum(data?.annualEnergyProfit, 4),
+            value: data?.sumCarbonProfit,
             img: u18811,
           },
           {
             title: "累计节能收益",
-            value: toFixedNum(data?.annualEnergyProfit, 4),
+            value: data?.sumEnergyProfit,
             img: u18813,
           },
         ],
@@ -117,7 +116,7 @@ const testData = (data) => [
     id: 1,
     title: "预期投资回报年",
     unit: "年",
-    value: toFixedNum(data?.annualEnergyProfit, 4),
+    value: data?.predictYear,
     width: "44%",
     img: u18829,
     hasTab: true,
