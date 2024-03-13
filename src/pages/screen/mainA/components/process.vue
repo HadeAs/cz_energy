@@ -93,12 +93,12 @@ const colors = [img1, img2, img3, img3, img4, img5, img5, img6];
 const xMap = {
   碳排基准: "carbonBase",
   "能源使用\n减少": "energyReduce",
-  绿色能源: "greenEnergy",
-  "碳汇(植树等)": "carbonSink",
+  // 绿色能源: "greenEnergy",
+  "碳汇": "carbonSink",
+  "电网碳\n排放因子\n降低": "powerCarbonReduce",
   碳排放: "carbonSummary",
-  // "电网碳排放因子降低": "powerCarbonReduce",
   "碳信用抵消\n(碳交易)": "carbonCreditAmount",
-  "绿店购买\n抵消": "greenPowerAmount",
+  "绿电购买\n抵消": "greenPowerAmount",
   净排放: "netCarbonSummary",
 };
 const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));

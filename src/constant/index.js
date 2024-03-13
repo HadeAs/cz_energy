@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-20 13:10:50
+ * @LastEditTime: 2024-03-13 22:44:00
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -126,7 +126,7 @@ export const MENU_DATA = [
 ];
 
 const minValue = 10;
-const colorArr = ["#2DB7F5", "#7DC856", "#F9BF00", "#FA5555", "#6666FF"];
+const colorArr = ["#2DB7F5", "#7DC856", "#F9BF00", "#FA5555", "#6666FF", "#f5b1bd", "#E873FD", "#3745aa", "#247238"];
 export const COMMON_ECHART_OPTION = {
   tooltip: {
     trigger: "axis",

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 17:47:00
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-02-01 21:49:29
+ * @LastEditTime: 2024-03-13 22:32:00
  * @Description: 
 -->
 <template>
@@ -113,9 +113,11 @@ const {
   searchParam,
   treeData,
   checkKeys,
+  queryTree,
   tabChange,
   checkChange,
   searchChange,
+  changeParam
 } = useChart(
   {
     api: queryTrend,
@@ -136,7 +138,8 @@ const buttonConfig = () => {
 watch(
   () => globalState.value.projectId,
   (val) => {
-    searchChange({ prop: "projectId", value: val });
+    changeParam({ prop: "projectId", value: val });
+    queryTree(true, { projectId: val });
   }
 );
 

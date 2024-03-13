@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-16 11:29:30
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-22 15:22:30
+ * @LastEditTime: 2024-03-13 22:31:55
  * @Description: 
  */
 import { reactive, toRefs, onMounted } from "vue";
@@ -78,8 +78,8 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
   //   return treeData;
   // }
 
-  const queryTree = async (init = false) => {
-    const { data } = await treeApi(treeParam);
+  const queryTree = async (init = false, extraParam = {}) => {
+    const { data } = await treeApi({ ...treeParam, ...extraParam });
     if (data?.data) {
       const treeData = data.data || [];
       // 调用方处理treeData
@@ -98,6 +98,9 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
             state.checkDatas = [state.treeData[0]];
           }
         }
+      } else {
+        state.checkKeys = [];
+        state.checkDatas = [];
       }
       if (init) {
         queryChart();
@@ -116,7 +119,7 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
     queryChart();
   }
 
-  const searchChange = ({ prop, value }) => {
+  const changeParam = ({ prop, value }) => {
     if (Array.isArray(value)) {
       // 时间范围
       const param = {
@@ -127,6 +130,10 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
     } else {
       state.searchParam = { ...state.searchParam, [prop]: value };
     }
+  }
+
+  const searchChange = ({ prop, value }) => {
+    changeParam({ prop, value });
     queryChart();
   }
 
@@ -140,7 +147,8 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
     queryTree,
     tabChange,
     checkChange,
-    searchChange
+    searchChange,
+    changeParam
   }
 }
 export default useChart;

@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 22:08:58
+ * @LastEditTime: 2024-03-13 22:51:40
  * @Description: 
 -->
 <template>
@@ -159,6 +159,7 @@ const initChart = (res) => {
   // 动态更改图表数据
   const seriesData = [];
   const legendData = [];
+  let unitLabel = "";
   checkchilds.forEach((item, index) => {
     legendData.push(item.label);
     seriesData.push({
@@ -168,7 +169,15 @@ const initChart = (res) => {
       showSymbol: false,
       data: (res?.[index] || []).map((i) => i?.data),
     });
+    if (item.unit) {
+      unitLabel = item.unit;
+    }
   });
+  if (unitLabel) {
+    chartOption.value.yAxis[0].name = `单位：${unitLabel}`;
+  } else {
+    chartOption.value.yAxis[0].name = "";
+  }
   chartOption.value.xAxis[0].data = res?.[0]?.map((i) =>
     renderAxis(searchType.value, i?.createTime)
   );

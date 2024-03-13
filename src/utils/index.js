@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-31 13:06:38
+ * @LastEditTime: 2024-03-13 22:48:26
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
@@ -108,6 +108,7 @@ export const renderTreeData = (data = [], names = [], faKey) => {
       orgId: child?.id,
       faId: i?.[faKey],
       label: child?.[names?.[1]],
+      unit: i?.tag
     }))
   }
   ));
