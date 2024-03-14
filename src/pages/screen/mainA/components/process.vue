@@ -11,8 +11,8 @@
           </div>
           <div class="cs-main-text">
             <span class="cs-num-text">{{
-              state.config.targetCarbonTopYearDiff
-            }}</span>
+                state.config.targetCarbonTopYearDiff
+              }}</span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
@@ -22,8 +22,8 @@
           </div>
           <div class="cs-main-text">
             <span class="cs-num-text">{{
-              state.config.targetCarbonTopYear
-            }}</span>
+                state.config.targetCarbonTopYear
+              }}</span>
             <span class="cs-unit-text"></span>
           </div>
         </div>
@@ -33,7 +33,7 @@
           </div>
           <div class="cs-main-text">
             <span class="cs-num-text"
-              >{{ state.config.targetCarbonNtYearDiff }}
+            >{{ state.config.targetCarbonNtYearDiff }}
             </span>
             <span class="cs-unit-text">天</span>
           </div>
@@ -44,8 +44,8 @@
           </div>
           <div class="cs-main-text">
             <span class="cs-num-text">{{
-              state.config.targetCarbonNtYear
-            }}</span>
+                state.config.targetCarbonNtYear
+              }}</span>
             <span class="cs-unit-text"></span>
           </div>
         </div>
@@ -62,9 +62,9 @@
       <span class="cs-sub-header-text">碳中和趋势</span>
       <div class="cs-sub-right">
         <UnitSelect
-          :default-value="state.year"
-          label="单位：万t"
-          @change="handleChange"
+            :default-value="state.year"
+            label="单位：万t"
+            @change="handleChange"
         />
       </div>
     </div>
@@ -93,12 +93,12 @@ const colors = [img1, img2, img3, img3, img4, img5, img5, img6];
 const xMap = {
   碳排基准: "carbonBase",
   "能源使用\n减少": "energyReduce",
-  // 绿色能源: "greenEnergy",
-  "碳汇": "carbonSink",
-  "电网碳\n排放因子\n降低": "powerCarbonReduce",
+  绿色能源: "greenEnergy",
+  "碳汇(植树等)": "carbonSink",
   碳排放: "carbonSummary",
+  // "电网碳排放因子降低": "powerCarbonReduce",
   "碳信用抵消\n(碳交易)": "carbonCreditAmount",
-  "绿电购买\n抵消": "greenPowerAmount",
+  "绿店购买\n抵消": "greenPowerAmount",
   净排放: "netCarbonSummary",
 };
 const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));
@@ -123,7 +123,7 @@ const query = async () => {
     const { chartList, ...rest } = data;
     state.config = {
       ...rest,
-      progressRate: props.projectId === 3 ? 62 : ((data.progressRate || 0) * 100).toFixed(0),
+      progressRate: ((data.progressRate || 0) * 100).toFixed(0),
     };
     const topArr = [];
     const bottomArr = [];

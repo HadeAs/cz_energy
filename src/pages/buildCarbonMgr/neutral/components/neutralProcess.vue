@@ -38,18 +38,18 @@ const defaultData = {
   targetCarbonNtYearDiff: 0,
 }
 
-const getCenterConfig = (data = defaultData, projectId) => ({
+const getCenterConfig = (data = defaultData) => ({
   countdownTitle: "碳中和",
   countdownValue: data?.targetCarbonNtYearDiff,
   params: [
     {
       children: [
         { title: "碳中和考核时间", value: data?.targetCarbonNtYear, unit: "年", image: u16559 },
-        { title: "实际碳中和时间预测", value: projectId === 3 ? 2059 : data?.realCarbonNtYear, unit: "年", image: u16557 },
+        { title: "实际碳中和时间预测", value: data?.realCarbonNtYear, unit: "年", image: u16557 },
       ],
     },
   ],
-  process: projectId === 3 ? 11 : Number(toFixedNum((data?.progressRate || 0) * 100, 1)),
+  process: Number(toFixedNum((data?.progressRate || 0) * 100, 1)),
 });
 
 const state = reactive({
@@ -65,38 +65,11 @@ const loadMil = async () => {
   state.lcbList = lcbRes;
 }
 
-const getMockData = () => {
-  return {
-    targetNetCarbonList: [
-      { createTime: '2034', data: 190 },
-      { createTime: '2038', data: 160 },
-      { createTime: '2042', data: 130 },
-      { createTime: '2046', data: 90 },
-      { createTime: '2050', data: 50 },
-      { createTime: '2054', data: 30 },
-      { createTime: '2058', data: 22 },
-      { createTime: '2060', data: 8 },
-    ],
-    realNetCarbonList: [
-      { createTime: '2034', data: 182 },
-      { createTime: '2038', data: 175 },
-      { createTime: '2042', data: 148 },
-      { createTime: '2046', data: 108 },
-      { createTime: '2050', data: 66 },
-      { createTime: '2054', data: 46 },
-      { createTime: '2058', data: 34 },
-      { createTime: '2060', data: 13 },
-    ],
-  };
-}
-
 const loadData = async () => {
   await loadMil();
   const tdfRes = await getMainData({ projectId: state.searchFormData.projectId });
-  state.centerConfig = getCenterConfig(tdfRes?.data, state.searchFormData.projectId);
-  state.chartData = state.searchFormData.projectId === 3
-      ? getMockData()
-      : { targetNetCarbonList: tdfRes?.data?.targetNetCarbonList, realNetCarbonList: tdfRes?.data?.realNetCarbonList };
+  state.centerConfig = getCenterConfig(tdfRes?.data);
+  state.chartData = { targetNetCarbonList: tdfRes?.data?.targetNetCarbonList, realNetCarbonList: tdfRes?.data?.realNetCarbonList };
 }
 
 onMounted(async () => {
