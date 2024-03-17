@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, watch } from "vue";
 import cloneDeep from "lodash/cloneDeep";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import {
@@ -215,7 +215,6 @@ const handleChangeTab = async (tab) => {
 };
 
 const handleClick = async (param) => {
-  console.log(`param`, param.name);
   if (param.name === '绿电购买抵消') {
     jdDrawerRef.value.open();
   }
@@ -279,6 +278,15 @@ onMounted(async () => {
 const handleSearchChange = (type) => {
   initChart();
 };
+
+watch(
+  () => globalState.value.projectId,
+  async (id) => {
+    state.searchFormData.projectId = id;
+    await loadData();
+  }
+);
+
 </script>
 <style lang="scss" scoped>
 .search {
