@@ -64,7 +64,6 @@
 <script setup name="Rank">
 import { reactive, watch } from "vue";
 import { queryCarbonRank, queryCarbonTotal } from "@/api/screen/maina";
-import sortBy from "lodash/sortBy";
 const props = defineProps({
   projectId: { type: Number },
 });
@@ -113,9 +112,7 @@ const updateData = (data) => {
       percent: total !== 0 ? `${(item.data / total) * 100}%` : "0%",
     };
   });
-  state.rankData = sortBy(rankData, (item) => {
-    return -item.value
-  })
+  state.rankData = rankData;
 };
 
 const querySummary = async () => {

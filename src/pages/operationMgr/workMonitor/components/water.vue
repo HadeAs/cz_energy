@@ -106,7 +106,7 @@ const updateChart = (datas, checkDatas, currentType) => {
       unitLabel = item.tag;
     }
   });
-  chartOption.value.xAxis[0].data = datas[0].map((item) =>
+  chartOption.value.xAxis[0].data = (datas[0] || []).map((item) =>
     formatXAxis(item.createTime, currentType)
   );
   chartOption.value.legend.data = checkDatas.map((item) => item.name);

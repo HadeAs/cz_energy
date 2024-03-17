@@ -52,7 +52,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-select
+                <!-- <el-select
                   v-model="state.searchFormData.equipmentTypeId"
                   placeholder="选择设备类型"
                   clearable
@@ -64,7 +64,18 @@
                     :label="item.name"
                     :value="item.id"
                   />
-                </el-select>
+                </el-select> -->
+                <el-tree-select
+                  placeholder="选择设备类型"
+                  node-key="id"
+                  v-model="state.searchFormData.equipmentTypeId"
+                  :data="state.equipmentTypes"
+                  :render-after-expand="false"
+                  :props="typeProps"
+                  default-expand-all
+                  clearable
+                  @change="handleTypeChange"
+                />
               </el-form-item>
               <el-form-item>
                 <el-input
@@ -152,7 +163,7 @@ import {
 import { getEquipmentTypeList } from "@/api/deviceMgr";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
-import { exportWithExcel } from "@/utils";
+import { exportWithExcel, transformArrayToTree } from "@/utils";
 
 const TAGS_MAP = ["", "success", "info", "warning", "danger"];
 const { globalState } = storeToRefs(appStore.global);
@@ -163,6 +174,10 @@ const importDrawerRef = ref();
 const paramDrawerRef = ref();
 const commonParamRef = ref();
 const importRef = ref();
+
+const typeProps = {
+  label: "name",
+}
 const state = reactive({
   searchFormData: {
     projectId: globalState.value.projectId,
@@ -261,7 +276,10 @@ const getEqpList = async () => {
   const { data } = await getEquipmentTypeList({
     projectId: state.searchFormData.projectId,
   });
-  state.equipmentTypes = data.data;
+  if (data?.data) {
+    const list = transformArrayToTree(data.data, "parentId", "id", "children");
+    state.equipmentTypes = list;
+  }
 };
 getEqpList();
 
