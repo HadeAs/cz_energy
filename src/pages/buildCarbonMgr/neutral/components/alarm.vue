@@ -8,18 +8,18 @@
 <template>
   <CommonContainer :title="`动态预警${alarms.length}`">
     <template #default>
-      <div class="alarm-container" v-for="item in alarms" :key="item.id">
-        <div class="title">{{ item.date }}</div>
+      <div class="alarm-container" v-for="item in alarms" :key="item.year">
+        <div class="title">{{ item.year }}</div>
         <div class="content">
           <div
             class="left"
             :style="{
-              width: `${(item.target / (item.target + item.actual)) * 100}%`,
+              width: `${(item.target / (item.target + item.real)) * 100}%`,
             }"
           >
             {{ item.target }}
           </div>
-          <div class="right">{{ item.actual }}</div>
+          <div class="right">{{ item.real }}</div>
         </div>
         <div class="description">
           <div>目标净碳排量</div>

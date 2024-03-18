@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 14:07:09
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-07 10:12:42
+ * @LastEditTime: 2024-01-19 20:32:22
  * @Description: 
 -->
 <template>
@@ -13,6 +13,7 @@
       v-model:file-list="state.fileList"
       :accept="state.accept"
       list-type="text"
+      :auto-upload="false"
       :limit="limit"
       :on-exceed="handleExceed"
       :before-upload="beforeUpload"
@@ -149,7 +150,7 @@ const beforeUpload = (rawFile) => {
     const fileSuffix = rawFile.name.substring(
       rawFile.name.lastIndexOf(".") + 1
     );
-    if (accepts.indexOf(fileSuffix) === -1) {
+    if (!accepts.some((item) => item.includes(fileSuffix))) {
       ElMessage.error("文件格式错误！请检查！");
       return false;
     }

@@ -1,76 +1,44 @@
 <template>
   <MainContentContainer class="process-container">
     <el-row class="title-container" align="middle" :gutter="5">
-      <el-col :span="18">
+      <el-col :span="20">
         <span class="title">净碳排放量趋势</span>
       </el-col>
-      <el-col :span="6">
-        <el-date-picker
-          v-model="state.timeRange"
-          type="datetimerange"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
-          value-format="YYYY-MM-DD hh:mm:ss"
-        />
+      <el-col :span="4">
+        <el-button @click="handleConfigTarget">配置碳排放目标</el-button>
       </el-col>
     </el-row>
     <div class="content">
-      <el-tabs v-model="state.activeTab" @tab-change="initChart">
-        <el-tab-pane
-          v-for="item in tabs"
-          :key="item.id"
-          :label="item.title"
-          :name="item.id"
-        />
-      </el-tabs>
       <Echart :option="chartOption" />
     </div>
   </MainContentContainer>
+  <ProDrawer title="配置碳达峰、中和目标" ref="targetDrawerRef" @confirm="confirmTarget">
+    <TargetConfig ref="targetConfigRef" />
+  </ProDrawer>
 </template>
 <script setup name="ProcessContainer">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, watch } from "vue";
 import Echart from "@/components/Echart.vue";
 import { POWER_ECHART_OPT } from "@/constant/workMonitor";
-import { handleOpts } from "@/utils";
+import { handleOpts, renderAxis, timeRender } from "@/utils";
+import dayjs from 'dayjs';
+import TargetConfig from './targetConfig.vue';
+import { postTarget } from '@/api/buildCarbon/neutral.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
 
-const tabs = [
-  {
-    id: 0,
-    title: "年能耗",
-    value: [
-      "2022",
-      "2023",
-      "2024",
-      "2025",
-      "2026",
-      "2027",
-      "2028",
-      "2029",
-      "2030",
-    ],
-  },
-  {
-    id: 1,
-    title: "月能耗",
-    value: [
-      "1月",
-      "2月",
-      "3月",
-      "4月",
-      "5月",
-      "6月",
-      "7月",
-      "8月",
-      "9月",
-      "10月",
-      "11月",
-      "12月",
-    ],
-  },
-];
+const { globalState } = storeToRefs(appStore.global);
+
+const targetDrawerRef = ref();
+const targetConfigRef = ref();
+
+const emits = defineEmits([
+  "reload",
+]);
+
 const dataMaps = [
   {
-    name: "目标趋势预测",
+    name: "实际趋势预测",
     value: "target",
     lineColor: "#191b1a",
     lineType: "dashed",
@@ -97,15 +65,41 @@ const state = reactive({
   activeTab: 0,
 });
 
-const randomArr = (times, num) => {
-  const arr = new Array(times)
-    .fill("")
-    .map((v) => (Math.random() * num).toFixed(0));
-  return arr.sort();
+const props = defineProps({
+  chartData: {
+    type: Object,
+    default: {},
+  },
+})
+
+const getDashData = (targetNetCarbonList) => {
+  return targetNetCarbonList.map(i => {
+    if (Number(dayjs(i?.createTime).format(timeRender.year)) >= Number(dayjs().format(timeRender.year))) {
+      return i;
+    } else {
+      return { ...i, data: '-' };
+    }
+  });
+}
+
+const handleConfigTarget = () => {
+  targetDrawerRef.value.open();
 };
 
-const initChart = () => {
-  const targetTab = tabs.find((v) => v.id === state.activeTab);
+const confirmTarget = async () => {
+  const res = await targetConfigRef.value.validate();
+  if (res) {
+    const postRes = await postTarget({ ...res, projectId: globalState.value.projectId, })
+    if (postRes && postRes?.code === 200) {
+      emits("reload", {});
+      targetDrawerRef.value.close();
+    }
+  }
+}
+
+const initChart = ({ targetNetCarbonList, realNetCarbonList }) => {
+  const dashData = getDashData(realNetCarbonList);
+  const chartData = [dashData, targetNetCarbonList, realNetCarbonList];
   const seriesData = [];
   const legendData = [];
   dataMaps.forEach((item, index) => {
@@ -113,29 +107,35 @@ const initChart = () => {
     seriesData.push({
       name: item.name,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
-      data: randomArr(targetTab.value.length, 1000),
+      data: chartData?.[index]?.map(i => i?.data),
       areaStyle: {
         color: item.bgColor,
       },
-      lineStyle: {
-        color: item.lineColor,
-        type: index === 0 ? "dashed" : "solid",
-      },
+      // lineStyle: {
+      //   color: item.lineColor,
+      //   type: index === 0 ? "dashed" : "solid",
+      // },
     });
   });
+  chartOption.value.color = ["#191b1a", "#fed135", "#916aff", '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272'];
   chartOption.value.yAxis[0].name = "单位：tCO₂";
-  chartOption.value.xAxis[0].data = targetTab.value;
+  chartOption.value.xAxis[0].data = targetNetCarbonList.map(i => renderAxis('year', i?.createTime));
   chartOption.value.legend = {
     data: legendData,
   };
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };
-onMounted(() => {
-  initChart();
-});
+
+watch(
+  () => props.chartData,
+  (val) => {
+    initChart(val);
+  }
+);
+
 </script>
 <style lang="scss" scoped>
 .process-container {

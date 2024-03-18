@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 14:56:02
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-14 22:10:46
+ * @LastEditTime: 2024-01-19 21:16:33
  * @Description: 
 -->
 <template>
@@ -113,6 +113,7 @@ import {
   handleLive,
   exportLive,
 } from "@/api/deviceMgr/deviceAlarm";
+import { getDeviceAlarmProve } from "@/api/common";
 import { ElMessage } from "element-plus";
 import { ALARM_LEVELS } from "@/constant";
 import { exportWithExcel } from "@/utils";
@@ -196,11 +197,29 @@ const column = [
   {
     prop: "status",
     label: "处理过程",
-    width: 100,
+    width: 140,
+    showOverflowTooltip: false,
     render: (scope) => {
       const status = scope.row.status;
+      const appendix = scope.row.appendix;
       const type = status === "未处理" ? "danger" : "success";
-      return <ElTag type={type}>{status}</ElTag>;
+      if (!appendix) {
+        return <ElTag type={type}>{status}</ElTag>;
+      }
+      return (
+        <div class="handle-process">
+          <ElTag type={type}>{status}</ElTag>
+          <ElButton
+            link
+            type="primary"
+            onClick={() => {
+              download(appendix);
+            }}
+          >
+            下载凭证
+          </ElButton>
+        </div>
+      );
     },
   },
   {
@@ -220,7 +239,7 @@ const {
   searchChange,
   selectionChange,
   getTableList,
-} = useTable(getLiveList, state.searchFormData, state.sortInfo);
+} = useTable(getLiveList, state.searchFormData, state.sortInfo, {}, 131);
 
 getTableList();
 
@@ -264,6 +283,17 @@ const handleSearchChange = () => {
 const addRow = () => {
   addRef.value.open();
 };
+const download = async (name) => {
+  const data = getDeviceAlarmProve(name);
+  if (data && !data.code) {
+    const [n, type] = name.split(".");
+    exportWithExcel(data, "报警处理凭证", type);
+    // ElMessage({
+    //   type: "success",
+    //   message: "下载成功",
+    // });
+  }
+};
 const handleRow = (row) => {
   if (row.status !== "已处理") {
     state.currentData = { ...row };
@@ -274,19 +304,20 @@ const addSubmit = async (param) => {
   const { code } = await addLive(state.searchFormData.projectId, param);
   if (code === 200) {
     addRef.value.close();
-    ElMessage.success("新增成功!");
+    // ElMessage.success("新增成功!");
     getTableList();
   }
 };
 const handleSubmit = async (param) => {
-  const { code } = await handleLive(state.searchFormData.projectId, {
+  const params = {
     alarmId: param.id,
-    userName: param.userName,
     result: param.result,
-  });
+  };
+  if (param.file) params.file = param.file;
+  const { code } = await handleLive(state.searchFormData.projectId, params);
   if (code === 200) {
     handleRef.value.close();
-    ElMessage.success("处理成功!");
+    // ElMessage.success("处理成功!");
     getTableList();
   }
 };
@@ -306,5 +337,10 @@ const handleSubmit = async (param) => {
       }
     }
   }
+}
+</style>
+<style lang="scss">
+.handle-process {
+  display: flex;
 }
 </style>

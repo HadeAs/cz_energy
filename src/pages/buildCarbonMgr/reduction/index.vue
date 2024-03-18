@@ -10,7 +10,7 @@
 </template>
 <script setup name="BuildCarbonMgr">
 import Calculate from "./components/calculate.vue";
-import Rate from "./components/rate.vue";
+import Income from "./components/income.vue";
 import MainTabContainer from "@/components/MainTabContainer.vue";
 
 const defaultTab = "calculate";
@@ -21,9 +21,9 @@ const tabData = [
     component: Calculate,
   },
   {
-    label: "碳减排评价",
+    label: "碳减排效益分析",
     name: "rate",
-    component: Rate,
+    component: Income,
   },
 ];
 </script>

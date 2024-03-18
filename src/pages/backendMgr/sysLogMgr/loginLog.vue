@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 18:49:12
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-16 23:47:22
  * @Description: 
 -->
 <template>
@@ -32,8 +32,8 @@ import { reactive } from "vue";
 import ProTable from "@/components/ProTable.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import useTable from '@/hooks/useTable.js';
-import { getLoginLog } from '@/api/backstageMng/sysLog.js';
+import useTable from "@/hooks/useTable.js";
+import { getLoginLog } from "@/api/backstageMng/sysLog.js";
 
 const searchFormCfg = [
   {
@@ -60,7 +60,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getLoginLog, state.searchFormData, state.sortInfo);
+} = useTable(getLoginLog, state.searchFormData, state.sortInfo, {}, 231);
 
 getTableList();
 
@@ -105,7 +105,6 @@ const column = [
     sortable: "custom",
   },
 ];
-
 </script>
 <style lang="scss" scoped>
 .search {

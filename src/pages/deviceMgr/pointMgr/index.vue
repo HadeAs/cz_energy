@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 21:03:19
+ * @LastEditTime: 2024-01-18 09:56:00
  * @Description: 
 -->
 <template>
@@ -239,7 +239,7 @@ const deleteRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success(`删除点位成功`);
+    // ElMessage.success(`删除点位成功`);
     getTableList();
   }
 };
@@ -247,7 +247,7 @@ const detailSubmit = async (param) => {
   const { projectId, ...rest } = param;
   const { code } = await updatePoint(projectId, rest);
   if (code === 200) {
-    ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
+    // ElMessage.success(`${rest.id ? "修改" : "新增"}点位成功`);
     detailRef.value.close();
     getTableList();
   }

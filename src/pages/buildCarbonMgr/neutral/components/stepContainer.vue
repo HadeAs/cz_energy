@@ -17,25 +17,86 @@
             <div>{{ item.content }}</div>
           </template>
           <template #description>
-            <div>{{ item.title }}</div>
+            <div style="display: flex;align-items: center;justify-content: center;">
+              <div>{{ item.year }}</div>
+              <el-icon style="margin-left: 6px;cursor: pointer;" @click="() => deleteLcb(item)"><Delete /></el-icon>
+            </div>
           </template>
         </el-step>
       </el-steps>
     </div>
+    <el-button @click="handleAddLcb">增加里程碑</el-button>
   </MainContentContainer>
+  <ProDrawer title="增加里程碑" ref="priceDrawerRef" @confirm="confirmLcb">
+    <MilestoneDetail ref="priceConfigRef" />
+  </ProDrawer>
 </template>
 <script name="StepContainer" setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
 import u16459 from "@/assets/img/carbon/u16459.png";
+import MilestoneDetail from './milestoneDetail.vue';
+import { deleteMilestone, postMilestone } from '@/api/buildCarbon/neutral.js';
+import { renderAxis } from '@/utils/index.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+import { Delete } from "@element-plus/icons-vue";
+import { ElMessageBox } from 'element-plus';
+
+const { globalState } = storeToRefs(appStore.global);
+
+const priceDrawerRef = ref();
+const priceConfigRef = ref();
+
+const emits = defineEmits([
+  "reload",
+]);
 
 const props = defineProps({
+  type: { type: Number, default: 0 },
   data: { type: Array, default: [] },
   defaultActive: { type: Number, default: 1 },
 });
+
 const state = reactive({
   activeStep: props.defaultActive,
 });
+
+const handleAddLcb = () => {
+  priceDrawerRef.value.open();
+}
+
+const confirmLcb = async () => {
+  const res = await priceConfigRef.value.validate();
+  if (res) {
+    const postRes = await postMilestone({
+      ...res,
+      type: props.type,
+      year: Number(renderAxis('year', res.year)),
+      projectId: globalState.value.projectId,
+    })
+    if (postRes && postRes?.code === 200) {
+      emits("reload", {});
+      priceDrawerRef.value.close();
+    }
+  }
+}
+
+const deleteLcb = ({ id }) => {
+  ElMessageBox.confirm("确认删除当前里程碑吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+  .then(async () => {
+    const res = await deleteMilestone({ id, projectId: globalState.value.projectId });
+    if (res?.code === 200) {
+      emits("reload", {});
+    }
+  })
+  .catch(() => {});
+};
+
 </script>
 <style lang="scss" scoped>
 .time-line-container {

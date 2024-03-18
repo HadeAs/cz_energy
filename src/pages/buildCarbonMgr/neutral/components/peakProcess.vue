@@ -7,20 +7,21 @@
 -->
 <template>
   <div class="process-container">
-    <StepContainer :data="TEST_STEP_DATA" :default-active="1" />
-    <CenterContainer v-bind="centerConfig" />
+    <StepContainer :data="state.lcbList" :default-active="1" :type="0" @reload="loadMil" />
+    <CenterContainer v-bind="state.centerConfig" @reload="loadData" />
     <el-row class="bottom-container" :gutter="10">
       <el-col :span="18">
-        <ProcessChart />
+        <ProcessChart :chartData="state.chartData" @reload="loadData" />
       </el-col>
       <el-col :span="6">
-        <Alarm :alarms="alarms" />
+        <Alarm :alarms="state.alarms" />
         <Suggestion :suggestions="suggestions" />
       </el-col>
     </el-row>
   </div>
 </template>
 <script setup name="PeakProcess">
+import { onMounted, reactive, watch } from 'vue';
 import StepContainer from "./stepContainer.vue";
 import CenterContainer from "./centerContainer.vue";
 import ProcessChart from "./processChart.vue";
@@ -30,52 +31,98 @@ import u16559 from "@/assets/img/carbon/u16559.png";
 import u16557 from "@/assets/img/carbon/u16557.png";
 import u17509 from "@/assets/img/carbon/u17509.png";
 import u17513 from "@/assets/img/carbon/u17513.png";
+import { getMainData, getMilestone } from '@/api/buildCarbon/neutral.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
+import { toFixedNum } from '@/utils';
 
-const TEST_STEP_DATA = [
-  { title: "2023", content: "里程碑意义" },
-  { title: "2025", content: "净碳排量增长率低于10%" },
-  { title: "2027", content: "低于10%" },
-  { title: "2029", content: "2029" },
-  { title: "2030", content: "实现碳达峰" },
-];
-const centerConfig = {
+const { globalState } = storeToRefs(appStore.global);
+
+// "targetCarbonTopTarget": 50, //碳达峰考核目标（t）
+//     "progressRate": 0.30442963910944576, //碳达峰/中和完成进度
+//     "realCarbonTopYear": 2051, //碳达峰年份预测值
+//     "currentNetCarbonSummary": 35.08101907999992, //CO2净排放总量（t）
+//     "targetCarbonNtYearDiff": 13120, //碳中和倒计时
+
+const getCenterConfig = (data) => ({
   countdownTitle: "碳达峰",
-  countdownValue: 1542,
+  countdownValue: data?.targetCarbonTopYearDiff || 0,
   params: [
     {
       children: [
-        { title: "碳达峰考核时间", value: 2026, unit: "年", image: u16559 },
-        { title: "实际碳达峰时间预测", value: 2030, unit: "年", image: u16557 },
+        {
+          title: "碳达峰考核时间",
+          value: data?.targetCarbonTopYear || 0,
+          unit: "年",
+          image: u16559,
+        },
+        {
+          title: "实际碳达峰时间预测",
+          value: data?.realCarbonTopYear || 0,
+          unit: "年",
+          image: u16557,
+        },
       ],
     },
     {
       children: [
-        { title: "CO₂排放总量", value: 134.6, unit: "万t", image: u17509 },
-        { title: "碳达峰考核目标", value: 200, unit: "万t", image: u17513 },
+        {
+          title: "CO₂排放总量",
+          value: toFixedNum(data?.currentNetCarbonSummary || 0, 4),
+          unit: "t",
+          image: u17509,
+        },
+        {
+          title: "碳达峰考核目标",
+          value: data?.targetCarbonTopTarget || 0,
+          unit: "t",
+          image: u17513,
+        },
       ],
     },
   ],
-  process: 68,
-};
-const alarms = [
-  {
-    id: 0,
-    date: "2023/8",
-    target: 30,
-    actual: 100,
-  },
-  {
-    id: 1,
-    date: "2023/3",
-    target: 20,
-    actual: 60,
-  },
-];
+  process: Number(toFixedNum((data?.progressRate || 0) * 100, 1)),
+});
 
 const suggestions = [
   "分析各系统设备用能情况，检索异常用能设备。",
   // "XXXXXXXXXXXXXXXXXXXXXXX，检索异常用能设备。",
 ];
+
+const state = reactive({
+  searchFormData: {
+    projectId: globalState.value.projectId,
+  },
+  lcbList: [],
+  centerConfig: {},
+  alarms: [],
+});
+
+const loadMil = async () => {
+  const lcbRes = await getMilestone({ type: 0, projectId: state.searchFormData.projectId });
+  state.lcbList = lcbRes;
+}
+
+const loadData = async () => {
+  await loadMil();
+  const tdfRes = await getMainData({ projectId: state.searchFormData.projectId });
+  state.centerConfig = getCenterConfig(tdfRes?.data);
+  state.alarms = tdfRes?.data?.targetAlarmList.map(i => ({ id: i, ...i })) || [];
+  state.chartData = { targetNetCarbonList: tdfRes?.data?.targetNetCarbonList, realNetCarbonList: tdfRes?.data?.realNetCarbonList };
+}
+
+onMounted(async () => {
+  await loadData();
+})
+
+watch(
+  () => globalState.value.projectId,
+  async (id) => {
+    state.searchFormData.projectId = id;
+    await loadData();
+  }
+);
+
 </script>
 <style lang="scss" scoped>
 .bottom-container {

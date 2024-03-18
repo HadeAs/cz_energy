@@ -15,8 +15,8 @@
     class="custom-form"
   >
     <el-form-item label="变量类型" required prop="level">
-      <el-select v-model="state.detailForm.level" placeholder="请选择">
-        <el-option v-for="item in VARIABLE_TYPE" v-bind="item" />
+      <el-select v-model="state.detailForm.level" onchange="onTypeChange" placeholder="请选择">
+        <el-option v-for="item in props.vTypeData" :key="item.id" :value="item.id" :label="item.name" />
       </el-select>
     </el-form-item>
     <el-form-item label="一级变量名称" required prop="name">
@@ -25,20 +25,31 @@
     <el-form-item label="二级变量名称" prop="classTwoName">
       <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
+    <el-form-item label="变量单位" required prop="templateTag">
+      <el-select v-model="state.detailForm.templateTag" placeholder="请选择">
+        <el-option v-for="item in state.unitList" :key="item.id" :value="item.tag" :label="`${item.name}-${item.tag}`" />
+      </el-select>
+    </el-form-item>
   </el-form>
 </template>
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { VARIABLE_TYPE } from "@/constant";
+import { getUnitList, getVariablesByParent } from '@/api/common.js';
+// import { VARIABLE_TYPE } from "@/constant";
 
 const init = {
   name: "",
   level: "",
   parentName: "",
+  templateTag: "",
 };
 const props = defineProps({
   initData: {
     type: Object,
+  },
+  vTypeData: {
+    type: Array,
+    default: [],
   },
 });
 const rules = {
@@ -67,12 +78,21 @@ defineExpose({
   },
 });
 
+const onTypeChange = e => {
+  getVariablesByParent();
+};
+
 const formRef = ref();
-const state = reactive({ detailForm: init });
+const state = reactive({ detailForm: init, unitList: [] });
 
 onMounted(() => {
+  getUnitList().then(({ data }) => {
+    if (data) {
+      state.unitList = data.data;
+    }
+  })
   if (props.initData) {
-    const formData = { ...init, ...props.initData, level: String(props?.initData?.level) };
+    const formData = { ...init, ...props.initData };
     state.detailForm = formData;
   }
 });

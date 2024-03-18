@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 22:43:43
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 22:30:48
+ * @LastEditTime: 2024-01-31 14:23:09
  * @Description: 
 -->
 
@@ -37,7 +37,7 @@
       <el-form-item label="数据聚合" prop="function">
         <el-select v-model="state.form.function">
           <el-option
-            v-for="item in state.funcList"
+            v-for="item in COMMON_FUNCTION_LIST"
             :key="item.id"
             :label="item.name"
             :value="item.id"
@@ -54,7 +54,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="智能网关" required prop="gatewayId">
+      <!-- <el-form-item label="智能网关" required prop="gatewayId">
         <el-select v-model="state.form.gatewayId">
           <el-option
             v-for="item in state.gatewayList"
@@ -63,8 +63,8 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="点位模板" required prop="templateId">
+      </el-form-item> -->
+      <el-form-item label="点位模板" prop="templateId">
         <el-select v-model="state.form.templateId">
           <el-option
             v-for="item in state.unitList"
@@ -74,9 +74,29 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="通讯站号" required prop="commNum">
-        <el-input-number v-model="state.form.commNum" :min="0" />
+      <el-form-item label="碳排放因子" prop="carbonStatisticsId">
+        <el-select v-model="state.form.carbonStatisticsId">
+          <el-option
+            v-for="item in state.tpyList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
       </el-form-item>
+      <el-form-item label="碳减排变量" prop="carbonReduceStatisticsId">
+        <el-select v-model="state.form.carbonReduceStatisticsId">
+          <el-option
+            v-for="item in state.reduceList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <!-- <el-form-item label="通讯站号" required prop="commNum">
+        <el-input-number v-model="state.form.commNum" :min="0" />
+      </el-form-item> -->
       <el-form-item label="检测周期(分钟)" required prop="period">
         <el-input-number v-model="state.form.period" :min="0" :max="9999" />
       </el-form-item>
@@ -105,7 +125,14 @@ import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
 import { storeToRefs } from "pinia";
 import appStore from "@/store";
 import { getInfo } from "@/api/deviceMgr/pointMgr";
-import { getGatewayList, getUnitList, getEnergyList } from "@/api/common";
+import {
+  getGatewayList,
+  getUnitList,
+  getEnergyList,
+  getCarbonTpyList,
+  getCarbonReduceList,
+} from "@/api/common";
+import { COMMON_FUNCTION_LIST } from "@/constant";
 
 const { globalState } = storeToRefs(appStore.global);
 const initData = {
@@ -116,9 +143,9 @@ const initData = {
   maxThreshold: null,
   minThreshold: null,
   energyStatisticsId: "",
-  gatewayId: "",
+  // gatewayId: "",
   templateId: "",
-  commNum: null,
+  // commNum: null,
   period: 60,
   number: null,
   status: true,
@@ -139,22 +166,21 @@ const state = reactive({
   gatewayList: [],
   variableList: [],
   unitList: [],
-  funcList: [
-    { id: "null", name: "无" },
-    { id: "sum", value: "求和" },
-    { id: "avg", value: "均值" },
-    { id: "max", value: "最大值" },
-    { id: "min", value: "最小值" },
-  ],
   energyList: [],
+  tpyList: [],
+  reduceList: [],
 });
 const init = async () => {
   const { data: gatewayData } = await getGatewayList();
   const { data: unitData } = await getUnitList();
   const { data: energyData } = await getEnergyList();
+  const { data: tpy } = await getCarbonTpyList();
+  const { data: reduce } = await getCarbonReduceList();
   state.gatewayList = gatewayData.data;
   state.unitList = unitData.data;
   state.energyList = energyData.data;
+  state.tpyList = tpy.data;
+  state.reduceList = reduce.data;
   state.initFlag = true;
 };
 
@@ -164,7 +190,7 @@ const getDetail = async (param) => {
   state.form.number = data.data.number;
   state.form.tag = data.data.tag;
   state.form.type = data.data.type;
-  state.form.gatewayId = data.data.gatewayId;
+  // state.form.gatewayId = data.data.gatewayId;
   state.form.templateId = data.data.templateId;
   state.form.energyStatisticsId = data.data.energyStatisticsId;
   state.form.function = data.data.function;

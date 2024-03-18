@@ -2,123 +2,171 @@
  * @Author: ymZhang
  * @Date: 2024-01-12 14:17:53
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 02:02:42
+ * @LastEditTime: 2024-01-19 13:27:48
  * @Description: 
 -->
 <template>
   <div>
-    <ProSearchContainer
-      class="search"
-      buttonContent="导出"
-      :form-info="searchFormCfg"
-      @button-click="onSearch"
-      authKey="monitor_electric_export"
-    />
+    <div style="background-color: white;padding: 6px 12px">
+      <el-form :inline="true" :model="state.searchFormData" class="demo-form-inline">
+        <el-form-item label="年份" style="margin-bottom: 0">
+          <el-date-picker
+            type="year"
+            v-model="state.searchFormData.year"
+            @change="e => handleChange(e, 'year')"
+          />
+        </el-form-item>
+        <el-form-item label="排放标准" style="margin-bottom: 0">
+          <el-select v-model="state.searchFormData.standardId" @change="e => handleChange(e, 'standardId')" placeholder="选择排放标准">
+            <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </div>
     <EchartTreeContainer
       ref="echartTreeRef"
       :showSwitch="true"
       :conflict="false"
+      allowParent
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[11, 12, 13, 14, 21, 22, 23]"
+      :defaultTreeCheckKeys="baseData.map(i => i?.key)"
       :treeData="CARBON_NETURAL_CALCULATE_TREE_DATA"
       @tree-check-change="initChart"
       @type-change="handleChangeTab"
+      @click-chart="handleClick"
       style="height: calc(100vh - 203px)"
     />
   </div>
+  <ProDrawer title="配置碳信用抵消" ref="diDrawerRef" @confirm="confirmXdx">
+    <DivisorDetail ref="diConfigRef" :curYear="detailYear" />
+  </ProDrawer>
+  <ProDrawer title="配置绿色家电购买抵消" ref="jdDrawerRef" @confirm="confirmJdx">
+    <GreenPowerDetail ref="jdConfigRef" :curYear="detailYear" />
+  </ProDrawer>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, watch } from "vue";
 import cloneDeep from "lodash/cloneDeep";
-import { TYPES_MAP, POWER_ECHART_OPT } from "@/constant/workMonitor";
+import { POWER_ECHART_OPT } from "@/constant/workMonitor";
 import {
   CARBON_NETURAL_CALCULATE_TREE_DATA,
   COMMON_SERIES_DATA,
 } from "@/constant/carbton";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
-import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import { handleOpts } from "@/utils";
+// import ProSearchContainer from "@/components/ProSearchContainer.vue";
+import { handleOpts, renderAxis, timeRender } from "@/utils";
+import { useRouter } from "vue-router";
+import { getCarbonFactor, getList, postCredit, postGreenPower } from '@/api/buildCarbon/neutral.js';
+import dayjs from 'dayjs';
+import DivisorDetail from './divisorDetail.vue';
+import GreenPowerDetail from './greenPowerDetail.vue';
+import { getCarbonStandardList } from '@/api/common.js';
+import { storeToRefs } from 'pinia';
+import appStore from '@/store/index.js';
 
+const router = useRouter();
+
+const diDrawerRef = ref();
+const diConfigRef = ref();
+const jdDrawerRef = ref();
+const jdConfigRef = ref();
+const detailYear = ref(2024);
 const echartTreeRef = ref();
+const staList = ref([]);
 const chartOption = ref(handleOpts(POWER_ECHART_OPT));
 
+const emits = defineEmits([
+  "reload",
+]);
+
+const { globalState } = storeToRefs(appStore.global);
+
+const baseData = [
+  { key: 'carbonBase', label: '碳排基准' },
+  { key: 'energyReduce', label: '能源使用减少' },
+  { key: 'greenEnergy', label: '绿色能源' },
+  { key: 'carbonSink', label: '碳汇(植树等)' },
+  { key: 'carbonSummary', label: '碳排放' },
+  { key: 'powerCarbonReduce', label: '电网碳排放因子降低' },
+  { key: 'carbonCreditAmount', label: '碳信用抵消(碳交易)' },
+  { key: 'greenPowerAmount', label: '绿电购买抵消' },
+  { key: 'netCarbonSummary', label: '净排放' },
+];
+
 const state = reactive({
+  treeData: [],
+  searchFormData: {
+    projectId: globalState.value.projectId,
+    type: "day",
+    standardId: 1,
+    year: dayjs().format(timeRender.year),
+  },
   activeTab: 0,
 });
 
-const searchFormCfg = [
-  {
-    label: "时间范围",
-    prop: "timeRange",
-    type: "datetimerange",
-    value: "",
-  },
-  {
-    label: "",
-    prop: "select",
-    type: "select",
-    value: "",
-    options: [
-      { value: 0, label: "国家推荐值" },
-      { value: 1, label: "地方推荐值" },
-    ],
-  },
-];
+const handleChange = (value, type) => {
+  if (type === 'standardId') {
+    state.searchFormData.standardId = value;
+    detailYear.value = value;
+  }
+  if (type === 'year') {
+    state.searchFormData.year = dayjs(value).format(timeRender.year);
+    detailYear.value = dayjs(value).format(timeRender.year);
+  }
+  loadData();
+}
 
-const onSearch = (data) => {
-  console.log(data);
-};
+const mockData = [850.3, 100, 100, 100, 150, 400.3, 100, 100, 200.3];
 
-const randomArr = (times, num) => {
-  const item = COMMON_SERIES_DATA[0].data;
-  const arr = new Array(times).fill("").map((v, index) => {
-    if (index === 0) return item[index];
-    const diff = num - item[index];
-    return Math.ceil(Math.random() * (diff - 1)) + 1;
+const getTopData = (record) => {
+  return baseData.map((item, index) => {
+    return {
+      value: record?.[item?.key],
+      // value: mockData?.[index],
+      itemStyle: {
+        color: {
+          repeat: "repeat",
+        },
+      },
+    }
   });
-  return arr;
-};
+}
 
-const totalMap = {
-  id: 0,
-  color: "rgba(197, 206, 223, 1)",
-  label: "碳排基准",
-};
-const basicTop = [
-  [850.3, 100, 100, 100, 150, 400.3, 100, 300.3],
-  [956.3, 150, 150, 150, 506.3, 100, 100, 306.3],
-  [1200, 200, 200, 250, 550, 100, 100, 350],
-  [2000, 350, 350, 250, 1050, 500, 200, 350],
-];
-const basicBottom = [
-  [0, 750.3, 650.3, 550.3, 400.3, 0, 300.3, 0],
-  [0, 806.3, 656.3, 506.3, 0, 406.3, 306.3, 0],
-  [0, 1000, 800, 550, 0, 450, 350, 0],
-  [0, 1650, 1300, 1050, 0, 550, 350, 0],
-];
+const getBottomData = (topArr) => {
+  const bottomArr = [];
+  topArr.forEach((item, index) => {
+    if (index === 0) {
+      bottomArr.push(0);
+    } else {
+      const topPrefix = topArr[index - 1].value;
+      const bottomPrefix = bottomArr[index - 1];
+      const max = Math.max(topPrefix, bottomPrefix);
+      const diff = max - item.value;
+      bottomArr.push(diff < 0 ? 0 : diff);
+    }
+  });
+  return bottomArr;
+}
 
-const initChart = () => {
+const initChart = (record) => {
   const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = [totalMap, ...checks.filter((v) => !v.children)];
   const seriesData = cloneDeep(COMMON_SERIES_DATA);
   const legendData = [];
   const lineData = [];
-  if (!checkchilds.length) return;
-  const num = state.activeTab % 4;
-  const basicTop_copy = [...basicTop[num]];
-  const basicBottom_copy = [...basicBottom[num]];
-  checkchilds.forEach((item, index) => {
+  const topData = getTopData(record);
+  const btmData = getBottomData(topData);
+  checks.forEach((item, index) => {
     legendData.push(item.label);
-    seriesData[0].data.push(basicBottom_copy[index]);
+    seriesData[0].data.push(btmData[index]);
     seriesData[1].data.push({
-      value: basicTop_copy[index],
+      value: topData[index]?.value,
       itemStyle: {
         color: item.color,
       },
     });
     const prefix = new Array(index).fill().map((item) => "-");
-    const max = Math.max(basicBottom_copy[index], basicTop_copy[index]);
+    const max = Math.max(btmData[index], topData[index]?.value);
     lineData.push({
       name: `test${index}`,
       type: "line",
@@ -138,7 +186,7 @@ const initChart = () => {
   chartOption.value.legend = { show: false };
   chartOption.value.yAxis[0] = {
     ...chartOption.value.yAxis[0],
-    name: "单位：万t",
+    name: "单位：t",
     axisLine: {
       show: false,
     },
@@ -161,14 +209,84 @@ const initChart = () => {
   chartOption.value = { ...chartOption.value };
 };
 
-const handleChangeTab = (tab) => {
-  state.activeTab = TYPES_MAP[tab];
+const handleChangeTab = async (tab) => {
+  state.searchFormData.type = tab;
+  // await loadData();
+};
+
+const handleClick = async (param) => {
+  if (param.name === '绿电购买抵消') {
+    jdDrawerRef.value.open();
+  }
+  const { standardId, year, projectId } = state.searchFormData;
+  if (param.name === '电网碳排因子降低') {
+    const res = await getCarbonFactor({ standardId, year, projectId });
+    ElMessageBox.confirm(`变化前：${res.data?.prevYear || 0}，变换后：${res.data?.thisYear || 0}`, "碳排因子变化前后", {
+      confirmButtonText: '关闭',
+      type: "info",
+      showCancelButton: false,
+    })
+  }
+  if (param.name === '碳信用抵消(碳交易)') {
+    diDrawerRef.value.open();
+  }
+};
+
+const confirmXdx = async () => {
+  const res = await diConfigRef.value.validate();
+  if (res) {
+    const postRes = await postCredit({
+      ...res,
+      year: Number(renderAxis('year', res.year)),
+      projectId: globalState.value.projectId,
+    })
+    if (postRes && postRes?.code === 200) {
+      loadData();
+      diDrawerRef.value.close();
+    }
+  }
+}
+
+const confirmJdx = async () => {
+  const res = await jdConfigRef.value.validate();
+  if (res) {
+    const postRes = await postGreenPower({
+      ...res,
+      year: Number(renderAxis('year', res.year)),
+      projectId: globalState.value.projectId,
+    })
+    if (postRes && postRes?.code === 200) {
+      loadData();
+      jdDrawerRef.value.close();
+    }
+  }
+}
+
+const loadData = async () => {
+  const { standardId, year, projectId } = state.searchFormData;
+  const res = await getList({ standardId, year, projectId });
+  initChart(res?.data);
+};
+
+onMounted(async () => {
+  await getCarbonStandardList().then(staRes => {
+    staList.value = staRes?.data?.data || [];
+    state.searchFormData.standardId = staRes?.data?.data?.[0]?.id;
+  })
+  await loadData();
+});
+const handleSearchChange = (type) => {
   initChart();
 };
 
-onMounted(() => {
-  initChart();
-});
+watch(
+  () => globalState.value.projectId,
+  async (id) => {
+    state.searchFormData.projectId = id;
+    await loadData();
+  }
+);
+
 </script>
 <style lang="scss" scoped>
 .search {

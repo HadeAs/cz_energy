@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 12:10:31
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-15 03:19:13
+ * @LastEditTime: 2024-01-31 13:44:18
  * @Description: 
 -->
 <template>
@@ -10,31 +10,29 @@
     <div class="cs-header-content">
       <img src="@/assets/img/screen/mainB/u8.png" />分项计量
       <div class="pull-right">
-        <span class="cs-title-unit margin-right-small-1">单位：kWh</span>
-        <ul class="cs-btn-group">
-          <li
-            v-for="(item, index) in tabs"
-            :key="index"
-            :class="state.activeTab === index ? 'active' : ''"
-            @click="handleChange(index)"
-          >
-            {{ item }}
-          </li>
-        </ul>
+        <span class="cs-title-unit margin-right-small-1"
+          >单位：{{ state.tag }}</span
+        >
+        <YearTabs @change="tabChange" />
       </div>
     </div>
     <Echart id="chart1" class="cs-left-wrap4" :option="option" />
   </div>
 </template>
 <script setup name="Measure">
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { MEASURE_OPT } from "./constant";
 import Echart from "@/components/Echart.vue";
+import YearTabs from "./yearTabs.vue";
+import { powerAnalysis } from "@/api/screen/mainb";
+import { judgeIfMock } from "@/utils";
 
-const tabs = ["年", "月", "日"];
-const arr = [30, 20, 28, 22];
+const props = defineProps({
+  projectId: { type: Number },
+});
 const state = reactive({
-  activeTab: 0,
+  activeTab: "year",
+  tag: "kWh",
   chartData: [
     { value: 30, name: "空调", rate: "30%" },
     { value: 20, name: "动力", rate: "20%" },
@@ -44,20 +42,35 @@ const state = reactive({
 });
 
 const option = ref(MEASURE_OPT(state.chartData));
-const handleChange = (index) => {
-  if (state.activeTab !== index) {
-    state.activeTab = index;
-    const newArr = arr.sort(function () {
-      return Math.random() - 0.5;
-    });
-    const newData = state.chartData.map((item, index) => ({
+
+const query = async () => {
+  const { data } = await powerAnalysis({
+    projectId: props.projectId,
+    type: state.activeTab,
+  });
+  if (data?.list && !judgeIfMock()) {
+    state.tag = data.tag;
+    state.chartData = data.list.map((item) => ({
       ...item,
-      value: newArr[index],
-      rate: `${newArr[index]}%`,
+      name: item.sysClassName,
+      value: (item.totalAmount || 0).toFixed(0),
+      rate: `${(item.ratio * 100).toFixed(0)}%`,
     }));
-    option.value = MEASURE_OPT(newData);
+    option.value = MEASURE_OPT(state.chartData);
   }
 };
+query();
+
+const tabChange = (tab) => {
+  state.activeTab = tab;
+  query();
+};
+watch(
+  () => props.projectId,
+  () => {
+    query();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

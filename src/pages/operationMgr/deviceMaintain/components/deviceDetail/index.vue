@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 16:57:31
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 12:18:37
+ * @LastEditTime: 2024-01-20 13:34:18
  * @Description: 
 -->
 <template>
@@ -16,14 +16,24 @@
         :detail="state.detail"
       />
       <List :device-id="id" :project-id="projectId" />
-      <MaintainPlan :device-id="id" :project-id="projectId" />
+      <MaintainPlan
+        :device-id="id"
+        :project-id="projectId"
+        :list="state.detail.maintainPlanList"
+        @reload="getDetail"
+      />
       <MaintainFuture
         :device-id="id"
         :project-id="projectId"
         :plan="state.detail.fiveYearMaintainPlan"
         @reload="getDetail"
       />
-      <Attach :device-id="id" :project-id="projectId" />
+      <Attach
+        :device-id="id"
+        :project-id="projectId"
+        :file-url="state.detail.maintainAppendix"
+        @reload="getDetail"
+      />
     </div>
   </div>
 </template>
@@ -35,7 +45,7 @@ import List from "./list.vue";
 import MaintainPlan from "./maintainPlan.vue";
 import MaintainFuture from "./maintainFuture.vue";
 import Attach from "./attach.vue";
-import { getInfo } from "@/api/deviceMgr/deviceLedger";
+import { getDeviceTypeInfo } from "@/api/operationMgr/deviceMaintain";
 
 const route = useRoute();
 const { projectId, id, num } = route.params;
@@ -44,9 +54,9 @@ const state = reactive({
   detail: {},
 });
 const getDetail = async () => {
-  const { data } = await getInfo({
+  const { data } = await getDeviceTypeInfo({
     projectId,
-    id,
+    equipmentModelId: id,
   });
   if (data?.data) {
     state.detail = data.data;

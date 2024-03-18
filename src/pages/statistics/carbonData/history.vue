@@ -11,7 +11,7 @@
       class="search"
       buttonContent="导出"
       :form-info="searchFormCfg"
-      @button-click="onSearch"
+      @button-click="handleExport"
       @search-change="handleOnSearch"
       authKey="carbon_history_export"
     />
@@ -19,7 +19,6 @@
       ref="echartTreeRef"
       :showSwitch="true"
       :chartOption="chartOption"
-      :defaultTreeCheckKeys="[8, 9, 10, 11]"
       :treeData="state.treeData"
       @type-change="handleTypeChange"
       @tree-check-change="renderChart"
@@ -33,18 +32,27 @@ import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
-import { exportWithExcel, handleOpts, renderAxis } from "@/utils";
-import { storeToRefs } from 'pinia';
-import appStore from '@/store/index.js';
-import { simServiceRequest } from '@/api/backstageMng/utils.js';
-import { exportCostQsBatch, querySysClassSide } from '@/api/staMng/statistics.js';
-import { exportEnergyQsBatch, getEnergyActual } from '@/api/staMng/energyData.js';
+import {
+  exportWithExcel,
+  getSearchNode,
+  handleOpts,
+  renderAxis,
+  renderTreeData,
+} from "@/utils";
+import { storeToRefs } from "pinia";
+import appStore from "@/store/index.js";
+import { simServiceRequest } from "@/api/backstageMng/utils.js";
+import { querySysClassSide } from "@/api/staMng/statistics.js";
+import {
+  exportEnergyQsBatch,
+  getEnergyActual,
+} from "@/api/staMng/energyData.js";
 
 const { globalState } = storeToRefs(appStore.global);
 
-const defaultKeys = ref([2, 3]);
-const searchType = ref('hour');
-const searchDate = ref({})
+const defaultKeys = ref([]);
+const searchType = ref("day");
+const searchDate = ref({});
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const echartTreeRef = ref();
@@ -67,26 +75,52 @@ const searchFormCfg = ref([
 ]);
 
 const handleOnSearch = () => {
-  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
+  const [startDate, endDate] = searchFormCfg.value.filter(
+    (i) => i?.prop === "timeRange"
+  )?.[0]?.value || [undefined, undefined];
   searchDate.value = { startDate, endDate };
   renderChart();
-}
+};
 
-const onSearch = async () => {
-  const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
-  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
-  const res = await exportEnergyQsBatch({
-    type: searchType.value,
-    projectId: state.searchFormData.projectId,
-    startDate,
-    endDate,
-    sysClassId: 1, // todo: 临时
-    // 直接单个数字
-    energyStatisticsId: energyStatisticsIds?.[0],
-  });
-  exportWithExcel(res, new Date().getTime());
+const handleExport = async () => {
+  const checks = echartTreeRef.value
+    .getCheckedNodes()
+    ?.filter((v) => !v.children);
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
+      const [startDate, endDate] = searchFormCfg.value.filter(
+          (i) => i?.prop === "timeRange"
+      )?.[0]?.value || [undefined, undefined];
+      const exportData = {
+        type: searchType.value,
+        projectId: state.searchFormData.projectId,
+        startDate,
+        endDate,
+        energyStatisticsId: data?.faId,
+      };
+      // const res = await Promise.all(
+      //     data?.childIds.map((i) =>
+      //         exportEnergyQsBatch({ ...exportData, sysClassId: i })
+      //     )
+      // );
+      const res = await exportEnergyQsBatch({ ...exportData, sysClassId: data?.childIds?.[0] });
+      // res.forEach((i, index) => {
+      //   exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
+      // });
+      if (res) {
+        exportWithExcel(res, "能源数据-历史数据");
+        ElMessage({
+          type: "success",
+          message: "导出成功",
+        });
+      }
+    })
+    .catch(() => {});
 };
 
 const randomArr = (count, num) => {
@@ -130,9 +164,9 @@ const initChart = (res) => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
-      data: (res?.[index] || []).map(i => i?.data),
+      data: (res?.[index] || [])?.map((i) => i?.data),
     });
     if (item.unit) {
       unitLabel = item.unit;
@@ -143,48 +177,53 @@ const initChart = (res) => {
   } else {
     chartOption.value.yAxis[0].name = "";
   }
-  chartOption.value.xAxis[0].data = res?.[0].map(i => renderAxis(searchType.value, i?.createTime));
+  chartOption.value.xAxis[0].data = res?.[0]?.map((i) =>
+    renderAxis(searchType.value, i?.createTime)
+  );
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
 };
 
 const renderChart = async () => {
-  const checks = echartTreeRef.value.getCheckedNodes();
-  const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys.value;
-  const res = await simServiceRequest(getEnergyActual, energyStatisticsIds, {
+  const checks = echartTreeRef.value
+    .getCheckedNodes()
+    ?.filter((v) => !v.children);
+  const data = getSearchNode(checks?.length ? checks : defaultKeys.value);
+  const res = await simServiceRequest(getEnergyActual, data?.childIds, {
     type: searchType.value,
+    energyStatisticsId: data?.faId,
     projectId: state.searchFormData.projectId,
-    sysClassId: 1, // todo: 临时
     ...searchDate.value,
   });
   initChart(res);
 };
 
-onMounted(async () => {
-  const res = await querySysClassSide({ projectId: state.searchFormData.projectId });
-  state.treeData = res.map(i => ({
-    ...i,
-    id: i?.energyStatisticsId,
-    label: i?.energyStatisticsName,
-    children: i?.children.map(child=> ({
-      ...child,
-      label: child?.name,
-    }))}
-  ));
-  defaultKeys.value = state.treeData?.[0]?.children.map(i => i?.id);
-  echartTreeRef.value.setCheckedKeys(defaultKeys.value);
+const initData = async () => {
+  const res = await querySysClassSide({
+    projectId: state.searchFormData.projectId,
+  });
+  state.treeData = renderTreeData(
+    res,
+    ["energyStatisticsName", "name"],
+    "energyStatisticsId"
+  );
+  defaultKeys.value = state.treeData?.[0]?.children;
+  echartTreeRef.value.setCheckedKeys(defaultKeys.value.map((i) => i?.id));
   renderChart();
+};
+
+onMounted(async () => {
+  initData();
 });
 
 watch(
-    () => globalState.value.projectId,
-    () => {
-      renderChart();
-    }
+  () => globalState.value.projectId,
+  (id) => {
+    state.searchFormData.projectId = id;
+    initData();
+  }
 );
-
 </script>
 <style lang="scss" scoped>
 .search {

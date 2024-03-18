@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 14:25:07
+ * @LastEditTime: 2024-01-17 22:45:08
  * @Description: 
 -->
 <template>
@@ -23,12 +23,12 @@
             <el-button type="primary" v-auth="'auth_add'" @click="addRow"
               >新增</el-button
             >
-            <el-button
-              :disabled="!selectRows.length"
-              v-auth="'auth_batch_delete'"
-              @click="batchDelete"
-              >批量删除</el-button
-            >
+<!--            <el-button-->
+<!--              :disabled="!selectRows.length"-->
+<!--              v-auth="'auth_batch_delete'"-->
+<!--              @click="batchDelete"-->
+<!--              >批量删除</el-button-->
+<!--            >-->
           </el-col>
           <el-col :offset="16" :span="4">
             <el-input
@@ -37,6 +37,7 @@
               placeholder="角色名称"
               :suffix-icon="Search"
               @keyup.enter="handleSearch"
+              v-auth="'auth_search'"
             />
           </el-col>
         </el-row>
@@ -100,6 +101,7 @@ import {
   distributeRoleAuth,
 } from "@/api/backstageMng/authMng.js";
 import { crudService } from "@/api/backstageMng/utils.js";
+import appStore from "@/store";
 
 const selectRows = ref([]);
 const operateType = ref("");
@@ -109,7 +111,6 @@ const roleDetailRef = ref();
 const roleDistributeRef = ref();
 const detailDrawerTitle = ref("");
 const initDetailData = ref(null);
-const initDistributeData = ref([]);
 
 const state = reactive({
   searchFormData: { textQuery: "" },
@@ -125,9 +126,14 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 222);
 
 getTableList();
+
+const refresh = () => {
+  getTableList();
+  appStore.global.getRoleList();
+};
 
 const addRow = () => {
   operateType.value = "add";
@@ -145,8 +151,6 @@ const editRow = (data) => {
 
 const distribute = (rowData) => {
   //模拟当前角色的权限点
-  const mock_auth = [11, 14, "carbon", "project_add", "systemlog_login_search"];
-  initDistributeData.value = mock_auth;
   state.currentData = rowData;
   initDetailData.value = rowData;
   distributeDrawerRef.value.open();
@@ -154,13 +158,12 @@ const distribute = (rowData) => {
 
 const confirmDistribute = async () => {
   const res = roleDistributeRef.value.getCheckResult();
-  console.log(state.currentData);
   if (res) {
     await crudService(
       distributeRoleAuth,
       { id: state.currentData?.id, resourceIds: res },
       () => {
-        getTableList();
+        refresh();
         distributeDrawerRef.value.close();
       }
     );
@@ -175,7 +178,7 @@ const confirmDetail = async () => {
   const res = await roleDetailRef.value.validate();
   if (res) {
     await crudService(updateRoleInfo, res, () => {
-      getTableList();
+      refresh();
       detailDrawerRef.value.close();
     });
   }
@@ -191,7 +194,7 @@ const handleSearch = () => {
  * @return {Promise<void>}
  */
 const confirmDelete = async ({ id }) => {
-  await crudService(deleteRoleInfo, { id }, getTableList);
+  await crudService(deleteRoleInfo, { id }, refresh);
 };
 
 const selectionChange = (data) => {
@@ -213,6 +216,7 @@ const batchDelete = () => {
         type: "success",
         message: "删除成功",
       });
+      refresh();
     })
     .catch(() => {});
 };

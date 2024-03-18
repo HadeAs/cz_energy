@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-24 18:06:45
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 14:58:46
+ * @LastEditTime: 2024-01-18 09:56:24
  * @Description: 
 -->
 <template>
@@ -56,7 +56,7 @@
             v-model="state.formData.maintainDate"
             type="datetime"
             placeholder="请选择日期"
-            value-format="YYYY-MM-DD hh:mm:ss"
+            :value-format="COMMON_DATE_TIME_FORMAT"
           />
         </el-form-item>
         <el-form-item label="设备保养（最多上传5张）" prop="images">
@@ -98,6 +98,7 @@ import {
   addDeviceMaintainPlan,
 } from "@/api/operationMgr/deviceMaintain";
 import { wrapObjWithFormData } from "@/utils";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 const props = defineProps({
   deviceId: { type: String },
@@ -253,7 +254,7 @@ const confirmAddVar = () => {
       const formData = wrapObjWithFormData(param);
       const { code } = await addDeviceMaintainPlan(props.projectId, formData);
       if (code === 200) {
-        ElMessage.success("设备保养添加成功");
+        // ElMessage.success("设备保养添加成功");
         drawerRef.value.close();
         getTableList();
       }

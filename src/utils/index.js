@@ -2,20 +2,21 @@
  * @Author: ymZhang
  * @Date: 2024-01-05 22:55:52
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:15:01
+ * @LastEditTime: 2024-03-13 22:48:26
  * @Description: 
  */
 import cloneDeep from "lodash/cloneDeep";
 import dayjs from 'dayjs';
-
+import appStore from "@/store";
+import { COMMON_DATE_FORMAT } from "@/constant";
 export * from "./cookies";
 
 // 导出文件制作下载链接
-export const exportWithExcel = (content, name) => {
+export const exportWithExcel = (content, name, type = "xls") => {
   const elink = document.createElement("a");
-  elink.download = `${name}.xls`;
+  elink.download = `${name}.${type}`;
   elink.style.display = "none";
-  const blob = new Blob([content], { type: "application/x-msdownload" });
+  const blob = new Blob([content], { type: type === "zip" ? "application/zip" : "application/x-msdownload" });
   elink.href = URL.createObjectURL(blob);
   document.body.appendChild(elink);
   elink.click();
@@ -72,20 +73,70 @@ export const handleOpts = (opts) => {
   return newOpts;
 }
 
+export const getSearchNode = (nodeKeys = [], name) => {
+  return {
+    faId: nodeKeys?.[0]?.faId,
+    childIds: nodeKeys?.map(i => i?.orgId),
+  }
+}
+
+export const toFixedNum = (target, count) => {
+  return target ? target.toFixed(count) : target;
+}
+
+export const getUnit = (type) => {
+  switch (type) {
+    case 'summary':
+      return 'tCO₂';
+    case 'perPerson':
+      return 'kgCO₂';
+    case 'intensity':
+      return 'kgCO₂/（m·a）';
+    default: return 'tCO₂';
+  }
+}
+
+// 树形数据字段不一致，临时处理
+export const renderTreeData = (data = [], names = [], faKey) => {
+  return data.map((i, index) => ({
+    ...i,
+    id: String(index),
+    label: i?.[names?.[0]],
+    children: i?.children.map((child, ind) => ({
+      ...child,
+      id: `${index}-${ind}`,
+      orgId: child?.id,
+      faId: i?.[faKey],
+      label: child?.[names?.[1]],
+      unit: i?.tag
+    }))
+  }
+  ));
+};
+
+export const timeRender = {
+  hour: 'HH',
+  day: 'YYYY-MM-DD',
+  month: 'YYYY-MM',
+  year: 'YYYY',
+  hourYear: 'YYYY-MM-DD HH',
+  common: 'YYYY-MM-DD HH:mm:ss'
+}
+
 export const renderAxis = (type, label) => {
   switch (type) {
     case "hour":
-      return dayjs(label).format('YYYY-MM-DD HH');
+      return dayjs(label).format(timeRender.hour);
     case "day":
-      return dayjs(label).format('YYYY-MM-DD');
+      return dayjs(label).format(timeRender.day);
     case "month":
-      return dayjs(label).format('YYYY-MM');
+      return dayjs(label).format(timeRender.month);
     case "year":
-      return dayjs(label).format('YYYY');
+      return dayjs(label).format(timeRender.year);
     default:
-      return dayjs(label).format('YYYY-MM-DD HH');
+      return dayjs(label).format(timeRender.hourYear);
   }
-}
+};
 
 export const formatXAxis = (value, type) => {
   let format = "";
@@ -95,8 +146,40 @@ export const formatXAxis = (value, type) => {
     format = "MM-DD";
   } else if (type === "month") {
     format = "YYYY-MM";
+  } else if (type === "monthOnly") {
+    format = "MM";
   } else {
     format = "YYYY";
   }
   return dayjs(value).format(format)
 };
+
+export const getDefaultDate = (type) => {
+  let startDate;
+  const now = dayjs();
+  const endDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 23:59:59";
+  if (type === "hour") {
+    // 默认查询当前一天的数据
+    startDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 00:00:00";
+  } else if (type === "day") {
+    // 默认查询近7天的数据
+    startDate = now.subtract(7, "day").format(COMMON_DATE_FORMAT) + " 00:00:00";
+  } else if (type === "month") {
+    // 默认查询最近12个月的数据
+    startDate = now.subtract(1, "year").startOf("year").format(COMMON_DATE_FORMAT) + " 00:00:00";
+  }
+  return { startDate, endDate };
+}
+
+export const judgeIfMock = () => {
+  return appStore.global.globalState.mock;
+}
+
+export const handleResources = (treeData = []) => {
+  const resources = [];
+  treeData.forEach(item => {
+    const { children = [] } = item;
+    resources.push(...(children.map(v => v.id)))
+  });
+  return resources;
+}

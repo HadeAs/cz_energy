@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-05 18:49:05
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-16 23:49:03
  * @Description: 
 -->
 <template>
@@ -32,8 +32,8 @@ import { reactive } from "vue";
 import ProTable from "@/components/ProTable.vue";
 import ProSearchContainer from "@/components/ProSearchContainer.vue";
 import MainContentContainer from "@/components/MainContentContainer.vue";
-import useTable from '@/hooks/useTable.js';
-import { getAlarmLog } from '@/api/backstageMng/sysLog.js';
+import useTable from "@/hooks/useTable.js";
+import { getAlarmLog } from "@/api/backstageMng/sysLog.js";
 
 const searchFormCfg = [
   {
@@ -44,7 +44,6 @@ const searchFormCfg = [
   },
   { label: "设备名称", prop: "textQuery", type: "input", value: "" },
 ];
-
 
 const state = reactive({
   searchFormData: {
@@ -61,7 +60,7 @@ const {
   sortChange,
   searchChange,
   getTableList,
-} = useTable(getAlarmLog, state.searchFormData, state.sortInfo);
+} = useTable(getAlarmLog, state.searchFormData, state.sortInfo, {}, 233);
 
 getTableList();
 
@@ -105,7 +104,6 @@ const column = [
     label: "所属项目",
   },
 ];
-
 </script>
 <style lang="scss" scoped>
 .search {

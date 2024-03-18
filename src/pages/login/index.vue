@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="cs-login-header">
       <img src="@/assets/img/logo.png" />
-      <span class="cs-header-text">建筑能耗与碳排放检测平台</span>
+      <span class="cs-header-text">建筑能耗与碳排放监测平台</span>
       <span class="cs-header-sub">V1.0</span>
     </div>
     <div class="cs-login-content">
@@ -152,7 +152,7 @@ const getCaptcha = async () => {
         }
       }, 1000);
       const { data } = await getCode({ phone: state.msgForm.phone });
-      ElMessage.success("验证码发送成功");
+      // ElMessage.success("验证码发送成功");
     }
   });
 };

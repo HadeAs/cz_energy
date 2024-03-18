@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-21 18:17:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 20:08:25
+ * @LastEditTime: 2024-01-18 09:55:49
  * @Description: 
 -->
 <template>
@@ -52,7 +52,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-select
+                <!-- <el-select
                   v-model="state.searchFormData.equipmentTypeId"
                   placeholder="选择设备类型"
                   clearable
@@ -64,7 +64,18 @@
                     :label="item.name"
                     :value="item.id"
                   />
-                </el-select>
+                </el-select> -->
+                <el-tree-select
+                  placeholder="选择设备类型"
+                  node-key="id"
+                  v-model="state.searchFormData.equipmentTypeId"
+                  :data="state.equipmentTypes"
+                  :render-after-expand="false"
+                  :props="typeProps"
+                  default-expand-all
+                  clearable
+                  @change="handleTypeChange"
+                />
               </el-form-item>
               <el-form-item>
                 <el-input
@@ -152,7 +163,7 @@ import {
 import { getEquipmentTypeList } from "@/api/deviceMgr";
 import appStore from "@/store";
 import useTable from "@/hooks/useTable";
-import { exportWithExcel } from "@/utils";
+import { exportWithExcel, transformArrayToTree } from "@/utils";
 
 const TAGS_MAP = ["", "success", "info", "warning", "danger"];
 const { globalState } = storeToRefs(appStore.global);
@@ -163,6 +174,10 @@ const importDrawerRef = ref();
 const paramDrawerRef = ref();
 const commonParamRef = ref();
 const importRef = ref();
+
+const typeProps = {
+  label: "name",
+}
 const state = reactive({
   searchFormData: {
     projectId: globalState.value.projectId,
@@ -245,7 +260,7 @@ const {
   searchChange,
   getTableList,
   selectionChange,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 104);
 
 getTableList();
 
@@ -261,7 +276,10 @@ const getEqpList = async () => {
   const { data } = await getEquipmentTypeList({
     projectId: state.searchFormData.projectId,
   });
-  state.equipmentTypes = data.data;
+  if (data?.data) {
+    const list = transformArrayToTree(data.data, "parentId", "id", "children");
+    state.equipmentTypes = list;
+  }
 };
 getEqpList();
 
@@ -327,7 +345,7 @@ const deleteRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success("删除成功");
+    // ElMessage.success("删除成功");
     getTableList();
   }
 };
@@ -337,9 +355,9 @@ const confirmDetail = async () => {
   if (res) {
     const { code } = await updateModel(state.searchFormData.projectId, res);
     if (code === 200) {
-      ElMessage.success(
-        `${state.operateType === "add" ? "新增" : "修改"}设备台账成功`
-      );
+      // ElMessage.success(
+      //   `${state.operateType === "add" ? "新增" : "修改"}设备台账成功`
+      // );
       detailDrawerRef.value.close();
       getTableList();
     }
@@ -380,7 +398,7 @@ const confirmParam = async () => {
       }
       paramDrawerRef.value.close();
       if (changeFlag) {
-        ElMessage.success("设备型号参数修改成功");
+        // ElMessage.success("设备型号参数修改成功");
         getTableList();
       }
     }

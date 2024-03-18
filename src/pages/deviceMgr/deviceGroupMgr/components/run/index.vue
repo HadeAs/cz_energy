@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 22:02:04
+ * @LastEditTime: 2024-01-18 09:55:45
  * @Description: 
 -->
 <template>
@@ -321,7 +321,7 @@ const deleteRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success("删除成功");
+    // ElMessage.success("删除成功");
     getTableList();
   }
 };

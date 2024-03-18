@@ -4,7 +4,7 @@
       <Echart ref="chartRef" id="map" :option="option" @click="handleClick" />
     </div>
     <div class="cs-center-map" v-show="state.activeTab === 'BIM'">
-      <img src="@/assets/img/screen/mainA/bim.png" />
+      <img :src="bimUrl" />
     </div>
     <ul class="cs-center-tab">
       <li
@@ -17,22 +17,25 @@
         <div class="cs-tab-text">{{ item.value }}</div>
       </li>
     </ul>
-    <el-icon class="back-icon" v-show="state.district" @click="backToCity"
+    <el-icon
+      class="back-icon"
+      v-show="state.district && state.activeTab === 'GIS'"
+      @click="backToCity"
       ><Back
     /></el-icon>
     <a href="javascript:void(0)" class="cs-link" @click="gotoB">进入B屏</a>
-    <el-select id="select2" v-model="state.selectVal">
+    <el-select id="select2" v-model="state.selectVal" @change="handleChange">
       <el-option
-        v-for="item in state.opts"
+        v-for="item in projectList"
         :key="item.id"
-        :label="item.text"
+        :label="item.name"
         :value="item.id"
       />
     </el-select>
   </div>
 </template>
 <script setup name="Map">
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { Back } from "@element-plus/icons-vue";
 import areaInfo from "@/constant/320000.json";
@@ -43,6 +46,14 @@ import { MAP_OPT, MAP_OPT2 } from "./constant";
 import gis from "@/assets/img/screen/mainA/u2705.png";
 import bim from "@/assets/img/screen/mainA/u2710.png";
 
+const mapPointData = [{ value: ["119.63", "32.02"], name: "武家嘴办公楼" }];
+const props = defineProps({
+  projectId: { type: Number },
+  projectList: { type: Array },
+  bimUrl: { type: String },
+  location: { type: Object },
+  change: { type: Function },
+});
 const tabs = [
   {
     value: "GIS",
@@ -58,24 +69,6 @@ const state = reactive({
   selectVal: 1,
   activeTab: "GIS",
   district: false,
-  opts: [
-    {
-      id: 1,
-      text: "武家嘴大酒店",
-    },
-    {
-      id: 2,
-      text: "徐州沛县中金商贸",
-    },
-    {
-      id: 3,
-      text: "连云港白虎山小商品",
-    },
-    {
-      id: 4,
-      text: "葛洲坝融创南京紫郡",
-    },
-  ],
 });
 
 const chartRef = ref();
@@ -91,21 +84,51 @@ const gotoB = () => {
   router.push({ path: "/mainB" });
 };
 
-onMounted(() => {
+const getPoint = () => {
+  const target = props.projectList.find((v) => v.id === props.projectId);
+  if (!target) return mapPointData;
+  return [
+    {
+      value: [
+        String(props.location.latitude),
+        String(props.location.longitude),
+      ],
+      name: target.name,
+    },
+  ];
+};
+
+const initArea = () => {
+  const point = getPoint();
   registerMap("jsMap", areaInfo);
-  option.value = MAP_OPT;
-});
+  option.value = MAP_OPT(point);
+};
+
+const handleChange = (val) => {
+  props.change(val);
+};
+
+watch(
+  () => props.location,
+  (val) => {
+    if (val && val.latitude && val.longitude) {
+      initArea();
+    }
+  },
+  { immediate: true }
+);
 
 const handleClick = (param) => {
-  if (["武家嘴办公楼", "常州市"].includes(param.name)) {
-    registerMap("czMap", districtInfo);
-    option.value = MAP_OPT2;
-    state.district = true;
-  }
+  // const point = getPoint();
+  // const names = point.map((item) => item.name);
+  // if (names.includes(param.name)) {
+  //   registerMap("czMap", districtInfo);
+  //   option.value = MAP_OPT2;
+  //   state.district = true;
+  // }
 };
 const backToCity = () => {
-  registerMap("jsMap", areaInfo);
-  option.value = MAP_OPT;
+  initArea();
   state.district = false;
 };
 </script>

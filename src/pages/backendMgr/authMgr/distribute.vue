@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-26 13:19:34
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-09 14:28:37
+ * @LastEditTime: 2024-01-16 23:21:25
  * @Description: 
 -->
 <template>
@@ -81,8 +81,9 @@ const checkChange = (data) => {
 
 const getCheckResult = () => {
   const checkedKeys = treeRef.value.getCheckedKeys();
-  const halfCheckedKeys = treeRef.value.getHalfCheckedKeys();
-  return [...halfCheckedKeys, ...checkedKeys];
+  // const halfCheckedKeys = treeRef.value.getHalfCheckedKeys();
+  const checkChildren = checkedKeys.filter((item) => String(item).length > 2);
+  return checkChildren;
 };
 
 defineExpose({

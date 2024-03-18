@@ -66,7 +66,7 @@ class RequestHttp {
         // tryHideFullScreenLoading();
         // 登录失效
         if (data.code == ResultEnum.OVERDUE) {
-          userStore.setToken("");
+          userStore.clear();
           router.replace("/login");
           if (data.msg) {
             ElMessage.error(data.msg);
@@ -79,6 +79,9 @@ class RequestHttp {
           return Promise.reject(data);
         }
         // 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
+        if (data.msg && !["get", "GET"].includes(config.method)) {
+          ElMessage.success(data.msg)
+        }
         return data;
       },
       async (error) => {

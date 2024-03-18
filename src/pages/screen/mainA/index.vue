@@ -1,21 +1,96 @@
 <template>
   <div class="cs-left-wrapper">
-    <Summary />
-    <Rank />
-    <Trend />
+    <Summary :project-id="state.projectId" />
+    <Rank :project-id="state.projectId" />
+    <Trend :project-id="state.projectId" />
   </div>
   <div class="cs-center-wrapper">
-    <Map />
-    <OverView />
+    <Map
+      :project-id="state.projectId"
+      :project-list="globalState.projects"
+      :bim-url="state.bim"
+      :location="state.location"
+      :change="appStore.global.changeName"
+    />
+    <OverView :config="state.config" />
   </div>
   <div class="cs-right-wrapper">
-    <Process />
-    <Action />
-    <Rate />
+    <Process :project-id="state.projectId" />
+    <Action :project-id="state.projectId" />
+    <Rate :project-id="state.projectId" />
   </div>
 </template>
-<script lang="ts" setup name="MainA">
-import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./components";
+<script setup name="MainA">
+import { reactive, watch } from "vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import {
+  Summary,
+  Rank,
+  Trend,
+  Map,
+  OverView,
+  Process,
+  Action,
+  Rate,
+} from "./components";
+import { getImageUrl } from "@/api/common";
+import { transformFileToUrl } from "@/utils";
+import bimImage from "@/assets/img/screen/mainA/bim.png";
+import { queryOverview } from "@/api/screen/maina";
+
+const { globalState } = storeToRefs(appStore.global);
+const state = reactive({
+  projectId: globalState.value.projectId,
+  bim: bimImage,
+  location: { longitude: "", latitude: "" },
+  config: {
+    area: "20000",
+    projectName: "武家嘴办公楼",
+    buildingTypeName: "办公建筑",
+    openYear: "2015",
+    airConditionerForm: "分机盘管+新风系统",
+    solarCapacity: "186",
+    groundHeatArea: "15000",
+    solarHeatCollectArea: "1190",
+    extWallWarmForm: "外保温，保温装饰板",
+  },
+});
+
+const getBim = async (config) => {
+  const { panelImage, ...rest } = config;
+  state.location = { ...rest };
+  if (panelImage) {
+    const data = await getImageUrl(panelImage);
+    state.bim = transformFileToUrl(data);
+  }
+};
+
+const query = async () => {
+  const { data } = await queryOverview({ projectId: state.projectId });
+  if (data) {
+    state.config = {
+      ...data,
+      area: (data.area || 0).toFixed(0),
+      solarCapacity: (data.solarCapacity || 0).toFixed(0),
+      solarHeatCollectArea: (data.solarHeatCollectArea || 0).toFixed(0),
+    };
+    getBim({
+      panelImage: data.panelImage,
+      longitude: data.longitude,
+      latitude: data.latitude,
+    });
+  }
+};
+query();
+
+watch(
+  () => globalState.value.projectId,
+  (val) => {
+    state.projectId = val;
+    query();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .cs-left-wrapper {
@@ -57,13 +132,23 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   color: #7a7787;
 }
 
-.cs-right-wrapper .cs-right-wrap1 .cs-info-wrap .cs-info-box .cs-main-text .cs-num-text {
+.cs-right-wrapper
+  .cs-right-wrap1
+  .cs-info-wrap
+  .cs-info-box
+  .cs-main-text
+  .cs-num-text {
   color: #fff;
   font-size: 20px;
   font-weight: bold;
 }
 
-.cs-right-wrapper .cs-right-wrap1 .cs-info-wrap .cs-info-box .cs-main-text .cs-unit-text {
+.cs-right-wrapper
+  .cs-right-wrap1
+  .cs-info-wrap
+  .cs-info-box
+  .cs-main-text
+  .cs-unit-text {
   color: #acabb4;
 }
 
@@ -122,7 +207,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   display: inline-block;
   width: 70px;
   text-align: center;
-  color: #ACABB4;
+  color: #acabb4;
 }
 
 .cs-right-wrapper .cs-right-wrap3 .cs-info-wrap.color1 {
@@ -185,7 +270,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
 }
 
 .cs-right-wrapper .cs-right-wrap5 .cs-left-info .cs-info-text {
-  color: #ACABB4;
+  color: #acabb4;
   position: absolute;
   left: 12px;
   top: 62px;
@@ -206,7 +291,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
 }
 
 .cs-right-wrapper .cs-right-wrap5 .cs-left-info .cs-info-detail {
-  color: #ACABB4;
+  color: #acabb4;
   font-weight: bold;
   position: absolute;
   left: 108px;
@@ -223,7 +308,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   margin-top: 8px;
 }
 
-.cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box>img {
+.cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box > img {
   width: 25px;
   height: 21px;
 }
@@ -231,7 +316,7 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
 .cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-text {
   display: inline-block;
   width: 100px;
-  color: #7A7886;
+  color: #7a7886;
 }
 
 .cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-num {
@@ -247,7 +332,12 @@ import { Summary, Rank, Trend, Map, OverView, Process, Action, Rate } from "./co
   font-weight: bold;
 }
 
-.cs-right-wrapper .cs-right-wrap5 .cs-right-info .cs-info-box .cs-info-num .cs-unit {
+.cs-right-wrapper
+  .cs-right-wrap5
+  .cs-right-info
+  .cs-info-box
+  .cs-info-num
+  .cs-unit {
   color: #fff;
   font-size: 14px;
   font-weight: normal;

@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2024-01-06 10:24:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 22:25:50
+ * @LastEditTime: 2024-01-20 13:58:50
  * @Description: 
  */
 import http from './http';
@@ -48,6 +48,26 @@ export const getImageUrl = (url) => {
   });
 }
 
+// 获取报警凭证
+export const getDeviceAlarmProve = (url) => {
+  return http.get(`alarm-handle-appendix/${url}`, null, {
+    baseURL: "/static",
+    ...COMMON_SUBMIT_CONFIG,
+    responseType: 'blob',
+    "response-content-type": "application/octet-stream"
+  });
+}
+
+// 获取保养附件
+export const getDevicePlanFile = (url) => {
+  return http.get(`maintain-appendix/${url}`, null, {
+    baseURL: "/static",
+    ...COMMON_SUBMIT_CONFIG,
+    responseType: 'blob',
+    "response-content-type": "application/octet-stream",
+  });
+}
+
 // 建筑分类
 export const getBuildingType = (param) => {
   return http.get(`${PORT}/building-type/name-list`, param);
@@ -71,4 +91,29 @@ export const getCurrentResource = () => {
 // 获取系统中用能类型列表
 export const getEnergyList = () => {
   return http.get(`${PORT}/energy-statistics/name-list`);
+}
+
+// 获取省份列表
+export const getProvinceList = () => {
+  return http.get(`common/provinces`);
+}
+
+// 获取省份列表
+export const getCityByProvinceId = (province) => {
+  return http.get(`common/cities`, province);
+}
+
+// 获取系统中碳排放因子列表
+export const getCarbonTpyList = (params) => {
+  return http.get(`common/carbon-statistics/name-list`, params);
+}
+
+// 获取系统中碳排放标准列表
+export const getCarbonStandardList = (params) => {
+  return http.get(`common/carbon-standard/name-list`, params, COMMON_SUBMIT_CONFIG);
+}
+
+// 获取系统中碳排放标准列表
+export const getCarbonReduceList = (params) => {
+  return http.get(`common/carbon-reduce-statistics/name-list`, params, COMMON_SUBMIT_CONFIG);
 }

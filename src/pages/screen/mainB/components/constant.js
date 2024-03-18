@@ -13,7 +13,8 @@ export const MEASURE_OPT = (chartData) => {
       icon: 'circle',
       // data: ['空调', '动力', '照明插座', '特殊'],
       formatter: function (name) {
-        let value, rate
+        let value = 0;
+        let rate = "0%";
         chartData.forEach((v) => {
           if (v.name === name) {
             value = v.value
@@ -164,10 +165,7 @@ export const TREND_OPT1 = {
       // console.log(params)
       return [
         params[0].name + '用电',
-        params[0].marker + params[0].seriesName + '：' + params[0].value,
-        params[1].marker + params[1].seriesName + '：' + params[1].value,
-        params[2].marker + params[2].seriesName + '：' + params[2].value,
-        params[3].marker + params[3].seriesName + '：' + params[3].value,
+        ...params.map(item => item.marker + item.seriesName + '：' + item.value)
       ].join('<br />')
     },
   },
@@ -288,10 +286,7 @@ export const TREND_OPT2 = {
       // console.log(params)
       return [
         params[0].name + '用电',
-        params[0].marker + params[0].seriesName + '：' + params[0].value,
-        params[1].marker + params[1].seriesName + '：' + params[1].value,
-        params[2].marker + params[2].seriesName + '：' + params[2].value,
-        params[3].marker + params[3].seriesName + '：' + params[3].value,
+        ...params.map(item => item.marker + item.seriesName + '：' + item.value)
       ].join('<br />')
     },
   },
@@ -559,10 +554,7 @@ export const TREND_OPT3 = {
       // console.log(params)
       return [
         params[0].name + '用电',
-        params[0].marker + params[0].seriesName + '：' + params[0].value,
-        params[1].marker + params[1].seriesName + '：' + params[1].value,
-        params[2].marker + params[2].seriesName + '：' + params[2].value,
-        params[3].marker + params[3].seriesName + '：' + params[3].value,
+        ...params.map(item => item.marker + item.seriesName + '：' + item.value)
       ].join('<br />')
     },
   },

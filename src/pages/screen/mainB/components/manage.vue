@@ -19,7 +19,7 @@
             <img src="@/assets/img/screen/mainB/u6245.png" />监测设备总量
           </div>
           <div class="cs-right-text2">
-            <span class="num">584</span>
+            <span class="num">{{ state.info.total }}</span>
             <span class="unit">台</span>
           </div>
         </div>
@@ -33,15 +33,15 @@
                 <div
                   class="progress-bar"
                   role="progressbar"
-                  aria-valuenow="60"
+                  :aria-valuenow="state.info.fine"
                   aria-valuemin="0"
                   aria-valuemax="100"
-                  style="width: 60%"
+                  :style="getWidth(state.info.fine, state.info.total)"
                 ></div>
               </div>
               <span class="label label-primary">正常监测设备</span>
               <div class="cs-info-num">
-                <span class="num">561</span>
+                <span class="num">{{ state.info.fine }}</span>
                 <span class="unit">台</span>
               </div>
             </div>
@@ -57,15 +57,15 @@
                 <div
                   class="progress-bar progress-bar-danger"
                   role="progressbar"
-                  aria-valuenow="60"
+                  :aria-valuenow="state.info.error"
                   aria-valuemin="0"
                   aria-valuemax="100"
-                  style="width: 60%"
+                  :style="getWidth(state.info.error, state.info.total)"
                 ></div>
               </div>
               <span class="label label-carrot">异常监测设备</span>
               <div class="cs-info-num">
-                <span class="num">23</span>
+                <span class="num">{{ state.info.error }}</span>
                 <span class="unit">台</span>
               </div>
             </div>
@@ -89,12 +89,13 @@
   </div>
 </template>
 <script setup name="Manage">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, reactive } from "vue";
 import { useRouter } from "vue-router";
-// import c1 from "@/assets/img/screen/mainB/c1.png";
-// import c2 from "@/assets/img/screen/mainB/c2.png";
-// import c3 from "@/assets/img/screen/mainB/c3.png";
-// import c4 from "@/assets/img/screen/mainB/c4.png";
+import { queryDeviceStatus } from "@/api/screen/mainb";
+
+const props = defineProps({
+  projectId: { type: Number },
+});
 
 const images = [
   "@/assets/img/screen/mainB/c1.png",
@@ -112,6 +113,15 @@ const colorArr = [
 const bgImage = ref(images[0]);
 const canvasRef = ref();
 const router = useRouter();
+
+const state = reactive({
+  info: {},
+});
+
+const getWidth = (num1, num) => {
+  const width = ((num1 / num) * 100).toFixed(0);
+  return { width: `${width}%` };
+};
 const renderCanvas = (score) => {
   let color1;
   let color2;
@@ -230,9 +240,25 @@ const renderCanvas = (score) => {
 const goDeviceMgr = () => {
   router.push({ path: "/deviceLedger" });
 };
+
+const queryList = async () => {
+  const { data } = await queryDeviceStatus({ projectId: props.projectId });
+  state.info = data || {};
+  if (state.info.onlineRatio) {
+    const score = (state.info.onlineRatio * 100).toFixed(0);
+    renderCanvas(score);
+  }
+};
 onMounted(() => {
-  renderCanvas(85);
+  queryList();
 });
+
+watch(
+  () => props.projectId,
+  () => {
+    queryList();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

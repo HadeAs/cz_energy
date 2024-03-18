@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:25:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2023-12-26 22:10:05
+ * @LastEditTime: 2024-02-01 09:50:52
  * @Description: 
 -->
 <template>
@@ -11,7 +11,7 @@
       class="search"
       buttonContent="导出"
       :form-info="searchFormCfg"
-      @button-click="onSearch"
+      @button-click="handleExport"
       authKey="cost_compare_export"
       @search-change="handleOnSearch"
     />
@@ -34,16 +34,18 @@ import { ref, onMounted, reactive, watch } from "vue";
 import { COMMON_ECHART_OPTION } from "@/constant";
 import EchartTreeContainer from "@/components/EchartTreeContainer.vue";
 import { exportWithExcel, handleOpts, renderAxis } from "@/utils";
-import { exportCostQsBatch, getCostSta, querySysClassSide } from '@/api/staMng/statistics.js';
-import { storeToRefs } from 'pinia';
-import appStore from '@/store/index.js';
-import { simServiceRequest } from '@/api/backstageMng/utils.js';
+import { exportCostQsBatch, getCostSta } from "@/api/staMng/statistics.js";
+import { storeToRefs } from "pinia";
+import appStore from "@/store/index.js";
+import { simServiceRequest } from "@/api/backstageMng/utils.js";
+import { getEnergyList } from "@/api/common.js";
+import { getDefaultDate } from "@/utils";
 
 const { globalState } = storeToRefs(appStore.global);
 
 const defaultKeys = ref([2, 3]);
-const searchType = ref('hour');
-const searchDate = ref({})
+const searchType = ref("day");
+const searchDate = ref({});
 const xAxisCnt = ref(12);
 const suffix = ref(":00");
 const echartTreeRef = ref();
@@ -66,25 +68,53 @@ const searchFormCfg = ref([
 ]);
 
 const handleOnSearch = () => {
-  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
+  const [startDate, endDate] = searchFormCfg.value.filter(
+    (i) => i?.prop === "timeRange"
+  )?.[0]?.value || [undefined, undefined];
   searchDate.value = { startDate, endDate };
   renderChart();
-}
+};
 
-const onSearch = async () => {
+const handleExport = async () => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys;
-  const [startDate, endDate] = searchFormCfg.value.filter(i => i?.prop === 'timeRange')?.[0]?.value || [undefined, undefined];
-  const res = await exportCostQsBatch({
-    type: searchType.value,
-    projectId: state.searchFormData.projectId,
-    startDate,
-    endDate,
-    // 直接单个数字
-    energyStatisticsId: energyStatisticsIds?.[0],
+  ElMessageBox.confirm("确认导出选中数据吗？", "警告", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    const energyStatisticsIds = checkchilds?.length
+      ? checkchilds?.map((i) => i?.id)
+      : defaultKeys.value;
+    const [startDate, endDate] = searchFormCfg.value.filter(
+      (i) => i?.prop === "timeRange"
+    )?.[0]?.value || [undefined, undefined];
+    const exportData = {
+      type: searchType.value,
+      projectId: state.searchFormData.projectId,
+      startDate,
+      endDate,
+    };
+    // const res = await Promise.all(
+    //     energyStatisticsIds.map((i) =>
+    //         exportCostQsBatch({ ...exportData, energyStatisticsId: i })
+    //     )
+    // );
+    // res.forEach((i, index) => {
+    //   exportWithExcel(i, `${new Date().getTime()}-${checks?.[index]?.name}`);
+    // });
+    const res = await exportCostQsBatch({
+      ...exportData,
+      energyStatisticsId: energyStatisticsIds?.[0],
+    });
+    if (res) {
+      exportWithExcel(res, "费用数据-费用对比");
+      ElMessage({
+        type: "success",
+        message: "导出成功",
+      });
+    }
   });
-  exportWithExcel(res, new Date().getTime());
 };
 
 const randomArr = (count, num) => {
@@ -93,6 +123,7 @@ const randomArr = (count, num) => {
 
 const handleTypeChange = (val) => {
   searchType.value = val;
+  searchDate.value = getDefaultDate(val);
   switch (val) {
     case "hour":
       xAxisCnt.value = 12;
@@ -116,7 +147,7 @@ const handleTypeChange = (val) => {
   renderChart();
 };
 
-const initChart = res => {
+const initChart = (res) => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
   // 动态更改图表数据
@@ -127,12 +158,15 @@ const initChart = res => {
     seriesData.push({
       name: item.label,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
-      data: (res?.[index] || []).map(i => i?.data),
+      data: (res?.[index] || []).map((i) => i?.data),
     });
   });
-  chartOption.value.xAxis[0].data = res?.[0].map(i => renderAxis(searchType.value, i?.createTime));
+  chartOption.value.xAxis[0].data = res?.[0]?.map((i) =>
+    renderAxis(searchType.value, i?.createTime)
+  );
+  chartOption.value.yAxis[0].name = "单位：元";
   chartOption.value.legend.data = legendData;
   chartOption.value.series = seriesData;
   chartOption.value = { ...chartOption.value };
@@ -141,39 +175,47 @@ const initChart = res => {
 const renderChart = async () => {
   const checks = echartTreeRef.value.getCheckedNodes();
   const checkchilds = checks.filter((v) => !v.children);
-  const energyStatisticsIds = checkchilds?.length ? checkchilds?.map(i => i?.id) : defaultKeys.value;
-  const res = await simServiceRequest(getCostSta, energyStatisticsIds, {
-    type: searchType.value,
-    projectId: state.searchFormData.projectId,
-    ...searchDate.value,
-  });
+  const energyStatisticsIds = checkchilds?.length
+    ? checkchilds?.map((i) => i?.id)
+    : defaultKeys.value;
+  const res = await simServiceRequest(
+    getCostSta,
+    energyStatisticsIds,
+    {
+      type: searchType.value,
+      projectId: state.searchFormData.projectId,
+      ...searchDate.value,
+    },
+    "energyStatisticsId"
+  );
   initChart(res);
 };
 
-onMounted(async () => {
-  const res = await querySysClassSide({ projectId: state.searchFormData.projectId });
-  // todo: 临时处理 目前基础数据为二维数组
-  state.treeData = res.map(i => ({
-    ...i,
-    id: i?.energyStatisticsId,
-    label: i?.energyStatisticsName,
-    children: i?.children.map(child=> ({
-      ...child,
-      label: child?.name,
-    }))}
-  ));
-  defaultKeys.value = state.treeData?.[0]?.children.map(i => i?.id);
+const initData = async () => {
+  const res = await getEnergyList();
+  state.treeData = [
+    {
+      id: "faId",
+      label: "总费用",
+      children: res?.data?.data?.map((i) => ({ ...i, label: i?.name })),
+    },
+  ];
+  defaultKeys.value = state.treeData?.[0]?.children.map((i) => i?.id);
   echartTreeRef.value.setCheckedKeys(defaultKeys.value);
   renderChart();
+};
+
+onMounted(async () => {
+  initData();
 });
 
 watch(
-    () => globalState.value.projectId,
-    () => {
-      renderChart();
-    }
+  () => globalState.value.projectId,
+  (id) => {
+    state.searchFormData.projectId = id;
+    initData();
+  }
 );
-
 </script>
 <style lang="scss" scoped>
 .search {

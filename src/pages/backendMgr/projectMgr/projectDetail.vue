@@ -17,8 +17,18 @@
     <el-form-item label="项目名称" required prop="name">
       <el-input placeholder="请输入" v-model="state.detailForm.name" />
     </el-form-item>
-    <el-form-item label="所在地区" required prop="region">
-      <el-input placeholder="请输入" v-model="state.detailForm.region" />
+<!--    <el-form-item label="所在地区" required prop="region">-->
+<!--      <el-input placeholder="请输入" v-model="state.detailForm.region" />-->
+<!--    </el-form-item>-->
+    <el-form-item label="所在省份" required prop="provinceId">
+      <el-select v-model="state.detailForm.provinceId" placeholder="请选择" @change="handleOnChangeProvince">
+        <el-option v-for="item in state.provinceList" :key="item.id" :value="item.id" :label="item.name" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="所在城市" prop="cityId">
+      <el-select v-model="state.detailForm.cityId" placeholder="请选择">
+        <el-option v-for="item in state.cityList" :key="item.id" :value="item.id" :label="item.name" />
+      </el-select>
     </el-form-item>
     <el-form-item label="建筑面积(㎡)" required prop="area">
       <el-input placeholder="请输入" v-model="state.detailForm.area" />
@@ -91,17 +101,57 @@
         <el-input placeholder="请输入" v-model="state.detailForm.summerWinnerTag" />
       </el-form-item>
     </div>
+    <el-form-item label="用能人数" required prop="energyPersonNum">
+      <el-input placeholder="请输入" v-model="state.detailForm.energyPersonNum" />
+    </el-form-item>
+    <el-form-item label="默认碳排放标准" required prop="carbonStandardId">
+      <el-select v-model="state.detailForm.carbonStandardId" placeholder="选择排放标准">
+        <el-option v-for="item in staList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="智能网关" required prop="gatewayId">
+      <el-select v-model="state.detailForm.gatewayId" placeholder="选择智能网关">
+        <el-option v-for="item in state.gateWayList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="空调形式" required prop="airConditionerForm">
+      <el-input placeholder="请输入" v-model="state.detailForm.airConditionerForm" />
+    </el-form-item>
+    <el-form-item label="外墙保温形式" required prop="extWallWarmForm">
+      <el-input placeholder="请输入" v-model="state.detailForm.extWallWarmForm" />
+    </el-form-item>
+    <el-form-item label="太阳能光伏装机容量" required prop="solarCapacity">
+      <el-input-number placeholder="请输入" v-model="state.detailForm.solarCapacity" />
+    </el-form-item>
+    <el-form-item label="地源热泵应用面积" required prop="groundHeatArea">
+      <el-input-number placeholder="请输入" v-model="state.detailForm.groundHeatArea" />
+    </el-form-item>
+    <el-form-item label="太阳能热水集热面积" required prop="solarHeatCollectArea">
+      <el-input-number placeholder="请输入" v-model="state.detailForm.solarHeatCollectArea" />
+    </el-form-item>
   </el-form>
 </template>
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
+// import { BUILD_TYPE, WORK_SYSTEM } from "@/constant";
 import { fetchOneProject } from '@/api/backstageMng/pmMng.js';
-import { getBuildingType, getSysClass } from '@/api/common.js';
+import {
+  getBuildingType,
+  getCarbonStandardList,
+  getCityByProvinceId, getGatewayList,
+  getProvinceList,
+  getSysClass
+} from '@/api/common.js';
+
+const staList = ref([]);
 
 const init = {
   name: "",
-  region: "",
+  // region: "",
+  provinceId: "",
+  cityId: "",
   area: "",
   buildingTypeId: "",
   sysClassIds: [],
@@ -115,13 +165,31 @@ const init = {
   temperatureSettingTag: "",
   startStopTag: "",
   summerWinnerTag: "",
+  carbonStandardId: "",
+  energyPersonNum: "",
+  gatewayId: "",
+  airConditionerForm: "", // 空调形式
+  extWallWarmForm: "", // 外墙保温形式
+  solarCapacity: 0,  // 太阳能光伏装机容量(kw)
+  groundHeatArea: 0,  // 地源热泵应用面积(m2)
+  solarHeatCollectArea: 0, // 太阳能热水集热面积
 };
 const rules = {
   name: { required: true, message: "请输入项目名称", trigger: "blur" },
-  region: { required: true, message: "请输入所在地区", trigger: "blur" },
+  // region: { required: true, message: "请输入所在地区", trigger: "blur" },
   area: { required: true, message: "请输入建筑面积", trigger: "blur" },
+  provinceId: { required: true, message: "请输选择所在省份", trigger: "blur" },
+  cityId: { required: true, message: "请输选择所在城市", trigger: "blur" },
   buildingTypeId: { required: true, message: "请选择建筑分类", trigger: "change" },
   sysClassIds: { required: true, message: "请选择运行系统", trigger: "change" },
+  energyPersonNum: { required: true, message: "请输入用能人数", trigger: "blur" },
+  carbonStandardId: { required: true, message: "请选择碳排放标准", trigger: "change" },
+  gatewayId: { required: true, message: "请输选择网关", trigger: "blur" },
+  airConditionerForm: { required: true, message: "请输入空调形式", trigger: "blur" },
+  extWallWarmForm: { required: true, message: "请输入外墙保温形式", trigger: "change" },
+  solarCapacity: { required: true, message: "请输入太阳能光伏装机容量", trigger: "change" },
+  groundHeatArea: { required: true, message: "请输入地源热泵应用面积", trigger: "blur" },
+  solarHeatCollectArea: { required: true, message: "请输入太阳能热水集热面积", trigger: "change" },
   openTime: {
     type: "date",
     required: true,
@@ -190,25 +258,59 @@ const state = reactive({
   detailForm: init,
   buildingType: [],
   sysClass: [],
+  provinceList: [],
+  cityList: [],
+  gateWayList: [],
 });
 
+const getCity = async parentId => {
+  const res = await getCityByProvinceId({ parentId })
+  if (res?.data?.data) {
+    state.cityList = res?.data?.data;
+  }
+}
+
+const handleOnChangeProvince = e => {
+  getCity(e);
+  state.detailForm = { ...state.detailForm, cityId: '' }
+}
+
 onMounted(async () => {
+  getCarbonStandardList().then(({ data }) => {
+    if (data?.data) {
+      staList.value = data.data;
+    }
+  })
   getBuildingType().then(({ data }) => {
     if (data?.data) {
       state.buildingType = data?.data;
     }
   })
-  getSysClass().then(({ data }) => {
-    if (data?.data) {
-      state.sysClass = data?.data;
+  getSysClass().then(data => {
+    if (data) {
+      state.sysClass = data;
     }
   })
+  getProvinceList().then(({ data }) => {
+    if (data?.data) {
+      state.provinceList = data?.data;
+    }
+  })
+  getGatewayList().then(res => {
+    console.log(`res`, res);
+    if (res?.code === 200) {
+      state.gateWayList = res?.data?.data;
+    }
+  });
   if (props.initData) {
     const { data } = await fetchOneProject(props.initData);
     if (data?.data) {
       state.detailForm = { ...init, ...props.initData, ...data?.data,
         // isRemoted 查询返回 boolean， post 接口接收 字符串
       ...{ openTime: props.initData?.openTime, isRemoted: data?.data?.isRemoted ? '1' : '0' } };
+      if (data?.data?.provinceId) {
+        await getCity(data?.data?.provinceId)
+      }
     }
   }
 });

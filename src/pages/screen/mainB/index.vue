@@ -1,21 +1,52 @@
+<!--
+ * @Author: ymZhang
+ * @Date: 2023-12-23 19:10:40
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-26 12:57:05
+ * @Description: 
+-->
 <template>
   <div class="cs-left-wrapper">
-    <Back />
-    <Summary />
-    <Measure />
-    <Analyse />
+    <Back @search="handleSearch" />
+    <Summary :project-id="state.projectId" />
+    <Measure :project-id="state.projectId" />
+    <Analyse :project-id="state.projectId" />
   </div>
   <div class="cs-center-wrapper">
-    <Trend />
+    <Trend :project-id="state.projectId" />
   </div>
   <div class="cs-right-wrapper">
-    <Warning />
-    <List />
-    <Manage />
+    <Warning :project-id="state.projectId" />
+    <List :project-id="state.projectId" />
+    <Manage :project-id="state.projectId" />
   </div>
 </template>
-<script lang="ts" setup name="MainB">
-import { Back, Summary, Measure, Analyse, Trend, Warning, List, Manage } from "./components";
+<script setup name="MainB">
+import { reactive } from "vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
+import {
+  Back,
+  Summary,
+  Measure,
+  Analyse,
+  Trend,
+  Warning,
+  List,
+  Manage,
+} from "./components";
+
+const emits = defineEmits(["refresh"]);
+const { globalState } = storeToRefs(appStore.global);
+const state = reactive({
+  projectId: globalState.value.projectId,
+});
+const handleSearch = (projectId) => {
+  state.projectId = projectId;
+  appStore.global.changeName(projectId);
+  emits("refresh", projectId);
+};
+// emits("refresh", state.projectId);
 </script>
 <style lang="scss">
 .cs-right-tab {
@@ -28,7 +59,7 @@ import { Back, Summary, Measure, Analyse, Trend, Warning, List, Manage } from ".
   height: 28px;
   line-height: 26px;
   border-bottom: 2px solid transparent;
-  color: #7A7886;
+  color: #7a7886;
   text-align: center;
   cursor: pointer;
 }

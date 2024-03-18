@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-20 09:00:59
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 13:56:56
+ * @LastEditTime: 2024-03-13 22:44:00
  * @Description:
  */
 export const SHOW_PROJ_CHANGE_PATH = [
@@ -11,6 +11,9 @@ export const SHOW_PROJ_CHANGE_PATH = [
   "workMonitor",
   "/deviceMaintain",
   "/workMonitor",
+  "/carbonEmission",
+  "/carbonReduction",
+  "/carbonNeutral"
 ];
 export const MENU_DATA = [
   {
@@ -107,15 +110,15 @@ export const MENU_DATA = [
     icon: "aidicon aidicon-dropbox",
     children: [
       {
-        name: "碳排放",
+        name: "碳排放统计",
         path: "/carbonEmission",
       },
       {
-        name: "碳减排",
+        name: "碳减排计算与评价",
         path: "/carbonReduction",
       },
       {
-        name: "碳中和",
+        name: "双碳进程",
         path: "/carbonNeutral",
       },
     ],
@@ -123,7 +126,7 @@ export const MENU_DATA = [
 ];
 
 const minValue = 10;
-const colorArr = ["#2DB7F5", "#7DC856", "#F9BF00", "#FA5555", "#6666FF"];
+const colorArr = ["#2DB7F5", "#7DC856", "#F9BF00", "#FA5555", "#6666FF", "#f5b1bd", "#E873FD", "#3745aa", "#247238"];
 export const COMMON_ECHART_OPTION = {
   tooltip: {
     trigger: "axis",
@@ -440,170 +443,230 @@ export const VARIABLE_TYPE = [
 // 权限点，暂时写死
 export const AUTH_POINT_CONFIG = [
   {
-    key: 1,
+    key: "backend",
     label: "后台管理",
     disabled: true,
     children: [
       {
-        key: 11,
+        key: "project",
         label: "项目管理",
+        authKey: 20,
         type: "page",
         children: [
-          { key: 111, label: "新增", type: "component" },
-          { key: 112, label: "编辑", type: "component" },
-          { key: 113, label: "删除", type: "component" },
-          { key: 114, label: "批量删除", type: "component" },
-          { key: 115, label: "项目图片", type: "component" },
-          { key: 116, label: "费用配置", type: "component" },
+          { key: "project_add", authKey: 201, label: "新增", type: "component" },
+          { key: "project_edit", authKey: 201, label: "编辑", type: "component" },
+          { key: "project_delete", authKey: 202, label: "删除", type: "component" },
+          { key: "project_batch_delete", label: "批量删除", type: "component" },
+          { key: "project_upload_img", authKey: 205, label: "项目图片", type: "component" },
+          { key: "project_price_config", authKey: 204, label: "费用配置", type: "component" },
+          { key: "project_search", authKey: 203, label: "查询项目", type: "component" },
         ],
       },
       {
-        key: 12,
+        key: "account",
         label: "账号管理",
+        authKey: 21,
         type: "page",
         children: [
-          { key: 121, label: "新增", type: "component" },
-          { key: 122, label: "编辑", type: "component" },
-          { key: 123, label: "删除", type: "component" },
+          { key: "account_add", authKey: 211, label: "新增", type: "component" },
+          { key: "account_edit", authKey: 211, label: "编辑", type: "component" },
+          { key: "account_delete", authKey: 213, label: "删除", type: "component" },
+          { key: "account_search", authKey: 212, label: "查询", type: "component" },
         ],
       },
       {
-        key: 13,
+        key: "auth",
         label: "权限管理",
+        authKey: 22,
         type: "page",
         children: [
-          { key: 131, label: "新增", type: "component" },
-          { key: 132, label: "编辑", type: "component" },
-          { key: 133, label: "删除", type: "component" },
-          { key: 134, label: "批量删除", type: "component" },
-          { key: 135, label: "分配", type: "component" },
+          { key: "auth_add", authKey: 221, label: "新增", type: "component" },
+          { key: "auth_edit", authKey: 221, label: "编辑", type: "component" },
+          { key: "auth_delete", authKey: 224, label: "删除", type: "component" },
+          { key: "auth_batch_delete", label: "批量删除", type: "component" },
+          { key: "auth_distribute", authKey: 223, label: "分配", type: "component" },
+          { key: "auth_search", authKey: 222, label: "查询", type: "component" },
         ],
       },
       {
-        key: 14,
+        key: "systemlog",
         label: "系统日志管理",
+        authKey: 23,
         type: "page",
         children: [
           {
-            key: 141,
+            key: "systemlog_login_search",
+            authKey: 231,
             label: "登陆日志_搜索",
             type: "component",
           },
           {
-            key: 142,
+            key: "systemlog_operation_search",
+            authKey: 232,
             label: "用户操作日志_搜索",
             type: "component",
           },
           {
-            key: 143,
+            key: "systemlog_alarm_search",
+            authKey: 233,
             label: "报警信息日志_搜索",
             type: "component",
           },
         ],
       },
       {
-        key: 15,
+        key: "platform",
         label: "平台配置",
+        authKey: 25,
         type: "page",
         children: [
           {
-            key: 151,
+            key: "platform_unit",
+            authKey: 251,
+            label: "单位管理",
+            type: "component",
+          },
+          {
+            key: "platform_unit_add",
             label: "单位管理_新增",
             type: "component",
           },
           {
-            key: 152,
+            key: "platform_unit_edit",
             label: "单位管理_编辑",
             type: "component",
           },
           {
-            key: 153,
+            key: "platform_unit_delete",
             label: "单位管理_删除",
             type: "component",
           },
           {
-            key: 154,
+            key: "platform_variable",
+            authKey: 253,
+            label: "变量管理",
+            type: "component",
+          },
+          {
+            key: "platform_variable_add",
             label: "变量管理_新增",
             type: "component",
           },
           {
-            key: 155,
+            key: "platform_variable_edit",
             label: "变量管理_编辑",
             type: "component",
           },
           {
-            key: 156,
+            key: "platform_variable_delete",
             label: "变量管理_删除",
             type: "component",
           },
           {
-            key: 157,
+            key: "platform_build",
+            authKey: 254,
+            label: "建筑类型管理",
+            type: "component",
+          },
+          {
+            key: "platform_build_add",
             label: "建筑类型管理_新增",
             type: "component",
           },
           {
-            key: 158,
+            key: "platform_build_delete",
             label: "建筑类型管理_删除",
             type: "component",
           },
           {
-            key: 159,
+            key: "platform_energy",
+            authKey: 252,
+            label: "用能系统分类管理",
+            type: "component",
+          },
+          {
+            key: "platform_energy_add",
             label: "用能系统分类管理_新增",
             type: "component",
           },
           {
-            key: 1510,
+            key: "platform_energy_delete",
             label: "用能系统分类管理_删除",
             type: "component",
           },
         ],
       },
       {
-        key: 16,
+        key: "comm",
         label: "通信配置",
+        authKey: 24,
         type: "page",
         children: [
-          { key: 161, label: "新增", type: "component" },
-          { key: 162, label: "编辑", type: "component" },
-          { key: 163, label: "删除", type: "component" },
+          { key: "comm_add", authKey: 242, label: "新增", type: "component" },
+          { key: "comm_edit", authKey: 242, label: "编辑", type: "component" },
+          { key: "comm_delete", authKey: 243, label: "删除", type: "component" },
+          { key: "comm_search", authKey: 241, label: "查询", type: "component" },
         ],
       },
     ],
   },
   {
-    key: 2,
+    key: "statistics",
     label: "数据统计",
     disabled: true,
     children: [
       {
-        key: 21,
+        key: "carbon",
         label: "能源数据",
+        authKey: 30,
         type: "page",
         children: [
           {
-            key: 211,
+            key: "carbon_history_search",
+            authKey: 302,
+            label: "历史数据_查询",
+            type: "component",
+          },
+          {
+            key: "carbon_history_export",
+            authKey: 303,
             label: "历史数据_导出",
             type: "component",
           },
           {
-            key: 212,
+            key: "carbon_device_search",
+            authKey: 302,
+            label: "单类设备数据_查询",
+            type: "component",
+          },
+          {
+            key: "carbon_device_export",
+            authKey: 304,
             label: "单类设备数据_导出",
             type: "component",
           },
         ],
       },
       {
-        key: 22,
+        key: "cost",
         label: "费用数据",
+        authKey: 31,
         type: "page",
         children: [
           {
-            key: 221,
+            key: "cost_compare_search",
+            authKey: 311,
+            label: "费用对比_查询",
+            type: "component",
+          },
+          {
+            key: "cost_compare_export",
+            authKey: 312,
             label: "费用对比_导出",
             type: "component",
           },
           {
-            key: 222,
+            key: "cost_detail_batch_export",
             label: "费用明细_批量导出",
             type: "component",
           },
@@ -612,129 +675,158 @@ export const AUTH_POINT_CONFIG = [
     ],
   },
   {
-    key: 3,
+    key: "device",
     label: "设备管理",
     disabled: true,
     children: [
       {
-        key: 31,
+        key: "ledger",
         label: "设备台账",
+        authKey: 10,
         type: "page",
         children: [
-          { key: 311, label: "新增", type: "component" },
-          { key: 312, label: "编辑", type: "component" },
-          { key: 313, label: "删除", type: "component" },
-          { key: 314, label: "批量导入", type: "component" },
+          { key: "ledger_add", authKey: 101, label: "新增", type: "component" },
+          { key: "ledger_edit", authKey: 101, label: "编辑", type: "component" },
+          { key: "ledger_delete", authKey: 102, label: "删除", type: "component" },
+          { key: "ledger_batch_import", authKey: 103, label: "批量导出", type: "component" },
+          { key: "ledger_search", authKey: 104, label: "查询搜索设备台账", type: "component" },
         ],
       },
       {
-        key: 32,
+        key: "alarm",
         label: "设备报警",
         type: "page",
+        authKey: 13,
         children: [
           {
-            key: 321,
+            key: "alarm_actual_add",
+            authKey: 135,
             label: "实时报警_新增",
             type: "component",
           },
           {
-            key: 322,
+            key: "alarm_actual_deal",
+            authKey: 132,
             label: "实时报警_立即处理",
             type: "component",
           },
           {
-            key: 323,
+            key: "alarm_actual_batch_export",
             label: "实时报警_批量导出",
             type: "component",
           },
           {
-            key: 324,
+            key: "alarm_actual_search",
+            authKey: 131,
             label: "实时报警_搜索",
             type: "component",
           },
           {
-            key: 325,
+            key: "alarm_work_add",
             label: "运行报警_数据补录",
             type: "component",
           },
           {
-            key: 326,
+            key: "alarm_work_search",
+            authKey: 134,
             label: "运行报警_搜索",
             type: "component",
           },
         ],
       },
       {
-        key: 33,
+        key: "group",
         label: "设备组管理",
         type: "page",
+        authKey: 11,
         children: [
           {
-            key: 331,
-            label: "设备组管理_回收站",
-            type: "component",
-          },
-          {
-            key: 332,
+            key: "group_index_add",
+            authKey: 111,
             label: "设备组管理_新增",
             type: "component",
           },
           {
-            key: 333,
+            key: "group_index_edit",
+            authKey: 111,
             label: "设备组管理_编辑",
             type: "component",
           },
           {
-            key: 334,
+            key: "group_index_delete",
+            authKey: 112,
             label: "设备组管理_删除",
             type: "component",
           },
           {
-            key: 335,
+            key: "group_index_batch_delete",
+            authKey: 114,
             label: "设备组管理_批量删除",
             type: "component",
           },
           {
-            key: 336,
+            key: "group_index_search",
+            authKey: 115,
+            label: "设备组管理_查询搜索设备",
+            type: "component",
+          },
+          {
+            key: "group_index_connect",
+            authKey: 116,
             label: "设备组管理_关联设备参数",
             type: "component",
           },
           {
-            key: 337,
+            key: "group_work_batch_export",
+            authKey: 113,
             label: "设备运行_批量导出",
             type: "component",
           },
           {
-            key: 338,
+            key: "group_work_recycle",
+            label: "设备运行_回收站",
+            type: "component",
+          },
+          {
+            key: "group_work_recycle_restore",
             label: "设备运行_回收站_恢复",
             type: "component",
           },
           {
-            key: 339,
+            key: "group_work_delete",
             label: "设备运行_删除",
             type: "component",
           },
         ],
       },
       {
-        key: 34,
+        key: "point",
         label: "点位管理",
+        authKey: 12,
         type: "page",
         children: [
-          { key: 341, label: "新增", type: "component" },
-          { key: 342, label: "编辑", type: "component" },
-          { key: 343, label: "删除", type: "component" },
-          { key: 344, label: "批量删除", type: "component" },
+          { key: "point_add", authKey: 121, label: "新增", type: "component" },
+          { key: "point_edit", authKey: 121, label: "编辑", type: "component" },
+          { key: "point_delete", authKey: 122, label: "删除", type: "component" },
+          { key: "point_batch_delete", authKey: 123, label: "批量删除", type: "component" },
         ],
       },
       {
-        key: 35,
+        key: "devicelog",
         label: "设备日志",
+        authKey: 14,
         type: "page",
         children: [
           {
-            key: 351,
+            key: "devicelog_batch_export",
+            authKey: 142,
             label: "批量导出",
+            type: "component",
+          },
+          {
+            key: "devicelog_export",
+            authKey: 141,
+            label: "查询",
             type: "component",
           },
         ],
@@ -742,67 +834,82 @@ export const AUTH_POINT_CONFIG = [
     ],
   },
   {
-    key: 4,
+    key: "operation",
     label: "运维管理",
     disabled: true,
     children: [
       {
-        key: 41,
+        key: "monitor",
         label: "运行监测",
+        authKey: 40,
         type: "page",
         children: [
           {
-            key: 411,
+            key: "monitor_electric_export",
             label: "配电监测_导出",
             type: "component",
           },
           {
-            key: 412,
+            key: "monitor_water_export",
             label: "用水监测_导出",
             type: "component",
           },
           {
-            key: 413,
+            key: "monitor_exception_search",
             label: "用水异常_搜索",
             type: "component",
           },
           {
-            key: 414,
+            key: "monitor_exception_deal",
             label: "用水异常_立即处理",
             type: "component",
           },
         ],
       },
       {
-        key: 42,
+        key: "maintain",
         label: "设备保养",
+        authKey: 41,
         type: "page",
         children: [
-          { key: 421, label: "编辑", type: "component" },
-          { key: 422, label: "详情", type: "component" },
+          { key: "maintain_search", authKey: 411, label: "查询", type: "component" },
+          { key: "maintain_edit", label: "编辑", type: "component" },
+          { key: "maintain_detail", label: "详情", type: "component" },
           {
-            key: 423,
+            key: "maintain_device_detail",
             label: "单个设备_详情",
             type: "component",
           },
           {
-            key: 424,
+            key: "maintain_device_maintenance",
             label: "单个设备_保养",
             type: "component",
           },
           {
-            key: 425,
+            key: "maintain_device_add",
             label: "单个设备_添加保养计划",
             type: "component",
           },
           {
-            key: 426,
-            label: "单个设备_编辑5年保养计划",
+            key: "maintain_device_upload",
+            label: "单个设备_上传文件",
             type: "component",
           },
           {
-            key: 427,
-            label: "单个设备_上传文件",
+            key: "maintain_device_edit",
+            label: "5年保养计划_编辑",
+            type: "component",
+          },
+          {
+            key: "maintain_device_plan_get",
+            // authKey: 412,
+            label: "获取某型号的最新保养计划",
+            type: "component",
+          },
+          {
+            key: "maintain_device_plan_delete",
+            // authKey: 413,
+            label: "删除一个保养计划",
             type: "component",
           },
         ],
@@ -823,8 +930,24 @@ export const DEVICE_STATUS = [
 ];
 
 export const COMMON_DATE_FORMAT = "YYYY-MM-DD";
-export const COMMON_DATE_TIME_FORMAT = `${COMMON_DATE_FORMAT} hh:mm:ss`;
+export const COMMON_DATE_TIME_FORMAT = `${COMMON_DATE_FORMAT} HH:mm:ss`;
 
 export const COMMON_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.JPG', '.JPEG', '.PNG', '.BMP', '.gif', '.GIF'];
 
 export const COMMON_FILE_TYPES = ['.rar', '.zip', '.doc', '.docx'];
+
+export const COMMON_FUNCTION_LIST = [
+  { id: "null", name: "无" },
+  { id: "sum", name: "求和" },
+  { id: "avg", name: "均值" },
+  { id: "max", name: "最大值" },
+  { id: "min", name: "最小值" },
+  { id: "diff", name: "极差" },
+];
+
+export const COMMON_TIME_TYPE_LIST = [
+  // { id: "hour", name: "时能耗"},
+  { id: "day", name: "天能耗" },
+  { id: "month", name: "月能耗" },
+  { id: "year", name: "年能耗" }
+]

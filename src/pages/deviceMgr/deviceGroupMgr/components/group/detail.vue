@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 15:34:18
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 21:40:27
+ * @LastEditTime: 2024-01-31 14:20:54
  * @Description: 
 -->
 <template>
@@ -25,6 +25,9 @@
       </el-form-item>
       <el-form-item label="设备名称" required prop="name">
         <el-input placeholder="请输入设备名称" v-model="state.form.name" />
+      </el-form-item>
+      <el-form-item label="MQTT标识符" required prop="mqttId">
+        <el-input placeholder="请输入MQTT标识符" v-model="state.form.mqttId" />
       </el-form-item>
       <el-form-item label="资产编号" required prop="propertyNum">
         <el-input
@@ -77,7 +80,7 @@
       </el-form-item> -->
       <el-form-item label="启用时间" required prop="openTime">
         <el-date-picker
-          value-format="YYYY-MM-DD hh:mm:ss"
+          :value-format="COMMON_DATE_TIME_FORMAT"
           v-model="state.form.openTime"
           type="datetime"
           placeholder="请选择时间"
@@ -87,6 +90,12 @@
         <el-radio-group v-model="state.form.status">
           <el-radio-button :label="true">启用</el-radio-button>
           <el-radio-button :label="false">停用</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="是否重点用能" required prop="mainEnergy">
+        <el-radio-group v-model="state.form.mainEnergy">
+          <el-radio-button :label="1">是</el-radio-button>
+          <el-radio-button :label="0">否</el-radio-button>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="上传设备图片" prop="image">
@@ -110,11 +119,13 @@ import { getInfo } from "@/api/deviceMgr/deviceGroup";
 import { getEquipmentModelList, getProjectManagerList } from "@/api/deviceMgr";
 import { getImageUrl } from "@/api/common";
 import { transformFileToUrl } from "@/utils";
+import { COMMON_DATE_TIME_FORMAT } from "@/constant";
 
 let oldRaw;
 const initData = {
   projectId: "",
   name: "",
+  mqttId: "",
   propertyNum: "",
   equipmentModelId: "",
   location: "",
@@ -123,6 +134,7 @@ const initData = {
   // classify: "",
   openTime: "",
   status: true,
+  mainEnergy: 0,
   image: [],
 };
 const rules = {
@@ -190,6 +202,8 @@ const getDetail = async (param) => {
     state.form.status = data.data.status || false;
     state.form.managerId = data.data.managerId;
     state.form.equipmentModelId = data.data.equipmentModelId;
+    state.form.mqttId = data.data.mqttId;
+    state.form.mainEnergy = data.data.mainEnergy;
     if (data.data.image) {
       const images = await parseImage(data.data.image);
       state.form.image = images;

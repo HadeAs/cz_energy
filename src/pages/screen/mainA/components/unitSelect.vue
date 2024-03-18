@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-23 19:10:40
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-11 15:06:45
+ * @LastEditTime: 2024-01-30 22:50:51
  * @Description: 
 -->
 <template>
@@ -29,6 +29,10 @@
 import { reactive } from "vue";
 
 const localOpts = [
+  {
+    id: "2024",
+    text: "2024",
+  },
   {
     id: "2023",
     text: "2023",

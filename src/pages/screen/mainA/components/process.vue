@@ -10,7 +10,9 @@
             <img src="@/assets/img/screen/mainA/u311.png" />碳达峰倒计时
           </div>
           <div class="cs-main-text">
-            <span class="cs-num-text">1542</span>
+            <span class="cs-num-text">{{
+                state.config.targetCarbonTopYearDiff
+              }}</span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
@@ -19,7 +21,9 @@
             <img src="@/assets/img/screen/mainA/u311.png" />考核时间
           </div>
           <div class="cs-main-text">
-            <span class="cs-num-text">2026</span>
+            <span class="cs-num-text">{{
+                state.config.targetCarbonTopYear
+              }}</span>
             <span class="cs-unit-text"></span>
           </div>
         </div>
@@ -28,7 +32,9 @@
             <img src="@/assets/img/screen/mainA/u311.png" />碳中和倒计时
           </div>
           <div class="cs-main-text">
-            <span class="cs-num-text">2654 </span>
+            <span class="cs-num-text"
+            >{{ state.config.targetCarbonNtYearDiff }}
+            </span>
             <span class="cs-unit-text">天</span>
           </div>
         </div>
@@ -37,14 +43,16 @@
             <img src="@/assets/img/screen/mainA/u311.png" />考核时间
           </div>
           <div class="cs-main-text">
-            <span class="cs-num-text">2023</span>
+            <span class="cs-num-text">{{
+                state.config.targetCarbonNtYear
+              }}</span>
             <span class="cs-unit-text"></span>
           </div>
         </div>
       </div>
       <div class="cs-num-wrap">
         <div class="cs-num1">
-          <span class="cs-num-text">68</span>
+          <span class="cs-num-text">{{ state.config.progressRate }}</span>
           <span class="cs-num-unit">%</span>
         </div>
         <div class="cs-num2">碳达峰完成进度</div>
@@ -53,7 +61,11 @@
     <div class="cs-sub-header">
       <span class="cs-sub-header-text">碳中和趋势</span>
       <div class="cs-sub-right">
-        <UnitSelect label="单位：万t" @change="handleChange" />
+        <UnitSelect
+            :default-value="state.year"
+            label="单位：万t"
+            @change="handleChange"
+        />
       </div>
     </div>
     <!-- <div class="cs-right-wrap2" id="chart3"></div> -->
@@ -61,7 +73,7 @@
   </div>
 </template>
 <script setup name="Process">
-import { ref } from "vue";
+import { ref, reactive, watch } from "vue";
 import UnitSelect from "./unitSelect.vue";
 import { COLUM_OPT } from "./constant";
 import img1 from "@/assets/img/screen/mainA/bar1.png";
@@ -70,64 +82,127 @@ import img3 from "@/assets/img/screen/mainA/bar3.png";
 import img4 from "@/assets/img/screen/mainA/bar4.png";
 import img5 from "@/assets/img/screen/mainA/bar5.png";
 import img6 from "@/assets/img/screen/mainA/bar6.png";
-
 import Echart from "@/components/Echart.vue";
+import { queryCarbonProcess } from "@/api/screen/maina";
 
-const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));
-const basicTop = [
-  [850.3, 100, 100, 100, 150, 400.3, 100, 300.3],
-  // [956.3, 150, 150, 150, 506.3, 100, 100, 306.3],
-  [2000, 350, 350, 250, 1050, 500, 200, 350],
-  [1200, 200, 200, 250, 550, 100, 100, 350],
-  [2000, 350, 350, 250, 1050, 500, 200, 350],
-];
-const basicBottom = [
-  [0, 750.3, 650.3, 550.3, 400.3, 0, 300.3, 0],
-  // [0, 806.3, 656.3, 506.3, 0, 406.3, 306.3, 0],
-  [0, 1650, 1300, 1050, 0, 550, 350, 0],
-  [0, 1000, 800, 550, 0, 450, 350, 0],
-  // [0, 1650, 1300, 1050, 0, 550, 350, 0],
-];
-const dateMap = {
-  2023: 0,
-  2022: 1,
-  2021: 2,
+const props = defineProps({
+  projectId: { type: Number },
+});
+
+const colors = [img1, img2, img3, img3, img4, img5, img5, img6];
+const xMap = {
+  碳排基准: "carbonBase",
+  "能源使用\n减少": "energyReduce",
+  绿色能源: "greenEnergy",
+  "碳汇(植树等)": "carbonSink",
+  碳排放: "carbonSummary",
+  // "电网碳排放因子降低": "powerCarbonReduce",
+  "碳信用抵消\n(碳交易)": "carbonCreditAmount",
+  "绿店购买\n抵消": "greenPowerAmount",
+  净排放: "netCarbonSummary",
 };
+const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));
+
+const state = reactive({
+  year: "2023",
+  config: {
+    progressRate: "68",
+    targetCarbonTopYear: "2030",
+    targetCarbonTopYearDiff: "2654",
+    targetCarbonNtYear: "2024",
+    targetCarbonNtYearDiff: "1456",
+  },
+});
+
+const query = async () => {
+  const { data } = await queryCarbonProcess({
+    projectId: props.projectId,
+    year: state.year,
+  });
+  if (data) {
+    const { chartList, ...rest } = data;
+    state.config = {
+      ...rest,
+      progressRate: ((data.progressRate || 0) * 100).toFixed(0),
+    };
+    const topArr = [];
+    const bottomArr = [];
+    const lineArr = [];
+    Object.keys(xMap).forEach((key, index) => {
+      topArr.push({
+        value: data.chartList[xMap[key]],
+        itemStyle: {
+          color: {
+            image: colors[index],
+            repeat: "repeat",
+          },
+        },
+      });
+    });
+    topArr.forEach((item, index) => {
+      if (index === 0) {
+        bottomArr.push(0);
+      } else {
+        const topPrefix = topArr[index - 1].value;
+        const bottomPrefix = bottomArr[index - 1];
+        const max = Math.max(topPrefix, bottomPrefix);
+        const diff = max - item.value;
+        bottomArr.push(diff < 0 ? 0 : diff);
+      }
+    });
+    topArr.forEach((item, index) => {
+      if (index < topArr.length - 1) {
+        const prefix = new Array(index).fill().map((item) => "-");
+        const max = Math.max(item.value, bottomArr[index]);
+        lineArr.push({
+          name: `test${index}`,
+          type: "line",
+          lineStyle: {
+            color: "#6c6a77",
+          },
+          showSymbol: false,
+          data: [...prefix, max, max],
+        });
+      }
+    });
+    const [sum1, sum2] = option.value.series;
+    const newSum1 = { ...sum1, data: bottomArr };
+    const newSum2 = {
+      ...sum2,
+      label: {
+        ...sum2.label,
+        formatter: ({ dataIndex, name }) => {
+          if (bottomArr[dataIndex] === 0) {
+            return "";
+          }
+          return name;
+        },
+      },
+      data: topArr,
+    };
+
+    option.value.series = [newSum1, newSum2, ...lineArr];
+    option.value.xAxis[0].data = Object.keys(xMap);
+    option.value.xAxis[0].axisLabel.formatter = (value, index) => {
+      if (bottomArr[index] === 0) {
+        return value;
+      }
+      return null;
+    };
+  }
+};
+query();
 
 const handleChange = (val) => {
-  // option.value.series[1].data = option.value.series[1].data.map((item) => {
-  //   return { ...item, value: parseInt(item.value + 50, 10) };
-  // });
-  // option.value.series[0].data = option.value.series[0].data.map((item) => {
-  //   if (item === 0) return item;
-  //   return item + 50;
-  // });
-  const num = dateMap[val];
-
-  const s1 = { ...option.value.series[0], data: basicBottom[num] };
-  const s2 = {
-    ...option.value.series[1],
-    data: option.value.series[1].data.map((item, index) => {
-      return { ...item, value: basicTop[num][index] };
-    }),
-  };
-  const lineArr = [];
-  new Array(7).fill("").forEach((v, index) => {
-    const prefix = new Array(index).fill().map((item) => "-");
-    const max = Math.max(basicBottom[num][index], basicTop[num][index]);
-    lineArr.push({
-      name: `test${index}`,
-      type: "line",
-      lineStyle: {
-        color: "#6c6a77",
-      },
-      showSymbol: false,
-      data: [...prefix, max, max],
-    });
-  });
-
-  option.value.series = [s1, s2, ...lineArr];
+  state.year = val;
+  query();
 };
+watch(
+  () => props.projectId,
+  () => {
+    query();
+  }
+);
 </script>
 <style lang="scss" scoped>
 .content {

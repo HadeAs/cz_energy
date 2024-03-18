@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:56:35
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 12:45:48
+ * @LastEditTime: 2024-01-18 09:56:28
  * @Description: 
 -->
 <template>
@@ -73,7 +73,7 @@ const confirmAddVar = () => {
         fiveYearMaintainPlan: state.formData.content,
       });
       if (code === 200) {
-        ElMessage.success("5年保养计划修改成功");
+        // ElMessage.success("5年保养计划修改成功");
         emits("reload");
         drawerRef.value.close();
       }

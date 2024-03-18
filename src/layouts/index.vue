@@ -129,7 +129,7 @@ const init = async () => {
   // 获取角色列表
   await appStore.global.getRoleList();
   // 获取权限列表
-  await appStore.global.getResources();
+  await appStore.global.getAllResource();
   state.initSuccess = true;
 };
 init();
@@ -231,6 +231,7 @@ init();
       cursor: pointer;
       display: flex;
       align-items: center;
+      outline: none;
       .user-name {
         margin-left: 10px;
         color: #000000;

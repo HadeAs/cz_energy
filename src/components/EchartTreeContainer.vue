@@ -2,7 +2,7 @@
  * @Author: Zhicheng Huang
  * @Date: 2023-12-22 11:27:16
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 13:44:41
+ * @LastEditTime: 2024-01-19 19:29:21
  * @Description: 
 -->
 <template>
@@ -10,8 +10,21 @@
     <div class="left">
       <div class="left-title">
         <span>数据对比</span>
-        <el-tabs
-          :style="{ visibility: showSwitch ? 'initial' : 'hidden' }"
+        <el-select
+          size="small"
+          v-show="showSwitch"
+          v-model="activeTab"
+          @change="handleTabChange"
+        >
+          <el-option
+            v-for="item in COMMON_TIME_TYPE_LIST"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+        <!-- <el-tabs
+          :style="{ visibility: showSwitch ? 'visible' : 'hidden' }"
           v-model="activeTab"
           @tab-change="handleTabChange"
         >
@@ -19,17 +32,17 @@
           <el-tab-pane label="天能耗" name="day"></el-tab-pane>
           <el-tab-pane label="月能耗" name="month"></el-tab-pane>
           <el-tab-pane label="年能耗" name="year"></el-tab-pane>
-        </el-tabs>
+        </el-tabs> -->
       </div>
-      <Echart :option="chartOption" />
+      <Echart :option="chartOption" @click="handleChartClick" />
     </div>
     <div class="right">
       <el-scrollbar>
         <div class="right-title">
           <span class="select-var">选择变量</span>
-          <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">
-            +添加
-          </div>
+<!--          <div class="btn-add" v-if="allowAddVar" @click="openAddVarForm">-->
+<!--            +添加-->
+<!--          </div>-->
           <ProDrawer title="添加变量" ref="drawerRef" @confirm="confirmAddVar">
             <el-form ref="formRef" v-bind="COMMON_FORM_CONFIG" :model="varForm">
               <el-form-item label="变量组" required prop="groupName">
@@ -71,12 +84,12 @@
               @mouseleave="leaveTreeNode()"
             >
               <span>{{ node.label }}</span>
-              <span
-                @click="confirmDelVar(node, data)"
-                v-if="hoverNodeId === data.id && allowDelVar"
-                class="del-btn"
-                >删除</span
-              >
+<!--              <span-->
+<!--                @click="confirmDelVar(node, data)"-->
+<!--                v-if="hoverNodeId === data.id && allowDelVar"-->
+<!--                class="del-btn"-->
+<!--                >删除</span-->
+<!--              >-->
             </div>
           </template>
         </el-tree>
@@ -92,6 +105,7 @@ import Echart from "@/components/Echart.vue";
 import { Search } from "@element-plus/icons-vue";
 import ProDrawer from "@/components/ProDrawer.vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
+import { COMMON_TIME_TYPE_LIST } from "@/constant";
 
 const prop = defineProps({
   showSwitch: {
@@ -121,6 +135,10 @@ const prop = defineProps({
     type: Boolean,
     default: true,
   },
+  allowParent: {
+    type: Boolean,
+    default: false,
+  },
   props: {
     type: Object,
     default: () => ({
@@ -129,18 +147,19 @@ const prop = defineProps({
     }),
   },
 });
-defineExpose({
-  getCheckedNodes: () => treeRef.value.getCheckedNodes(),
-  setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
-});
-const emits = defineEmits(["type-change", "tree-check-change"]);
+const emits = defineEmits([
+  "type-change",
+  "tree-check-change",
+  "delete-node",
+  "click-chart",
+]);
 
 const treeRef = ref();
 const varName = ref("");
 const drawerRef = ref();
 const formRef = ref();
 const hoverNodeId = ref("");
-const activeTab = ref("hour");
+const activeTab = ref("day");
 const treeData = ref(prop.treeData);
 const varGroupOptions = ref([]);
 const varForm = reactive({
@@ -161,7 +180,7 @@ watch(
 
 const filterNode = (value, data) => {
   if (!value) return true;
-  return data.label.includes(value);
+  return data[prop.props.label].toLowerCase().includes(value.toLowerCase());
 };
 
 const enterTreeNode = (id) => {
@@ -174,7 +193,10 @@ const leaveTreeNode = () => {
 
 const getCheckedChildren = () => {
   const checkDatas = treeRef.value.getCheckedNodes();
-  return checkDatas.filter((item) => !item.children);
+  if (!prop.allowParent) {
+    return checkDatas.filter((item) => !item.children);
+  }
+  return checkDatas;
 };
 
 const treeCheckChangeHandle = (data, { checkedKeys }) => {
@@ -225,7 +247,10 @@ const openAddVarForm = () => {
   varForm.varName = "";
   const options = [];
   treeData.value.forEach((v) => {
-    options.push({ label: v.label, value: v.label });
+    options.push({
+      [prop.props.label]: v[prop.props.label],
+      value: v[prop.props.label],
+    });
   });
   varGroupOptions.value = options;
 };
@@ -244,10 +269,10 @@ const treeNodeAdd = () => {
   const checks = treeRef.value.getCheckedNodes();
   //模拟树增加节点
   treeData.value.forEach((v) => {
-    if (v.label === varForm.groupName) {
+    if (v[prop.props.label] === varForm.groupName) {
       v.children.push({
         id: uniqueId("var_tree_"),
-        label: varForm.varName,
+        [prop.props.label]: varForm.varName,
       });
       //如果当前父节点已经处于check状态，新增完子节点之后，记得去掉它的check状态！！！
       const idx = checks.findIndex((item) => item.id === v.id);
@@ -270,31 +295,23 @@ const confirmDelVar = (node, data) => {
   })
     .then(() => {
       treeNodeDel(node, data);
-      ElMessage({
-        type: "success",
-        message: "删除成功",
-      });
+      // ElMessage({
+      //   type: "success",
+      //   message: "删除成功",
+      // });
     })
     .catch(() => {});
 };
 
 const treeNodeDel = (node, data) => {
-  const checks = treeRef.value.getCheckedNodes();
+  emits("delete-node", data);
+  const checks = getCheckedChildren();
   const idx = checks.findIndex((v) => v.id === data.id);
   if (idx !== -1) {
     checks.splice(idx, 1);
-  }
-  //模拟树删除节点
-  const parent = node.parent;
-  const children = parent.data.children || parent.data;
-  const index = children.findIndex((d) => d.id === data.id);
-  children.splice(index, 1);
-  treeData.value = [...treeData.value];
-
-  nextTick(() => {
     treeRef.value.setCheckedNodes(checks);
-    treeCheckChangeHandle();
-  });
+    emits("tree-check-change", checks);
+  }
 };
 
 const handleTabChange = (val) => {
@@ -305,6 +322,10 @@ const handleTabChange = (val) => {
   });
 };
 
+const handleChartClick = (param) => {
+  emits("click-chart", param);
+};
+
 onMounted(() => {
   if (prop.defaultTreeCheckKeys.length) {
     treeRef.value.setCheckedKeys(prop.defaultTreeCheckKeys);
@@ -312,10 +333,16 @@ onMounted(() => {
 });
 watch(
   () => prop.defaultTreeCheckKeys,
-  (val) => {
-    treeRef.value.setCheckedKeys(val);
+  (val, oldVal) => {
+    if (!isEqual(val, oldVal)) {
+      treeRef.value.setCheckedKeys(val);
+    }
   }
 );
+defineExpose({
+  getCheckedNodes: getCheckedChildren,
+  setCheckedKeys: (keys) => treeRef.value.setCheckedKeys(keys),
+});
 </script>
 <style lang="scss" scoped>
 .echart-tree-container {
@@ -328,11 +355,16 @@ watch(
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 20px 15px;
+    padding: 15px 20px 15px;
     span {
       font-size: 16px;
       font-weight: 700;
       color: #000;
+    }
+    :deep() {
+      .el-select {
+        width: 100px;
+      }
     }
   }
   .right-title {

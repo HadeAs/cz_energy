@@ -2,7 +2,7 @@
  * @Author: ymZhang
  * @Date: 2023-12-26 17:28:58
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-12 22:04:08
+ * @LastEditTime: 2024-01-18 09:55:42
  * @Description: 
 -->
 <template>
@@ -300,7 +300,7 @@ const recoverRow = async (row) => {
     id: row.id,
   });
   if (code === 200) {
-    ElMessage.success("恢复成功");
+    // ElMessage.success("恢复成功");
     getTableList();
   }
 };

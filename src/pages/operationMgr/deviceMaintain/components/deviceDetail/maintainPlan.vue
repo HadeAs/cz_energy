@@ -2,11 +2,11 @@
  * @Author: ymZhang
  * @Date: 2023-12-25 13:10:14
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-08 12:45:56
+ * @LastEditTime: 2024-01-20 13:22:49
  * @Description: 
 -->
 <template>
-  <BoxContainer title="保养计划">
+  <BoxContainer title="保养计划" v-auth="'maintain_device_plan_get'">
     <template #extra>
       <el-button
         type="primary"
@@ -22,7 +22,7 @@
       border
     >
       <el-descriptions-item
-        v-for="item in state.exclData"
+        v-for="item in list"
         :key="item.id"
         :label="item.year + '年'"
       >
@@ -34,7 +34,9 @@
             iconColor="red"
             @confirm="deleteRecord(item)"
           >
-            <el-button link type="danger">删除</el-button>
+            <el-button link type="danger" v-auth="'maintain_device_plan_delete'"
+              >删除</el-button
+            >
           </ProPopConfirm>
         </div>
       </el-descriptions-item>
@@ -69,19 +71,17 @@
 <script setup name="MainTainPlan">
 import { reactive, ref } from "vue";
 import BoxContainer from "../boxContainer.vue";
-import {
-  getLatestPlan,
-  deletePlan,
-  addPlan,
-} from "@/api/operationMgr/deviceMaintain";
+import { deletePlan, addPlan } from "@/api/operationMgr/deviceMaintain";
 import { CircleCloseFilled } from "@element-plus/icons-vue";
 import { COMMON_FORM_CONFIG } from "@/constant/formConfig";
-import { ElMessage } from "element-plus";
 
+const emits = defineEmits(["reload"]);
 const props = defineProps({
   deviceId: { type: String },
   projectId: { type: String },
+  list: { type: Array, default: [] },
 });
+
 const rules = {
   year: [{ required: true, message: "请选择年份", trigger: "blur" }],
   content: [
@@ -92,23 +92,12 @@ const rules = {
 const drawerRef = ref();
 const formRef = ref();
 const state = reactive({
-  exclData: [],
+  // exclData: [],
   formData: {
     content: "",
     year: "",
   },
 });
-
-const getList = async () => {
-  const { data } = await getLatestPlan({
-    projectId: props.projectId,
-    equipmentModelId: props.deviceId,
-  });
-  if (data?.data) {
-    state.exclData = data.data;
-  }
-};
-getList();
 
 const deleteRecord = async (row) => {
   const { code } = await deletePlan(props.projectId, {
@@ -116,8 +105,8 @@ const deleteRecord = async (row) => {
     maintainPlanId: row.id,
   });
   if (code === 200) {
-    ElMessage.success("计划删除成功");
-    getList();
+    // ElMessage.success("计划删除成功");
+    emits("reload");
   }
 };
 
@@ -136,8 +125,8 @@ const confirmAddVar = () => {
         content: state.formData.content,
       });
       if (code === 200) {
-        ElMessage.success("计划添加成功");
-        getList();
+        // ElMessage.success("计划添加成功");
+        emits("reload");
         drawerRef.value.close();
       }
     })

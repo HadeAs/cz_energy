@@ -5,6 +5,7 @@
       buttonContent="搜索"
       :form-info="searchFormCfg"
       @button-click="onSearch"
+      auth-key="auth-key"
     />
     <MainContentContainer style="height: calc(100vh - 145px)">
       <ProTable
@@ -131,7 +132,7 @@ const {
   searchChange,
   selectionChange,
   getTableList,
-} = useTable(getList, state.searchFormData, state.sortInfo);
+} = useTable(getList, state.searchFormData, state.sortInfo, {}, 141);
 
 getTableList();
 

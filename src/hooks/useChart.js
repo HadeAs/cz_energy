@@ -2,34 +2,16 @@
  * @Author: ymZhang
  * @Date: 2024-01-16 11:29:30
  * @LastEditors: ymZhang
- * @LastEditTime: 2024-01-16 14:21:17
+ * @LastEditTime: 2024-03-13 22:31:55
  * @Description: 
  */
 import { reactive, toRefs, onMounted } from "vue";
-import dayjs from "dayjs";
-import { COMMON_DATE_FORMAT } from "@/constant";
+import { getDefaultDate } from "@/utils";
 
 
 const DEFAULT_SEARCH_CONFIG = {
-  type: "hour",
+  type: "day",
 };
-
-const getDefaultDate = (type) => {
-  let startDate;
-  const now = dayjs();
-  const endDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 23:59:59";
-  if (type === "hour") {
-    // 默认查询当前一天的数据
-    startDate = dayjs(now).format(COMMON_DATE_FORMAT) + " 00:00:00";
-  } else if (type === "day") {
-    // 默认查询近7天的数据
-    startDate = now.subtract(7, "day").format(COMMON_DATE_FORMAT) + " 00:00:00";
-  } else if (type === "month") {
-    // 默认查询最近12个月的数据
-    startDate = now.subtract(1, "year").startOf("year").format(COMMON_DATE_FORMAT) + " 00:00:00";
-  }
-  return { startDate, endDate };
-}
 
 const useChart = (chartConfig = {}, treeConfig = {}) => {
   const { api: chartApi, param: searchParam = {}, handleParam, updateChart } = chartConfig;
@@ -96,26 +78,33 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
   //   return treeData;
   // }
 
-  const queryTree = async () => {
-    const { data } = await treeApi(treeParam);
+  const queryTree = async (init = false, extraParam = {}) => {
+    const { data } = await treeApi({ ...treeParam, ...extraParam });
     if (data?.data) {
       const treeData = data.data || [];
       // 调用方处理treeData
       state.treeData = handleTreeData ? handleTreeData(treeData) : treeData;
       // 默认选中第一类节点下的所有子节点
       if (treeData.length) {
-        const datas = state.treeData[0].children || [];
-        if (datas.length) {
-          // 有子集
-          state.checkKeys = datas.map(item => item.id);
-          state.checkDatas = datas;
-        } else {
-          // 无子集
-          state.checkKeys = [state.treeData[0].id];
-          state.checkDatas = [state.treeData[0]];
+        if (init) {
+          const datas = state.treeData[0].children || [];
+          if (datas.length) {
+            // 有子集
+            state.checkKeys = datas.map(item => item.id);
+            state.checkDatas = datas;
+          } else {
+            // 无子集
+            state.checkKeys = [state.treeData[0].id];
+            state.checkDatas = [state.treeData[0]];
+          }
         }
+      } else {
+        state.checkKeys = [];
+        state.checkDatas = [];
       }
-      queryChart();
+      if (init) {
+        queryChart();
+      }
     }
   }
 
@@ -130,7 +119,7 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
     queryChart();
   }
 
-  const searchChange = ({ prop, value }) => {
+  const changeParam = ({ prop, value }) => {
     if (Array.isArray(value)) {
       // 时间范围
       const param = {
@@ -141,11 +130,15 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
     } else {
       state.searchParam = { ...state.searchParam, [prop]: value };
     }
+  }
+
+  const searchChange = ({ prop, value }) => {
+    changeParam({ prop, value });
     queryChart();
   }
 
   onMounted(() => {
-    queryTree();
+    queryTree(true);
   })
 
   return {
@@ -154,7 +147,8 @@ const useChart = (chartConfig = {}, treeConfig = {}) => {
     queryTree,
     tabChange,
     checkChange,
-    searchChange
+    searchChange,
+    changeParam
   }
 }
 export default useChart;

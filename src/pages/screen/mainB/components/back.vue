@@ -1,8 +1,8 @@
 <!--
  * @Author: Zhicheng Huang
  * @Date: 2024-01-04 17:18:46
- * @LastEditors: Zhicheng Huang
- * @LastEditTime: 2024-01-06 19:00:50
+ * @LastEditors: ymZhang
+ * @LastEditTime: 2024-01-22 12:44:39
  * @Description: 
 -->
 <template>
@@ -12,8 +12,17 @@
         >返回
       </el-button>
       <div class="pull-right back-container">
-        <UnitSelect :options="state.opts" width="160px" />
-        <el-button type="primary" class="btn btn-lg" id="search"
+        <UnitSelect
+          :options="state.projectList"
+          :default-value="state.active"
+          @change="handleChange"
+          width="160px"
+        />
+        <el-button
+          type="primary"
+          class="btn btn-lg"
+          id="search"
+          @click="handleSearch"
           >搜索</el-button
         >
       </div>
@@ -24,28 +33,27 @@
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import UnitSelect from "../../mainA/components/unitSelect.vue";
+import { storeToRefs } from "pinia";
+import appStore from "@/store";
 
+const emits = defineEmits(["search"]);
+const { globalState } = storeToRefs(appStore.global);
 const router = useRouter();
 const state = reactive({
-  opts: [
-    {
-      id: 1,
-      text: "武家嘴大酒店",
-    },
-    {
-      id: 2,
-      text: "徐州沛县中金商贸",
-    },
-    {
-      id: 3,
-      text: "连云港白虎山小商品",
-    },
-    {
-      id: 4,
-      text: "葛洲坝融创南京紫郡",
-    },
-  ],
+  projectList: globalState.value.projects.map((item) => ({
+    ...item,
+    text: item.name,
+  })),
+  active: globalState.value.projectId,
 });
+
+const handleChange = (select) => {
+  state.active = select;
+};
+
+const handleSearch = () => {
+  emits("search", state.active);
+};
 
 const back = () => {
   router.go(-1);
