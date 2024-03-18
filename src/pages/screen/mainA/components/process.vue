@@ -98,7 +98,7 @@ const xMap = {
   碳排放: "carbonSummary",
   // "电网碳排放因子降低": "powerCarbonReduce",
   "碳信用抵消\n(碳交易)": "carbonCreditAmount",
-  "绿店购买\n抵消": "greenPowerAmount",
+  "绿电购买\n抵消": "greenPowerAmount",
   净排放: "netCarbonSummary",
 };
 const option = ref(COLUM_OPT(img1, img2, img3, img4, img5, img6));
