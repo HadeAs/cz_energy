@@ -947,7 +947,7 @@ export const COMMON_FUNCTION_LIST = [
 
 export const COMMON_TIME_TYPE_LIST = [
   // { id: "hour", name: "时能耗"},
-  { id: "day", name: "天能耗" },
-  { id: "month", name: "月能耗" },
-  { id: "year", name: "年能耗" }
+  { id: "day", name: "逐日" },
+  { id: "month", name: "逐月" },
+  { id: "year", name: "逐年" }
 ]

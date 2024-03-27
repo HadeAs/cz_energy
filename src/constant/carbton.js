@@ -197,15 +197,15 @@ export const CARBON_NETURAL_CALCULATE_TREE_DATA = [
         color: "rgba(10, 209, 100, 1)"
       },
       {
-        id: 'carbonSummary',
-        label: "碳排放",
+        id: 'powerCarbonReduce',
+        label: "电网碳排因子降低",
         color: "rgba(190, 175, 158, 1)"
       }
     ]
   },
   {
-    id: 'powerCarbonReduce',
-    label: "电网碳排因子降低",
+    id: 'carbonSummary',
+    label: "碳排放",
     color: "rgba(255, 82, 0, 1)",
     children: [
       {

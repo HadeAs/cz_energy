@@ -25,7 +25,7 @@
     </div>
     <EchartTreeContainer
       ref="echartTreeRef"
-      :showSwitch="true"
+      :showSwitch="false"
       :conflict="false"
       allowParent
       :chartOption="chartOption"
@@ -87,11 +87,11 @@ const baseData = [
   { key: 'energyReduce', label: '能源使用减少' },
   { key: 'greenEnergy', label: '绿色能源' },
   { key: 'carbonSink', label: '碳汇(植树等)' },
+  { key: 'powerCarbonReduce', label: '电网碳排放因子降低' },
   { key: 'carbonSummary', label: '碳排放' },
-  { key: 'netCarbonSummary', label: '净排放' },
   { key: 'carbonCreditAmount', label: '碳信用抵消(碳交易)' },
   { key: 'greenPowerAmount', label: '绿电购买抵消' },
-  { key: 'powerCarbonReduce', label: '电网碳排放因子降低' },
+  { key: 'netCarbonSummary', label: '净排放' },
 ];
 
 const state = reactive({

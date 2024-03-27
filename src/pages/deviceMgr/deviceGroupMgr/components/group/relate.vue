@@ -25,7 +25,6 @@
         class="device-container"
         v-bind="COMMON_FORM_CONFIG"
         :model="state.form"
-        :rules="rules"
       >
         <el-form-item prop="devices">
           <el-checkbox-group v-model="state.form.devices">
